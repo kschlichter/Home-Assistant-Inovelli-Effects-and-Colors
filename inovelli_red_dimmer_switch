@@ -10,10 +10,10 @@ sequence:
       size: 4
       value: >
         {# Skip the calculations for effect = "off". #}
-        {% if effect|title == "Off" or effect is not defined %}
+        {% if effect|title == "Off" or effect is not defined or color|title == "Off" or color is not defined or duration|title == "Off" or duration is not defined or level|title == "Off" or level is not defined %}
           0
         {% else %}
-          {# Set default values if any needed values are missing. #}
+          {# Set default values if any needed values are missing. Old code that doesn't do anything now, but may be useful to someone #}
           {% set color = color|default("Off") %}
           {% set level = level|default(0) %}{# 1-10 #}
           {% set duration = duration|default("Off") %}
