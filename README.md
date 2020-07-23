@@ -16,6 +16,10 @@ Using the script:
   Notification effects are set by passing a calculated number to the "LED Strip Effect" configuration parameter.  Since the numbers are multiplied and then added, 
   it's possible to get the LED (switch) or LED strip (dimmer) to still do something if defaults are left out, but it may not be the expected effect, color, or 
   intensity.  
+  
+  The Inovelli LZW36 fan / light combo switch has two, independently controlled, LEDs.  In order to determine the parameter value, the "Type" variable must be
+  passed to the script with a value of either "Fan" or "Light".  For consistency, the "Type" can be passed to the script when using other Inovelli switches, or
+  omitted so that old automations don't need to be updated.
     
   Notification effect examples:
 
@@ -30,6 +34,22 @@ Using the script:
     duration: 30 Seconds
     effect: Pulse
     entity_id: zwave.entryway_lights
+    level: 10
+    service: script.inovelli_switch_leds
+    
+    color: Green
+    duration: Indefinitely
+    effect: Chase
+    Type: Fan
+    entity_id: zwave.guest_bedroom_fan_light
+    level: 10
+    service: script.inovelli_switch_leds
+    
+    color: Green
+    duration: Indefinitely
+    effect: Chase
+    Type: Light
+    entity_id: zwave.guest_bedroom_fan_light
     level: 10
     service: script.inovelli_switch_leds
 
