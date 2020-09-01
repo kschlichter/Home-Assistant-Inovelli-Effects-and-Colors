@@ -7,7 +7,7 @@ Calculation References:
 
 	https://nathanfiscus.github.io/inovelli-notification-calc/
 	https://community.inovelli.com/t/home-assistant-2nd-gen-switch-rgb-working/168/62
-	https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit#gid=0 (updated with dimmer and switch math)
+	https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing (updated with dimmer and switch math)
 
 **Using the script:**
 
