@@ -41,7 +41,7 @@ sequence:
           {% set colors = {
             "Off": 0,
             "Red": 1,
-            "Orange": 21,
+            "Orange": 8,
             "Yellow": 42,
             "Green": 85,
             "Cyan": 127,
@@ -137,7 +137,7 @@ sequence:
       value: >
         {% set colors = {
           "Red": 1,
-          "Orange": 21,
+          "Orange": 8,
           "Yellow": 42,
           "Green": 85,
           "Cyan": 127,
