@@ -30,14 +30,14 @@ Calculation References:
     effect: Chase
     entity_id: zwave.office_lights
     level: 6
-    service: script.inovelli_switch_leds
+    service: script.inovelli_led
 
     color: Light Pink
     duration: 30 Seconds
     effect: Pulse
     entity_id: zwave.entryway_lights
     level: 10
-    service: script.inovelli_switch_leds
+    service: script.inovelli_led
     
     color: Green
     duration: Indefinitely
@@ -45,7 +45,7 @@ Calculation References:
     Type: Fan
     entity_id: zwave.guest_bedroom_fan_light
     level: 10
-    service: script.inovelli_switch_leds
+    service: script.inovelli_led
     
     color: Green
     duration: Indefinitely
@@ -53,7 +53,7 @@ Calculation References:
     Type: Light
     entity_id: zwave.guest_bedroom_fan_light
     level: 10
-    service: script.inovelli_switch_leds
+    service: script.inovelli_led
 
 
   LED settings will modify the default LED color when a notification effect is not active (i.e. normal use).  On the dimmer, the strip will fade up and down as 
@@ -66,13 +66,13 @@ Calculation References:
     LEDintensity: 50%
     LEDintensity_off: 10%
     entity_id: zwave.office_lights
-    service: script.inovelli_switch_leds
+    service: script.inovelli_led
 
     LEDcolor: Blue
     LEDintensity: 100%
     LEDintensity_off: 30%
     entity_id: zwave.office_lights
-    service: script.inovelli_switch_leds
+    service: script.inovelli_led
     
   Setting an LED color immediately overrides a notification effect.  If you tend to use long notifications, but want to change the LED colors at regular intervals
   (like sunrise and sunset), you'll have to handle this conflict.  One possible solution is a binary sensor that's set and unset when the notification begins and 
@@ -87,7 +87,7 @@ Calculation References:
     LEDintensity: 100%
     LEDintensity_off: 50%
     entity_id: zwave.entryway_lights
-    service: script.inovelli_switch_leds
+    service: script.inovelli_led
     
 **Component Notes:**
 
