@@ -1,0 +1,317 @@
+alias: Inovelli Dimmer and Switch LEDs ZwaveJS
+description: 'Handles setting the LED colors and notifications on Inovelli "Red" model switches and dimmers through the Zwave JS integration.'
+############
+# Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
+#   Note that the on/off switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
+
+# Required parameters
+#   entity: (string) The entity ID from "Developer Tools" -> "States".  The device to be modified (e.g. light.office_lights_level)
+#           Can also be a comma separated list, if all entities are the same model.  For example, "light.office, light.family_room"
+#   model: (string) One of: dimmer, switch, combo_light, combo_fan
+
+# Required for setting the LED indicator
+#   LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+#           NOTE: The Red Series switch not take any digit 1 – 255 as a color.  Red must be 0, and it cannot receive the teal or light pink settings.  
+#   LEDintensity: (whole integer percentage e.g. 60%) Sets the brightness of the LED status when on.
+#   LEDintensity_off: ((whole integer percentage e.g. 60%) Sets the brightness of the LED status when off.
+
+# Required for setting LED effects
+#   duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Second", "Seconds", "Minute", or "Minutes", "Hour", "Hours", or "Indefinitely".
+#   effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", "Pulse", "Breath"
+#           NOTE: The Red Series dimmer won't "pulse".  Home assistant is limiting the value for the effect register to 83823359 and the math for pulse works out to more than that.  
+#   intensity: (int 1 – 10) Sets the brightness of the LED's effect
+#   color: (int or string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+#           NOTE: The Red Series switch, combo_fan and combo_light will not take any digit 1 – 255.  Red must be 0, and it cannot receive the teal or light pink settings.  
+
+# Lower case is used throughout, since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
+
+# ADD A HANDLER FOR BRIAN'S OLD VARIABLES
+############
+mode: parallel
+
+variables:
+  # Look-up tables easy reference and future maintenance. 
+  color_set:
+    "off": 0
+    "red": 0
+    "orange": 8
+    "yellow": 42
+    "green": 85
+    "cyan": 127
+    "teal": 145
+    "blue": 170
+    "purple": 195
+    "light pink": 220
+    "pink": 234
+    "hot pink": 234
+    "white": 255
+
+  duration_values:
+    "off": 0
+    "1 second": 1
+    "1 seconds": 1
+    "2 seconds": 2
+    "3 seconds": 3
+    "4 seconds": 4
+    "5 seconds": 5
+    "6 seconds": 6
+    "7 seconds": 7
+    "8 seconds": 8
+    "9 seconds": 9
+    "10 seconds": 10
+    "15 seconds": 15
+    "20 seconds": 20
+    "25 seconds": 25
+    "30 seconds": 30
+    "35 seconds": 35
+    "40 seconds": 40
+    "45 seconds": 45
+    "50 seconds": 50
+    "55 seconds": 55
+    "60 seconds": 60
+    "1 minute": 60
+    "1 minutes": 60
+    "2 minutes": 62
+    "3 minutes": 63
+    "4 minutes": 64
+    "10 minutes": 70
+    "15 minutes": 75
+    "30 minutes": 90
+    "45 minutes": 105
+    "60 minutes": 120
+    "1 hour": 120
+    "2 hours": 122
+    "forever": 255
+    "indefinitely": 255
+
+  switch_effects:
+    "off": 0
+    "solid": 1
+    "fast blink": 2
+    "chase": 2
+    "slow blink": 3
+    "blink": 3
+    "pulse": 4
+
+  strip_effects:
+    "off": 0
+    "solid": 1
+    "chase": 2
+    "fast blink": 3
+    "slow blink": 4
+    "blink": 4
+    "pulse": 5
+
+##################
+# There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
+##################
+  parameters:
+    "dimmer_effect": "LED Strip Effect"
+    "dimmer_ledcolor": "LED Indicator Color"
+    "dimmer_ledintensity": "LED Indicator Intensity"
+    "dimmer_ledintensity_off": "LED Indicator Intensity (When Off)"
+    "switch_effect_color": "LED Strip Effect (Color)"
+    "switch_effect_intensity": "LED Strip Effect (Brightness)"
+    "switch_effect_duration": "LED Strip Effect (Duration)"
+    "switch_effect_effect": "LED Strip Effect (Effect)"
+    "switch_ledcolor": "LED Indicator Color"
+    "switch_ledintensity": "LED Indicator Intensity"
+    "switch_ledintensity_off": "LED Indicator Intensity (When Off)"
+    "combo_light_effect_color": "Light LED Strip Effect Color"
+    "combo_light_effect_intensity": "Light LED Strip Effect Intensity"
+    "combo_light_effect_duration": "Light LED Strip Effect Duration"
+    "combo_light_effect_effect": "Light LED Strip Effect"
+    "combo_light_ledcolor": "Light LED Indicator Color"
+    "combo_light_ledintensity": "Light LED Strip Intensity"
+    "combo_light_ledintensity_off": "Light LED Strip Intensity (When OFF)"
+    "combo_fan_effect_color": "Fan LED Strip Effect Color"
+    "combo_fan_effect_intensity": "Fan LED Strip Effect Intensity"
+    "combo_fan_effect_duration": "Fan LED Strip Effect Duration"
+    "combo_fan_effect_effect": "Fan LED Strip Effect"
+    "combo_fan_ledcolor": "Fan LED Indicator Color"
+    "combo_fan_ledintensity": "Fan LED Strip Intensity"
+    "combo_fan_ledintensity_off": "Fan LED Strip Intensity (When OFF)"
+
+sequence:
+  # Cleaning up inputs
+  - variables:
+      entity: '{{ entity|lower }}'
+      model: '{{ model|lower }}'
+      color: '{{ color|default("off")|lower }}'
+      duration: '{{ duration|default("forever")|lower }}'
+      intensity: '{{ intensity|default("7")|int }}'
+      effect: '{{ effect|default("fast blink")|lower }}'
+      LEDcolor: '{{ LEDcolor|default("off")|lower }}'
+      LEDintensity: '{{ LEDintensity|default("7")|int }}'
+      LEDintensity_off: '{{ LEDintensity_off|default("2")|int }}'
+
+##################
+# Do not continue if we don't have at least entity and model
+#   Entity and model will be used as a default action to clear "forever" effects.
+##################
+  - condition: template
+    value_template: '{{ entity is defined and model is defined}}'
+
+##################
+# If LED indicator parameters have been passed, we'll set those before setting the effect.
+# Once the effect clears or the switch is used, the indicater will then display the new settings.
+# This also allows a user to pass just a color or intensity change (perhaps at night). 
+##################
+
+##################
+# LED strip color
+##################
+  - choose:
+    - conditions: >
+        {{ LEDcolor != "off" }}
+      sequence:
+        - service: zwave_js.set_config_parameter
+          data:
+            entity_id: '{{ entity }}'
+            parameter: |
+              {% set effect_param = model + '_ledcolor' %}
+              {{ parameters[effect_param] }}
+            value: |
+              {{ color_set[LEDcolor] }}
+
+##################
+# LED strip intensity
+##################
+  - choose:
+    - conditions: >
+        {{ LEDintensity is defined }}
+      sequence:
+        - service: zwave_js.set_config_parameter
+          data:
+            entity_id: '{{ entity }}'
+            parameter: |
+              {% set effect_param = model + '_ledintensity' %}
+              {{ parameters[effect_param] }}
+            value: |
+              {{ LEDintensity }}
+
+##################
+# LED strip intensity when off
+##################
+  - choose:
+    - conditions: >
+        {{ LEDintensity_off is defined }}
+      sequence:
+        - service: zwave_js.set_config_parameter
+          data:
+            entity_id: '{{ entity }}'
+            parameter: |
+              {% set effect_param = model + '_ledintensity_off' %}
+              {{ parameters[effect_param] }}
+            value: |
+              {{ LEDintensity_off }}
+
+##################
+# Effects (need to be fully defined)
+##################
+  - choose:
+    - conditions: >
+        {{ effect != "off" and
+           color != "off" }}
+      sequence:
+        - choose:
+          - conditions: >
+              {{ model == "dimmer" }}
+            sequence:
+              - service: zwave_js.set_config_parameter
+                data:
+                  entity_id: '{{ entity }}'
+                  parameter: |
+                    {% set effect_param = model + '_effect' %}
+                    {{ parameters[effect_param] }}
+                  value: |
+                    {{ (color_set[color]) + (intensity * 256) + (duration_values[duration] * 65536) + (strip_effects[effect] * 16777216) }}
+
+          ##################
+          # Default will handle switch, combo_light, and combo_fan.  
+          # Hopefully someday this also covers the dimmer
+          ##################
+          default:
+            - service: zwave_js.set_config_parameter
+              data:
+                entity_id: '{{ entity }}'
+                parameter: |
+                  {% set effect_param = model + '_effect_color' %}
+                  {{ parameters[effect_param] }}
+                value: |
+                  {{ color_set[color] }}
+            - service: zwave_js.set_config_parameter
+              data:
+                entity_id: '{{ entity }}'
+                parameter: |
+                  {% set effect_param = model + '_effect_intensity' %}
+                  {{ parameters[effect_param] }}
+                value: |
+                  {{ intensity }}
+            - service: zwave_js.set_config_parameter
+              data:
+                entity_id: '{{ entity }}'
+                parameter: |
+                  {% set effect_param = model + '_effect_duration' %}
+                  {{ parameters[effect_param] }}
+                value: |
+                  {{ duration_values[duration] }}
+            - service: zwave_js.set_config_parameter
+              data:
+                entity_id: '{{ entity }}'
+                parameter: |
+                  {% set effect_param = model + '_effect_effect' %}
+                  {{ parameters[effect_param] }}
+                value: |
+                  {% if model == "switch" %}
+                    {{ switch_effects[effect] }}
+                  {% else %}
+                    {{ strip_effects[effect] }}
+                  {% endif %}
+
+##################
+# Default will be to clear effect.  This way, "forever" effects can be set, then easily cleared.
+# It's also a safer way to fail since the worst case scenario is that an effect is cleared.
+##################
+    default:
+      - choose:
+        - conditions: >
+            {{ model == "dimmer" }}
+          sequence:
+            - service: zwave_js.set_config_parameter
+              data:
+                entity_id: '{{ entity }}'
+                parameter: |
+                  {% set effect_param = model + '_effect' %}
+                  {{ parameters[effect_param] }}
+                value: 0
+
+        default:
+          - service: zwave_js.set_config_parameter
+            data:
+              entity_id: '{{ entity }}'
+              parameter: |
+                {% set effect_param = model + '_effect_color' %}
+                {{ parameters[effect_param] }}
+              value: 0
+          - service: zwave_js.set_config_parameter
+            data:
+              entity_id: '{{ entity }}'
+              parameter: |
+                {% set effect_param = model + '_effect_intensity' %}
+                {{ parameters[effect_param] }}
+              value: 0
+          - service: zwave_js.set_config_parameter
+            data:
+              entity_id: '{{ entity }}'
+              parameter: |
+                {% set effect_param = model + '_effect_duration' %}
+                {{ parameters[effect_param] }}
+              value: 0
+          - service: zwave_js.set_config_parameter
+            data:
+              entity_id: '{{ entity }}'
+              parameter: |
+                {% set effect_param = model + '_effect_effect' %}
+                {{ parameters[effect_param] }}
+              value: 0
