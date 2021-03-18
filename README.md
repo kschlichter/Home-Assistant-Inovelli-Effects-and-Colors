@@ -1,4 +1,123 @@
 # Home-Assistant-Inovelli-Red-Dimmer-Switch
+# Z-Wave JS 
+**Using zwavejs2mqtt docker container**
+
+  Requires container 2.2.0 https://hub.docker.com/r/zwavejs/zwavejs2mqtt
+  
+  This is a complete rewrite of the original work which was done by BrianHanifin on post: https://community.home-assistant.io/t/inovelli-z-wave-red-series-notification-led/165483
+  
+  Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
+  Note that the on/off switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
+  
+  **Features**
+  This script can set effects, the LED indicator strip, any single aspect of the LED strip, or clear an effect.  A nighttime automation could simply dim the LED indicator without changing the color; or separate automations could handle the indicator intensity while another sets colors for morning, night, and holidays.  Changes to the LED intensity at night or during the day would be easy to manage and wouldn't have to be tracked down through multiple automations.  
+  
+  The  LED indicator can now be set with an effect in a single call so that an indicator color change doesn't clear the effect and using the switch (which clears the effect) will still have a red "warning" LED indicator.  For example, setting "chase" for 1 second with a red indicator LED is a nice "hey, there's a door open" notification without being too obnoxious.
+  
+  Effects that have been set to "forever" can be cleared by just passing the entity and model.  There's no need to remember the effect, color, and intensity parameter or set them to 0.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters since (most of the time) clearing the effect will have no visible result on the switch.
+  
+  Z-Wave JS can take multiple entities in a comma separate list, which makes setting the entire house easy (and copying the yaml into a now automation, too).
+  
+  I'm using lower case throughout the script since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
+    
+    
+  **Required parameters**
+    entity: (string) The entity ID from "Developer Tools" -> "States".  The device to be modified (e.g. light.office_lights_level)
+            Can also be a comma separated list, if all entities are the same model.  For example, "light.office, light.family_room"
+    model: (string) One of: dimmer (LZW31), switch (LZW30), combo_light (LZW36), combo_fan (LZW36)
+
+  **Required for setting the LED indicator**
+    LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+            NOTE: The Red Series switch not take any digit 1 – 255 as a color.  Red must be 0, and it cannot receive the teal or light pink settings.  
+    LEDintensity: (whole integer percentage e.g. 60%) Sets the brightness of the LED status when on.
+    LEDintensity_off: ((whole integer percentage e.g. 60%) Sets the brightness of the LED status when off.
+
+  **Required for setting LED effects**
+    duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Second", "Seconds", "Minute", or "Minutes", "Hour", "Hours", or "Indefinitely".
+    effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", "Pulse", "Breath"
+            NOTE: The Red Series dimmer won't "pulse".  Home assistant is limiting the value for the effect register to 83823359 and the math for pulse works out to more than that.  
+    intensity: (int 1 – 10) Sets the brightness of the LED's effect
+    color: (int or string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+            NOTE: The Red Series switch, combo_fan and combo_light will not take any digit 1 – 255.  Red must be 0, and it cannot receive the teal or light pink settings.  
+
+  **Notification effect examples:**
+	
+    service: script.inovelli_led_zwavejs
+    data:
+      entity: light.office, light.family_room_2x, light.family_room_6x, light.guest_room
+      model: dimmer
+      duration: Forever
+      effect: FAST BLINK
+      intensity: 8
+      color: red
+      
+    service: script.inovelli_led_zwavejs
+    data:
+      entity: light.ceiling_FAN
+      model: combo_fan      
+      effect: FAST BLINK
+      intensity: 8
+      color: red
+      
+    service: script.inovelli_led_zwavejs
+    data:
+      entity: light.ceiling_LIGHT
+      model: combo_light     
+      effect: FAST BLINK
+      intensity: 8
+      color: red
+            
+    service: script.inovelli_led_zwavejs
+    data:
+      entity: switch.front_porch_lights
+      model: switch
+      effect: FAST BLINK
+      intensity: 8
+      color: red
+      
+  **clearing an effect**
+  
+    service: script.inovelli_led_zwavejs
+    data:
+      entity: switch.front_porch_lights
+      model: switch
+  
+  **LED color example:**
+
+    service: script.inovelli_led_zwavejs
+    data:
+      entity: light.office
+      model: dimmer   
+      LEDcolor: blue
+      LEDintensity: 7
+      LEDintensity_off: 3
+
+  **LED intensity_off example: (maybe part of a nighttime routine?)**
+
+    service: script.inovelli_led_zwavejs
+    data:
+      entity: light.office
+      model: dimmer   
+      LEDintensity_off: 2
+            
+  **Effect to signal LED indicator transition**
+  
+    service: script.inovelli_led_zwavejs
+    data:
+      entity: light.office
+      model: dimmer
+      LEDcolor: green
+      LEDintensity: 7
+      LEDintensity_off: 3
+      duration: 1 second
+      effect: Chase
+      color: green
+      intensity: 7
+
+
+
+
+# Open Z-Wave 1.4 (Deprecated)
 
 Original work by BrianHanifin on post: https://community.home-assistant.io/t/inovelli-z-wave-red-series-notification-led/165483
   I've corrected the calculations for switch notification effects, and added functionality for configuring the LED color and intensities.
