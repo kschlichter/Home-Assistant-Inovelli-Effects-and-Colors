@@ -1,25 +1,22 @@
 # Home-Assistant-Inovelli-Red-Dimmer-Switch
-# Z-Wave JS 
-**Using zwavejs2mqtt docker container**
+# [Z-Wave JS to MQTT](https://hub.docker.com/r/zwavejs/zwavejs2mqtt) Container
 
-  Requires container 2.2.0 https://hub.docker.com/r/zwavejs/zwavejs2mqtt
+  Requires container 2.4.0 https://hub.docker.com/r/zwavejs/zwavejs2mqtt
   
   This is a complete rewrite of the original work which was done by BrianHanifin on post: https://community.home-assistant.io/t/inovelli-z-wave-red-series-notification-led/165483
-  
-  Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
-  Note that the on/off switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
-  
+    
   **Features**
-  This script can set effects, the LED indicator strip, any single aspect of the LED strip, or clear an effect.  A nighttime automation could simply dim the LED indicator without changing the color; or separate automations could handle the indicator intensity while another sets colors for morning, night, and holidays.  Changes to the LED intensity at night or during the day would be easy to manage and wouldn't have to be tracked down through multiple automations.  
+  This script can set effects, the LED indicator strip, any single aspect of the LED strip, or clear an effect.  A nighttime automation could simply dim the LED indicator without changing the color; separate automations could handle the indicator brightness while another sets colors for morning, night, and holidays.  Changes to the LED brightness at night or during the day would be easy to manage and wouldn't have to be tracked down through multiple automations.  
   
-  The  LED indicator can now be set with an effect in a single call so that an indicator color change doesn't clear the effect and using the switch (which clears the effect) will still have a red "warning" LED indicator.  For example, setting "chase" for 1 second with a red indicator LED is a nice "hey, there's a door open" notification without being too obnoxious.
+  The  LED indicator can now be set alongside an effect in a single call so that an indicator color change doesn't clear the effect and using the switch (which clears the effect in old firmware versions like mine) will still have a red "warning" LED indicator.  For example, setting "chase" for 1 second with a red indicator LED is a nice "hey, there's a door open" notification without being overly obnoxious and distracting.
   
-  Effects that have been set to "forever" can be cleared by just passing the entity and model.  There's no need to remember the effect, color, and intensity parameter or set them to 0.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters since (most of the time) clearing the effect will have no visible result on the switch.
+  Effects that have been set to "forever" can be cleared by just passing the entity and model.  There's no need to remember the effect, color, and brightness parameter or set them to 0.  It's easier to remember when you get to my age.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters since (most of the time) clearing the effect will have no visible result on the switch.
   
-  Z-Wave JS can take multiple entities in a comma separate list, which makes setting the entire house easy (and copying the yaml into a now automation, too).
+  Z-Wave JS can take multiple entities in a comma separate list, which makes setting the entire house easy (and copying the yaml into a new automation, too).
   
   I'm using lower case throughout the script since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
-    
+  
+  [Calculations](https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing) are no longer needed, since the dimmer takes effect parameters individually, which also means "pulse" works as an effect again and the "choose" code is a little cleaner than in the 2.2.0 container.
     
   **Required parameters**
     entity: (string) The entity ID from "Developer Tools" -> "States".  The device to be modified (e.g. light.office_lights_level)
