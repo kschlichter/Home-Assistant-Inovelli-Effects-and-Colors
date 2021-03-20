@@ -72,7 +72,7 @@
       intensity: 8
       color: red
       
-  **clearing an effect**
+  **Clearing an effect**
   
     service: script.inovelli_led_zwavejs
     data:
