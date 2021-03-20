@@ -1,7 +1,7 @@
 # Home-Assistant-Inovelli-Red-Dimmer-Switch
 # [Z-Wave JS to MQTT](https://hub.docker.com/r/zwavejs/zwavejs2mqtt) Container
 
-  Requires container 2.4.0 https://hub.docker.com/r/zwavejs/zwavejs2mqtt
+  Requires container 2.4.0
   
   This is a complete rewrite of the original work which was done by BrianHanifin on post: https://community.home-assistant.io/t/inovelli-z-wave-red-series-notification-led/165483
     
@@ -17,25 +17,27 @@
   I'm using lower case throughout the script since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
   
   [Calculations](https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing) are no longer needed, since the dimmer takes effect parameters individually, which also means "pulse" works as an effect again and the "choose" code is a little cleaner than in the 2.2.0 container.
-    
+   
   **Required parameters**
-    entity: (string) The entity ID from "Developer Tools" -> "States".  The device to be modified (e.g. light.office_lights_level)
-            Can also be a comma separated list, if all entities are the same model.  For example, "light.office, light.family_room"
-    model: (string) One of: dimmer (LZW31), switch (LZW30), combo_light (LZW36), combo_fan (LZW36)
+  
+    - entity: (string) The entity ID from "Developer Tools" -> "States".  The device to be modified (e.g. light.office_lights_level)
+        Can also be a comma separated list, if all entities are the same model.  For example, "light.office, light.family_room"
+    - model: (string) One of: dimmer, switch, combo_light, combo_fan
 
   **Required for setting the LED indicator**
-    LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
-            NOTE: The Red Series switch not take any digit 1 – 255 as a color.  Red must be 0, and it cannot receive the teal or light pink settings.  
-    LEDintensity: (whole integer percentage e.g. 60%) Sets the brightness of the LED status when on.
-    LEDintensity_off: ((whole integer percentage e.g. 60%) Sets the brightness of the LED status when off.
+
+    - LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+        NOTE: Home Assistant will not pass any number 1 – 10 so teal and light pink won't work at the moment.  Setting the parameter in the zwavejs2mqtt web interface works fine.
+    - LEDbrightness: (whole integer 1 – 10) Sets the brightness of the LED status when on.
+    - LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the LED status when off.
 
   **Required for setting LED effects**
-    duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Second", "Seconds", "Minute", or "Minutes", "Hour", "Hours", or "Indefinitely".
-    effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", "Pulse", "Breath"
-            NOTE: The Red Series dimmer won't "pulse".  Home assistant is limiting the value for the effect register to 83823359 and the math for pulse works out to more than that.  
-    intensity: (int 1 – 10) Sets the brightness of the LED's effect
-    color: (int or string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
-            NOTE: The Red Series switch, combo_fan and combo_light will not take any digit 1 – 255.  Red must be 0, and it cannot receive the teal or light pink settings.  
+  
+    - duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Second", "Seconds", "Minute", or "Minutes", "Hour", "Hours", "Indefinitely", or "Forever".
+    - effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", or "Pulse".
+    - brightness: (integer 1 – 10) Sets the brightness of the LED's effect
+    - color: (string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+        NOTE: Home Assistant will not pass any number 1 – 10 so teal and light pink won't work at the moment.  Setting the parameter in the zwavejs2mqtt web interface works fine.
 
   **Notification effect examples:**
 	
