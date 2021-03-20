@@ -261,20 +261,31 @@ sequence:
         data:
           entity_id: '{{ entity }}'
           parameter: |
-            {% set effect_param = model + '_effect_color' %}
+            {% set effect_param = model + '_effect_effect' %}
             {{ parameters[effect_param] }}
           value: 0
-      - service: zwave_js.set_config_parameter
-        data:
-          entity_id: '{{ entity }}'
-          parameter: |
-            {% set effect_param = model + '_effect_brightness' %}
-            {{ parameters[effect_param] }}
-          value: 0
-      - service: zwave_js.set_config_parameter
-        data:
-          entity_id: '{{ entity }}'
-          parameter: |
-            {% set effect_param = model + '_effect_duration' %}
-            {{ parameters[effect_param] }}
-          value: 0
+
+# Setting the duration to 0 was generating errors for some devices, and this generated unnecessary service calls anyhow.
+#   Uncomment this if you decide you want to use it for some reason, but it isn't necessary and neither is the traffic it generates.
+#      - service: zwave_js.set_config_parameter
+#        data:
+#          entity_id: '{{ entity }}'
+#          parameter: |
+#            {% set effect_param = model + '_effect_color' %}
+#            {{ parameters[effect_param] }}
+#          value: 0
+#      - service: zwave_js.set_config_parameter
+#        data:
+#          entity_id: '{{ entity }}'
+#          parameter: |
+#            {% set effect_param = model + '_effect_brightness' %}
+#            {{ parameters[effect_param] }}
+#          value: 0
+#      - service: zwave_js.set_config_parameter
+#        data:
+#          entity_id: '{{ entity }}'
+#          parameter: |
+#            {% set effect_param = model + '_effect_duration' %}
+#            {{ parameters[effect_param] }}
+#          value: 0
+
