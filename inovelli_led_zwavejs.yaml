@@ -253,27 +253,35 @@ sequence:
               {% endif %}
 
 ##################
-# Default will be to clear effect.  This way, "forever" effects can be set, then easily cleared.
+# Default will be to clear the effect and set the duration to 1sec.  
+# Setting only the effect to "off" turned the LED off on LZW36 fan / light combos for the duration (which could be "forever").
+#    This way it turns off for 1 sec before it returns to its default state, but until the min value for effect changes to 0 in the DB, that's the best I can do.
+# This way, "forever" effects can be set, then easily cleared.
 # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
 ##################
     default:
       - service: zwave_js.set_config_parameter
         data:
           entity_id: '{{ entity }}'
-          parameter: |
+          parameter: | 
             {% set effect_param = model + '_effect_effect' %}
             {{ parameters[effect_param] }}
-          value: 0
-
-# Setting the duration to 0 was generating errors for some devices, and this generated unnecessary service calls anyhow.
-#   Uncomment this if you decide you want to use it for some reason, but it isn't necessary and neither is the traffic it generates.
-#      - service: zwave_js.set_config_parameter
-#        data:
-#          entity_id: '{{ entity }}'
-#          parameter: |
-#            {% set effect_param = model + '_effect_color' %}
-#            {{ parameters[effect_param] }}
-#          value: 0
+          value: 0 
+      - service: zwave_js.set_config_parameter
+        data:
+          entity_id: '{{ entity }}'
+          parameter: | 
+            {% set effect_param = model + '_effect_duration' %}
+            {{ parameters[effect_param] }}
+          value: 1 
+# Setting the duration to 0 was generating errors for some devices, and this generated unnecessary service calls anyhow
+#     - service: zwave_js.set_config_parameter
+#       data:
+#         entity_id: '{{ entity }}'
+#         parameter: |
+#           {% set effect_param = model + '_effect_color' %}
+#           {{ parameters[effect_param] }}
+#         value: 0
 #      - service: zwave_js.set_config_parameter
 #        data:
 #          entity_id: '{{ entity }}'
@@ -281,11 +289,3 @@ sequence:
 #            {% set effect_param = model + '_effect_brightness' %}
 #            {{ parameters[effect_param] }}
 #          value: 0
-#      - service: zwave_js.set_config_parameter
-#        data:
-#          entity_id: '{{ entity }}'
-#          parameter: |
-#            {% set effect_param = model + '_effect_duration' %}
-#            {{ parameters[effect_param] }}
-#          value: 0
-
