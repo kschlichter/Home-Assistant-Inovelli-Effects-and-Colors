@@ -27,13 +27,12 @@ fields:
     name: Entity
     description: The light.* entity for the LED we're setting.  Can be a comma separated list.
     required: yes
-    example: light.office, light.guest_room
+    example: light.office
     selector:
-      target: 
-        device: 
-          manufacturer: Inovelli
-        entity:
-          domain: light
+      entity:
+        integration: zwave_js
+#         domain: light, fan #LZW36 fan / light combos are excluded if we set this to light.
+
   model:
     name: Model
     description: What type of device is this?
@@ -102,6 +101,7 @@ fields:
       select:
         options:
           - "Off"
+          - Forever
           - 1 Second
           - 2 Seconds
           - 3 Seconds
@@ -136,7 +136,7 @@ fields:
           - 45 Minutes
           - 1 Hour
           - 2 Hours
-          - Forever
+
   effect: 
     name: Effect
     description: Type of effect. NOTE – Chase is not available on devices of type switch.
@@ -152,6 +152,7 @@ fields:
           - Slow Blink
           - Blink
           - Pulse
+
   brightness: 
     name: Effect Brightness(integer 1 – 10) Sets the brightness of the LED's effect
     description: How bright the LED effect will be
@@ -185,6 +186,7 @@ fields:
           - Pink
           - Hot Pink
           - White
+
 
 variables:
   # Look-up tables easy reference and future maintenance. 
