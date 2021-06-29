@@ -11,7 +11,6 @@ description: 'Handles setting the LED colors and notifications on Inovelli "Red"
 
 # Required for setting the LED indicator
 #   LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
-#     NOTE: Home Assistant will not pass any number 1 – 10 so teal and light pink won't work at the moment.  Setting the parameter in the zwavejs2mqtt web interface works fine.
 #   LEDbrightness: (whole integer 1 – 10) Sets the brightness of the LED status when on.
 #   LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the LED status when off.
 
@@ -20,13 +19,176 @@ description: 'Handles setting the LED colors and notifications on Inovelli "Red"
 #   effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", or "Pulse".
 #   brightness: (integer 1 – 10) Sets the brightness of the LED's effect
 #   color: (string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
-#     NOTE: Home Assistant will not pass any number 1 – 10 so teal and light pink won't work at the moment.  Setting the parameter in the zwavejs2mqtt web interface works fine.
 ############
 mode: parallel
 
+fields:
+  entity:
+    name: Entity
+    description: The light.* entity for the LED we're setting.  Can be a comma separated list.
+    required: yes
+    example: light.office, light.guest_room
+    selector:
+      target: 
+        device: 
+          manufacturer: Inovelli
+        entity:
+          domain: light
+  model:
+    name: Model
+    description: What type of device is this?
+    required: yes
+    example: Dimmer
+    selector: 
+      select:
+        options:
+          - Dimmer
+          - Switch
+          - Combo_Light
+          - Combo_Fan
+
+  LEDcolor:
+    name: LED Color (non-effect)
+    description: Sets the color of the LED indicating brightness levels
+    required: no
+    example: Blue
+    selector:
+      select:
+        options:
+          - "Off"
+          - Red
+          - Orange
+          - Yellow
+          - Green
+          - Cyan
+          - Teal
+          - Blue
+          - Purple
+          - Light Pink
+          - Pink
+          - Hot Pink
+          - White
+
+  LEDbrightness: 
+    name: LED Brightness On (non-effect)
+    description: Sets the brightness of the LED status when on.
+    required: no
+    example: 6
+    selector:
+      number: 
+        min: 1
+        max: 10
+        step: 1
+        mode: slider
+
+  LEDbrightness_off:
+    name: LED Brightness Off (non-effect)
+    description: Sets the brightness of the LED status when off.
+    required: no
+    example: 2
+    selector:
+      number: 
+        min: 1
+        max: 10
+        step: 1
+        mode: slider
+
+  duration: 
+    name: Duration of Effect
+    description: How long the effect will last.
+    required: no
+    example: Off
+    selector:
+      select:
+        options:
+          - "Off"
+          - 1 Second
+          - 2 Seconds
+          - 3 Seconds
+          - 4 Seconds
+          - 5 Seconds
+          - 6 Seconds
+          - 7 Seconds
+          - 8 Seconds
+          - 9 Seconds
+          - 10 Seconds
+          - 15 Seconds
+          - 20 Seconds
+          - 25 Seconds
+          - 30 Seconds
+          - 35 Seconds
+          - 40 Seconds
+          - 45 Seconds
+          - 50 Seconds
+          - 55 Seconds
+          - 60 Seconds
+          - 2 Minutes
+          - 3 Minutes
+          - 4 Minutes
+          - 5 Minutes
+          - 6 Minutes
+          - 7 Minutes
+          - 8 Minutes
+          - 9 Minutes
+          - 10 Minutes
+          - 15 Minutes
+          - 30 Minutes
+          - 45 Minutes
+          - 1 Hour
+          - 2 Hours
+          - Forever
+  effect: 
+    name: Effect
+    description: Type of effect. NOTE – Chase is not available on devices of type switch.
+    required: no
+    example: Pulse
+    selector:
+      select:
+        options:
+          - "Off"
+          - Solid
+          - Chase
+          - Fast Blink
+          - Slow Blink
+          - Blink
+          - Pulse
+  brightness: 
+    name: Effect Brightness(integer 1 – 10) Sets the brightness of the LED's effect
+    description: How bright the LED effect will be
+    required: no
+    example: 8
+    selector:
+      number:
+        min: 1
+        max: 10
+        step: 1
+        mode: slider
+
+  color: 
+    name: Effect Color
+    description: Color of LED effect
+    required: no
+    example: Red
+    selector:
+      select:
+        options:
+          - "Off"
+          - Red
+          - Orange
+          - Yellow
+          - Green
+          - Cyan
+          - Teal
+          - Blue
+          - Purple
+          - Light Pink
+          - Pink
+          - Hot Pink
+          - White
+
 variables:
   # Look-up tables easy reference and future maintenance. 
-  color_set:
+  color_set: 
     "off": 0
     "red": 0
     "orange": 8
@@ -41,7 +203,7 @@ variables:
     "hot pink": 234
     "white": 255
 
-duration_values:
+  duration_values: 
     "off": 0
     "1 second": 1
     "1 seconds": 1
@@ -259,21 +421,21 @@ sequence:
 # This way, "forever" effects can be set, then easily cleared.
 # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
 ##################
-    default:
+    default: 
       - service: zwave_js.set_config_parameter
         data:
           entity_id: '{{ entity }}'
-          parameter: | 
+          parameter: |
             {% set effect_param = model + '_effect_effect' %}
             {{ parameters[effect_param] }}
-          value: 0 
+          value: 0
       - service: zwave_js.set_config_parameter
         data:
           entity_id: '{{ entity }}'
-          parameter: | 
+          parameter: |
             {% set effect_param = model + '_effect_duration' %}
             {{ parameters[effect_param] }}
-          value: 1 
+          value: 1
 # Setting the duration to 0 was generating errors for some devices, and this generated unnecessary service calls anyhow
 #     - service: zwave_js.set_config_parameter
 #       data:
