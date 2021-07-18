@@ -304,11 +304,11 @@ sequence:
   - variables:
       entity: '{{ entity|lower }}'
       model: '{{ model|lower }}'
-      color: '{{ color|default("invalid")|lower }}'
+      color: '{{ color|default("No Change")|lower }}'
       duration: '{{ duration|default("invalid")|lower }}'
       brightness: '{{ brightness|default("11")|int }}'
       effect: '{{ effect|default("off")|lower }}'
-      LEDcolor: '{{ LEDcolor|default("off")|lower }}'
+      LEDcolor: '{{ LEDcolor|default("No Change")|lower }}'
       LEDbrightness: '{{ LEDbrightness|default("11")|int }}'
       LEDbrightness_off: '{{ LEDbrightness_off|default("11")|int }}'
 
@@ -330,7 +330,7 @@ sequence:
 ##################
   - choose:
     - conditions: >
-        {{ LEDcolor != "invalid" }}
+        {{ LEDcolor != "no change" }}
       sequence:
         - service: zwave_js.set_config_parameter
           data:
