@@ -71,24 +71,24 @@ fields:
 
   LEDbrightness: 
     name: LED Brightness On (non-effect)
-    description: Sets the brightness of the LED status when on.
+    description: Sets the brightness of the LED status when on. 0 means off
     required: no
     example: 6
     selector:
       number: 
-        min: 1
+        min: 0
         max: 10
         step: 1
         mode: slider
 
   LEDbrightness_off:
     name: LED Brightness Off (non-effect)
-    description: Sets the brightness of the LED status when off.
+    description: Sets the brightness of the LED status when off. 0 means off
     required: no
     example: 2
     selector:
       number: 
-        min: 1
+        min: 0
         max: 10
         step: 1
         mode: slider
@@ -155,13 +155,13 @@ fields:
           - Pulse
 
   brightness: 
-    name: Effect Brightness(integer 1 – 10) Sets the brightness of the LED's effect
+    name: Effect Brightness Sets the brightness of the LED's effect.  0 means off
     description: How bright the LED effect will be
     required: no
     example: 8
     selector:
       number:
-        min: 1
+        min: 0
         max: 10
         step: 1
         mode: slider
@@ -190,7 +190,7 @@ fields:
 
 
 variables:
-  # Look-up tables easy reference and future maintenance. 
+  # Look-up tables for easy reference and future maintenance. 
   color_set: 
     "off": 0
     "red": 0
@@ -300,16 +300,17 @@ variables:
 
 sequence:
   # Cleaning up inputs; using lower case since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
+  # Brightness variables are set to 0 so they're skipped in the logic.  To turn the LED off, use "Off".
   - variables:
       entity: '{{ entity|lower }}'
       model: '{{ model|lower }}'
-      color: '{{ color|default("off")|lower }}'
-      duration: '{{ duration|default("forever")|lower }}'
-      brightness: '{{ brightness|default("0")|int }}'
+      color: '{{ color|default("invalid")|lower }}'
+      duration: '{{ duration|default("invalid")|lower }}'
+      brightness: '{{ brightness|default("11")|int }}'
       effect: '{{ effect|default("off")|lower }}'
       LEDcolor: '{{ LEDcolor|default("off")|lower }}'
-      LEDbrightness: '{{ LEDbrightness|default("0")|int }}'
-      LEDbrightness_off: '{{ LEDbrightness_off|default("0")|int }}'
+      LEDbrightness: '{{ LEDbrightness|default("11")|int }}'
+      LEDbrightness_off: '{{ LEDbrightness_off|default("11")|int }}'
 
 ##################
 # Do not continue if we don't have at least entity and model
@@ -329,7 +330,7 @@ sequence:
 ##################
   - choose:
     - conditions: >
-        {{ LEDcolor != "off" }}
+        {{ LEDcolor != "invalid" }}
       sequence:
         - service: zwave_js.set_config_parameter
           data:
@@ -345,14 +346,14 @@ sequence:
 ##################
   - choose:
     - conditions: >
-        {{ LEDbrightness is defined and LEDbrightness != 0 }}
+        {{ LEDbrightness is defined and LEDbrightness != 11 }}
       sequence:
         - service: zwave_js.set_config_parameter
           data:
             entity_id: '{{ entity }}'
             parameter: |
               {% set effect_param = model + '_ledbrightness' %}
-              {{ parameters[effect_param] }}
+              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
             value: |
               {{ LEDbrightness }}
 
@@ -361,14 +362,14 @@ sequence:
 ##################
   - choose:
     - conditions: >
-        {{ LEDbrightness_off is defined and LEDbrightness_off != 0 }}
+        {{ LEDbrightness_off is defined and LEDbrightness_off != 11 }}
       sequence:
         - service: zwave_js.set_config_parameter
           data:
             entity_id: '{{ entity }}'
             parameter: |
               {% set effect_param = model + '_ledbrightness_off' %}
-              {{ parameters[effect_param] }}
+              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
             value: |
               {{ LEDbrightness_off }}
 
@@ -393,7 +394,7 @@ sequence:
             entity_id: '{{ entity }}'
             parameter: |
               {% set effect_param = model + '_effect_brightness' %}
-              {{ parameters[effect_param] }}
+              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
             value: |
               {{ brightness }}
         - service: zwave_js.set_config_parameter
