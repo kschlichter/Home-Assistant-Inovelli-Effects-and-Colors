@@ -21,13 +21,14 @@ description: 'Handles setting the LED colors and notifications on Inovelli "Red"
 #   color: (string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
 ############
 mode: parallel
+max: 100 # Default max is 10, which might be an issue if you have a lot of switches
 
 fields:
   entity:
     name: Entity
     description: The light.* entity for the LED we're setting.  Can be a comma separated list.
     required: yes
-    example: light.office
+    example: light.office, light.guest_room
     selector:
       entity:
         integration: zwave_js
@@ -304,11 +305,11 @@ sequence:
       model: '{{ model|lower }}'
       color: '{{ color|default("off")|lower }}'
       duration: '{{ duration|default("forever")|lower }}'
-      brightness: '{{ brightness|default("7")|int }}'
-      effect: '{{ effect|default("fast blink")|lower }}'
+      brightness: '{{ brightness|default("0")|int }}'
+      effect: '{{ effect|default("off")|lower }}'
       LEDcolor: '{{ LEDcolor|default("off")|lower }}'
-      LEDbrightness: '{{ LEDbrightness|default("7")|int }}'
-      LEDbrightness_off: '{{ LEDbrightness_off|default("2")|int }}'
+      LEDbrightness: '{{ LEDbrightness|default("0")|int }}'
+      LEDbrightness_off: '{{ LEDbrightness_off|default("0")|int }}'
 
 ##################
 # Do not continue if we don't have at least entity and model
@@ -344,7 +345,7 @@ sequence:
 ##################
   - choose:
     - conditions: >
-        {{ LEDbrightness is defined }}
+        {{ LEDbrightness is defined and LEDbrightness != 0 }}
       sequence:
         - service: zwave_js.set_config_parameter
           data:
@@ -360,7 +361,7 @@ sequence:
 ##################
   - choose:
     - conditions: >
-        {{ LEDbrightness_off is defined }}
+        {{ LEDbrightness_off is defined and LEDbrightness_off != 0 }}
       sequence:
         - service: zwave_js.set_config_parameter
           data:
