@@ -3,17 +3,17 @@ description: 'Handles setting the LED colors and notifications on Inovelli "Red"
 ############
 # Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
 #   Note that the on/off switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
-
+#
 # Required parameters
 #   entity: (string) The entity ID from "Developer Tools" -> "States".  The device to be modified (e.g. light.office_lights_level)
 #           Can also be a comma separated list, if all entities are the same model.  For example, "light.office, light.family_room"
 #   model: (string) One of: dimmer, switch, combo_light, combo_fan
-
+#
 # Required for setting the LED indicator
 #   LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
 #   LEDbrightness: (whole integer 1 – 10) Sets the brightness of the LED status when on.
 #   LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the LED status when off.
-
+#
 # Required for setting LED effects
 #   duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Second", "Seconds", "Minute", or "Minutes", "Hour", "Hours", "Indefinitely", or "Forever".
 #   effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", or "Pulse".
@@ -190,7 +190,9 @@ fields:
 
 
 variables:
-  # Look-up tables for easy reference and future maintenance. 
+##################
+# Look-up tables for easy reference and future maintenance. 
+##################
   color_set: 
     "off": 0
     "red": 0
@@ -266,6 +268,7 @@ variables:
 # There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
 ##################
   parameters:
+    "dimmer_effect_bulk": 16
     "dimmer_effect_color": "LED Effect Color"
     "dimmer_effect_brightness": "LED Effect Brightness"
     "dimmer_effect_duration": "LED Effect Duration"
@@ -274,6 +277,7 @@ variables:
     "dimmer_ledbrightness": "LED Indicator Brightness"
     "dimmer_ledbrightness_off": "LED Indicator Brightness When Off"
 
+    "switch_effect_bulk": 8
     "switch_effect_color": "LED Effect Color"
     "switch_effect_brightness": "LED Effect Brightness"
     "switch_effect_duration": "LED Effect Duration"
@@ -282,6 +286,7 @@ variables:
     "switch_ledbrightness": "LED Indicator Brightness"
     "switch_ledbrightness_off": "LED Indicator Brightness When Off"
 
+    "combo_light_effect_bulk": 24
     "combo_light_effect_color": "Light LED Effect Color"
     "combo_light_effect_brightness": "Light LED Effect Brightness"
     "combo_light_effect_duration": "Light LED Effect Duration"
@@ -290,6 +295,7 @@ variables:
     "combo_light_ledbrightness": "Light LED Strip Brightness"
     "combo_light_ledbrightness_off": "Light LED Strip Brightness When Off"
 
+    "combo_fan_effect_bulk": 25
     "combo_fan_effect_color": "Fan LED Effect Color"
     "combo_fan_effect_brightness": "Fan LED Effect Brightness"
     "combo_fan_effect_duration": "Fan LED Effect Duration"
@@ -299,8 +305,10 @@ variables:
     "combo_fan_ledbrightness_off": "Fan LED Strip Brightness When Off"
 
 sequence:
-  # Cleaning up inputs; using lower case since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
-  # Brightness variables are set to 0 so they're skipped in the logic.  To turn the LED off, use "Off".
+##################
+# Cleaning up inputs; using lower case since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
+# Brightness variables are set to 0 so they're skipped in the logic.  To turn the LED off, use "Off".
+##################
   - variables:
       entity: '{{ entity|lower }}'
       model: '{{ model|lower }}'
@@ -317,7 +325,7 @@ sequence:
 #   Entity and model will be used as a default action to clear "forever" effects.
 ##################
   - condition: template
-    value_template: '{{ entity is defined and model is defined}}'
+    value_template: '{{ entity is defined and model is defined }}'
 
 ##################
 # If LED indicator parameters have been passed, we'll set those before setting the effect.
@@ -381,42 +389,55 @@ sequence:
         {{ effect != "off" and
            color != "off" }}
       sequence:
-        - service: zwave_js.set_config_parameter
+        - service: zwave_js.bulk_set_partial_config_parameters
           data:
             entity_id: '{{ entity }}'
             parameter: |
-              {% set effect_param = model + '_effect_color' %}
-              {{ parameters[effect_param] }}
-            value: |
-              {{ color_set[color] }}
-        - service: zwave_js.set_config_parameter
-          data:
-            entity_id: '{{ entity }}'
-            parameter: |
-              {% set effect_param = model + '_effect_brightness' %}
-              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
-            value: |
-              {{ brightness }}
-        - service: zwave_js.set_config_parameter
-          data:
-            entity_id: '{{ entity }}'
-            parameter: |
-              {% set effect_param = model + '_effect_duration' %}
-              {{ parameters[effect_param] }}
-            value: |
-              {{ duration_values[duration] }}
-        - service: zwave_js.set_config_parameter
-          data:
-            entity_id: '{{ entity }}'
-            parameter: |
-              {% set effect_param = model + '_effect_effect' %}
-              {{ parameters[effect_param] }}
+              {% set bulk_param = model + '_effect_bulk' %}
+              {{ parameters[bulk_param] }}
             value: |
               {% if model == "switch" %}
-                {{ switch_effects[effect] }}
+                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (switch_effects[effect] * 16777216) }}
               {% else %}
-                {{ strip_effects[effect] }}
+                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (strip_effects[effect] * 16777216) }}
               {% endif %}
+# Changing to a bulk set of parameters to reduce Z-Wave traffic and writes to the switch's NVRAM.
+#        - service: zwave_js.set_config_parameter
+#          data:
+#            entity_id: '{{ entity }}'
+#            parameter: |
+#              {% set effect_param = model + '_effect_color' %}
+#              {{ parameters[effect_param] }}
+#            value: |
+#              {{ color_set[color] }}
+#        - service: zwave_js.set_config_parameter
+#          data:
+#            entity_id: '{{ entity }}'
+#            parameter: |
+#              {% set effect_param = model + '_effect_brightness' %}
+#              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
+#            value: |
+#              {{ brightness }}
+#        - service: zwave_js.set_config_parameter
+#          data:
+#            entity_id: '{{ entity }}'
+#            parameter: |
+#              {% set effect_param = model + '_effect_duration' %}
+#              {{ parameters[effect_param] }}
+#            value: |
+#              {{ duration_values[duration] }}
+#        - service: zwave_js.set_config_parameter
+#          data:
+#            entity_id: '{{ entity }}'
+#            parameter: |
+#              {% set effect_param = model + '_effect_effect' %}
+#              {{ parameters[effect_param] }}
+#            value: |
+#              {% if model == "switch" %}
+#                {{ switch_effects[effect] }}
+#              {% else %}
+#                {{ strip_effects[effect] }}
+#              {% endif %}
 
 ##################
 # Default will be to clear the effect and set the duration to 1sec.  
