@@ -1,202 +1,441 @@
-alias: Inovelli Dimmer and Switch LEDs
-description: 'Handles setting the switch and dimmer LED colors and notifications'
+alias: Inovelli Dimmer and Switch LEDs OZW 14
+description: 'Handles setting the LED colors and notifications on Inovelli "Red" model switches and dimmers through the Open Zwave 1.4 integration which was deprecated in release 2021.11.'
 ############
-# To make this script work with the new open z-wave 1.6, the "service" in each step needs to be changed. 
-# I'd like to automagically detect if 1.4 or 1.6 is being used and then change to service_templates, but I'm not sure how to do that without requiring a sensor or adding yet another parameter that needs to be passed.
-# It's probably easier to simply change the service when you move to version 1.6 since there are only four changes to make.
-# z-wave 1.6: ozw.set_config_parameter
-# z-wave 1.4: zwave.set_config_parameter
+# To make this script work with the new open z-wave 1.6, the "service" in each step needs to be changed; I think.  I've never tested it.
+#   z-wave 1.6: ozw.set_config_parameter
+#   z-wave 1.4: zwave.set_config_parameter
+#
+# Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
+#   Note that the on/off switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
+#
+# Required parameters
+#   entity: (string) The entity ID from "Developer Tools" -> "States".  The device to be modified (e.g. light.office_lights_level)
+#           Can also be a comma separated list, if all entities are the same model.  For example, "light.office, light.family_room"
+#   model: (string) One of: dimmer, switch, combo_light, combo_fan
+#
+# Required for setting the LED indicator
+#   LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+#   LEDbrightness: (whole integer 1 – 10) Sets the brightness of the LED status when on.
+#   LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the LED status when off.
+#
+# Required for setting LED effects
+#   duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Second", "Seconds", "Minute", or "Minutes", "Hour", "Hours", "Indefinitely", or "Forever".
+#   effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", or "Pulse".
+#   brightness: (integer 1 – 10) Sets the brightness of the LED's effect
+#   color: (string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
 ############
 mode: parallel
+max: 100 # Default max is 10, which might be an issue if you have a lot of switches
+
+fields:
+  entity:
+    name: Entity
+    description: The zwave.* entity for the LED we're setting.  Can be a comma separated list.
+    required: yes
+    example: zwave.office_lights, zwave.guest_bedroom_fan_light
+    selector:
+      entity:
+        integration: ozw
+#         domain: light, fan #LZW36 fan / light combos are excluded if we set this to light.
+
+  model:
+    name: Model
+    description: What type of device is this?
+    required: yes
+    example: Dimmer
+    selector: 
+      select:
+        options:
+          - Dimmer
+          - Switch
+          - Combo_Light
+          - Combo_Fan
+
+  LEDcolor:
+    name: LED Color (non-effect)
+    description: Sets the color of the LED indicator brightness levels
+    required: no
+    example: Blue
+    selector:
+      select:
+        options:
+          - "Off"
+          - Red
+          - Orange
+          - Yellow
+          - Green
+          - Cyan
+          - Teal
+          - Blue
+          - Purple
+          - Light Pink
+          - Pink
+          - Hot Pink
+          - White
+
+  LEDbrightness: 
+    name: LED Brightness On (non-effect)
+    description: Sets the brightness of the LED status when on. 0 means off
+    required: no
+    example: 6
+    selector:
+      number: 
+        min: 0
+        max: 10
+        step: 1
+        mode: slider
+
+  LEDbrightness_off:
+    name: LED Brightness Off (non-effect)
+    description: Sets the brightness of the LED status when off. 0 means off
+    required: no
+    example: 2
+    selector:
+      number: 
+        min: 0
+        max: 10
+        step: 1
+        mode: slider
+
+  duration: 
+    name: Duration of Effect
+    description: How long the effect will last.
+    required: no
+    example: Off
+    selector:
+      select:
+        options:
+          - "Off"
+          - Forever
+          - 1 Second
+          - 2 Seconds
+          - 3 Seconds
+          - 4 Seconds
+          - 5 Seconds
+          - 6 Seconds
+          - 7 Seconds
+          - 8 Seconds
+          - 9 Seconds
+          - 10 Seconds
+          - 15 Seconds
+          - 20 Seconds
+          - 25 Seconds
+          - 30 Seconds
+          - 35 Seconds
+          - 40 Seconds
+          - 45 Seconds
+          - 50 Seconds
+          - 55 Seconds
+          - 60 Seconds
+          - 2 Minutes
+          - 3 Minutes
+          - 4 Minutes
+          - 5 Minutes
+          - 6 Minutes
+          - 7 Minutes
+          - 8 Minutes
+          - 9 Minutes
+          - 10 Minutes
+          - 15 Minutes
+          - 30 Minutes
+          - 45 Minutes
+          - 1 Hour
+          - 2 Hours
+
+  effect: 
+    name: Effect
+    description: Type of effect. NOTE – Chase is not available on devices of type switch.
+    required: no
+    example: Pulse
+    selector:
+      select:
+        options:
+          - "Off"
+          - Solid
+          - Chase
+          - Fast Blink
+          - Slow Blink
+          - Blink
+          - Pulse
+
+  brightness: 
+    name: Effect Brightness Sets the brightness of the LED's effect.  0 means off
+    description: How bright the LED effect will be
+    required: no
+    example: 8
+    selector:
+      number:
+        min: 0
+        max: 10
+        step: 1
+        mode: slider
+
+  color: 
+    name: Effect Color
+    description: Color of LED effect
+    required: no
+    example: Red
+    selector:
+      select:
+        options:
+          - "Off"
+          - Red
+          - Orange
+          - Yellow
+          - Green
+          - Cyan
+          - Teal
+          - Blue
+          - Purple
+          - Light Pink
+          - Pink
+          - Hot Pink
+          - White
+
+
+variables:
+##################
+# Look-up tables for easy reference and future maintenance. 
+##################
+  color_set: 
+    "off": 0
+    "red": 0
+    "orange": 8
+    "yellow": 42
+    "green": 85
+    "cyan": 127
+    "teal": 145
+    "blue": 170
+    "purple": 195
+    "light pink": 220
+    "pink": 234
+    "hot pink": 234
+    "white": 255
+
+  duration_values: 
+    "off": 0
+    "1 second": 1
+    "1 seconds": 1
+    "2 seconds": 2
+    "3 seconds": 3
+    "4 seconds": 4
+    "5 seconds": 5
+    "6 seconds": 6
+    "7 seconds": 7
+    "8 seconds": 8
+    "9 seconds": 9
+    "10 seconds": 10
+    "15 seconds": 15
+    "20 seconds": 20
+    "25 seconds": 25
+    "30 seconds": 30
+    "35 seconds": 35
+    "40 seconds": 40
+    "45 seconds": 45
+    "50 seconds": 50
+    "55 seconds": 55
+    "60 seconds": 60
+    "1 minute": 60
+    "1 minutes": 60
+    "2 minutes": 62
+    "3 minutes": 63
+    "4 minutes": 64
+    "10 minutes": 70
+    "15 minutes": 75
+    "30 minutes": 90
+    "45 minutes": 105
+    "60 minutes": 120
+    "1 hour": 120
+    "2 hours": 122
+    "forever": 255
+    "indefinitely": 255
+
+  switch_effects:
+    "off": 0
+    "solid": 1
+    "fast blink": 2
+    "chase": 2
+    "slow blink": 3
+    "blink": 3
+    "pulse": 4
+
+  strip_effects:
+    "off": 0
+    "solid": 1
+    "chase": 2
+    "fast blink": 3
+    "slow blink": 4
+    "blink": 4
+    "pulse": 5
+
+
 sequence:
-#########
-# Effects
-#########
-  - service: zwave.set_config_parameter
-    data_template:
-      node_id: "{{ state_attr(entity_id,'node_id') }}"
-      parameter: >-
-        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
-          16
-        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Light' %}
-          24
-        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
-          25
-        {% else %} 
-          8 
-        {% endif %}
-      size: 4
-      value: >
-        {# Skip the calculations for effect = "off". #}
-        {% if effect|title == "Off" or effect is not defined or color|title == "Off" or color is not defined or duration|title == "Off" or duration is not defined or level|title == "Off" or level is not defined %}
-          0
-        {% else %}
-          {# Set default values if any needed values are missing. Old code that doesn't do anything now, but may be useful to someone #}
-          {% set color = color|default("Off") %}
-          {% set level = level|default(0) %}{# 1-10 #}
-          {% set duration = duration|default("Off") %}
-          {% set effect = effect|default("Off") %}
-    
-          {# Let's make things easy by using descriptive text instead of hard to understand numbers. #}
-          {% set colors = {
-            "Off": 0,
-            "Red": 1,
-            "Orange": 8,
-            "Yellow": 42,
-            "Green": 85,
-            "Cyan": 127,
-            "Teal": 145,
-            "Blue": 170,
-            "Purple": 195,
-            "Light Pink": 220,
-            "Pink": 234
-          } %}
-          {% set durations = {
-            "Off": 0,
-            "1 Second": 1,
-            "2 Seconds": 2,
-            "3 Seconds": 3,
-            "4 Seconds": 4,
-            "5 Seconds": 5,
-            "6 Seconds": 6,
-            "7 Seconds": 7,
-            "8 Seconds": 8,
-            "9 Seconds": 9,
-            "10 Seconds": 10,
-            "15 Seconds": 15,
-            "20 Seconds": 20,
-            "25 Seconds": 25,
-            "30 Seconds": 30,
-            "35 Seconds": 35,
-            "40 Seconds": 40,
-            "45 Seconds": 45,
-            "50 Seconds": 50,
-            "55 Seconds": 55,
-            "60 Seconds": 60,
-            "2 Minutes": 62,
-            "3 Minutes": 63,
-            "4 Minutes": 64,
-            "10 Minutes": 70,
-            "15 Minutes": 75,
-            "30 Minutes": 90,
-            "45 Minutes": 105,
-            "1 Hour": 120,
-            "2 Hours": 122,
-            "Indefinitely": 255
-          } %}
-          {% if 'LZW31' in state_attr(entity_id, 'product_name') or 'LZW36' in state_attr(entity_id, 'product_name') %}
-            {% set effects = {
-              "Off": 0,
-              "Solid": 1,
-              "Chase": 2,
-              "Fast Blink": 3,
-              "Slow Blink": 4,
-              "Blink": 4,
-              "Pulse": 5,
-              "Breath": 5
-            } %}
-          {% else %}
-            {% set effects = {
-              "Off": 0,
-              "Solid": 1,
-              "Fast Blink": 2,
-              "Slow Blink": 3,
-              "Pulse": 4,
-              "Breath": 4
-            } %}
-          {% endif %}
-          {# Perform the Inovelli math #}
-          {{ colors[color|title] + (level * 256) + (durations[duration|title] * 65536) + (effects[effect|title] * 16777216) }}
-        {% endif %}
 
-  # If an effect is being programmed setting the LED indicator will immediately override it.  These conditions ensure the necessary data is present, and an effect hasn't been set. 
-  - condition: and
-    conditions:
-      - condition: template
-        value_template: "{{ LEDcolor is defined and LEDintensity is defined and LEDintensity_off is defined }}"
-      - condition: template
-        value_template: "{{ effect is not defined or effect == 'Off'}}"
+##################
+# Cleaning up inputs; using lower case since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
+# Brightness variables are set to 0 so they're skipped in the logic.  To turn the LED off, use "Off".
+##################
+  - variables:
+      entity: '{{ entity|lower }}'
+      model: '{{ model|lower }}'
+      color: '{{ color|default("no change")|lower }}'
+      duration: '{{ duration|default("invalid")|lower }}'
+      brightness: '{{ brightness|default("11")|int }}'
+      effect: '{{ effect|default("off")|lower }}'
+      LEDcolor: '{{ LEDcolor|default("No Change")|lower }}'
+      LEDbrightness: '{{ LEDbrightness|default("11")|int }}'
+      LEDbrightness_off: '{{ LEDbrightness_off|default("11")|int }}'
 
-  #################
-  # Indicator Color
-  #################
-  - service: zwave.set_config_parameter
-    data_template:
-      node_id: "{{ state_attr(entity_id,'node_id') }}"
-      parameter: >
-        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
-          13
-        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Light' %}
-          18
-        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
-          20
-        {% else %} 
-          5 
-        {% endif %}
-      size: 2
-      value: >
-        {% set colors = {
-          "Red": 1,
-          "Orange": 8,
-          "Yellow": 42,
-          "Green": 85,
-          "Cyan": 127,
-          "Teal": 145,
-          "Blue": 170,
-          "Purple": 195,
-          "Light Pink": 220,
-          "Pink": 234
-        } %}
-        {{ colors[LEDcolor|title] }}
+##################
+# Do not continue if we don't have at least entity and model
+#   Entity and model will be used as a default action to clear "forever" effects.
+##################
+  - condition: template
+    value_template: '{{ entity is defined and model is defined }}'
 
-  #########################
-  # LED Indicator Intensity
-  #########################
-  - service: zwave.set_config_parameter
-    data_template:
-      node_id: "{{ state_attr(entity_id,'node_id') }}"
-      parameter: >
-        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
-          14
-        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Light' %}
-          19
-        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
-          21
-        {% else %} 
-          6 
-        {% endif %}
-      size: 1
-      value: >
-        {# Red series dimmer takes input as '100%' but the light switch and fan / light combo switch needs an integer between 1 – 10. #}
-        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
-          {{ LEDintensity }}
-        {% else %}
-          {% set LEDintensity = (LEDintensity.split('%')[0])|int /10 %}
-          {{ LEDintensity | int }}
-        {% endif %}
+##################
+# If LED indicator parameters have been passed, we'll set those before setting the effect.
+# Once the effect clears or the switch is used, the indicater will then display the new settings.
+# This also allows a user to pass just a color or brightness change (perhaps at night). 
+##################
 
-  ####################################
-  # LED Indicator Intensity (when off)
-  ####################################
-  - service: zwave.set_config_parameter
-    data_template:
-      node_id: "{{ state_attr(entity_id,'node_id') }}"
-      parameter: >
-        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
-          15
-        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Light' %}
-          22
-        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
-          23
-        {% else %} 
-          7 
-        {% endif %}
-      size: 1
-      value: >
-        {# Red series dimmer takes input as '100%' but the light switch and fan / light combo switch needs an integer between 1 – 10. #}
-        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
-          {{ LEDintensity_off }}
-        {% else %}
-          {% set LEDintensity_off = (LEDintensity_off.split('%')[0])|int /10 %}
-          {{ LEDintensity_off | int }}
-        {% endif %}
+##################
+# LED strip color
+##################
+  - choose:
+    - conditions: >
+        {{ LEDcolor != "no change" }}
+      sequence:
+        - service: zwave.set_config_parameter
+          data_template:
+            node_id: "{{ state_attr(entity,'node_id') }}"
+            parameter: >
+              {% if 'LZW31' in state_attr(entity, 'product_name') %}
+                13
+              {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Light' %}
+                18
+              {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Fan' %}
+                20
+              {% else %} 
+                5 
+              {% endif %}
+            size: 2
+            value: |
+              {{ color_set[LEDcolor] }}
+
+##################
+# LED strip brightness
+##################
+  - choose:
+    - conditions: >
+        {{ LEDbrightness is defined and LEDbrightness != 11 }}
+      sequence:
+        - service: zwave.set_config_parameter
+          data_template:
+            node_id: "{{ state_attr(entity,'node_id') }}"
+            parameter: >
+              {% if 'LZW31' in state_attr(entity, 'product_name') %}
+                14
+              {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Light' %}
+                19
+              {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Fan' %}
+                21
+              {% else %} 
+                6 
+              {% endif %}
+            size: 1
+            value: >
+              {# Red series dimmer takes input as '100%' but the light switch and fan / light combo switch needs an integer between 1 – 10. #}
+              {% if 'LZW31' in state_attr(entity, 'product_name') %}
+                {{ LEDbrightness }}
+              {% else %}
+                {% set LEDbrightness = (LEDbrightness.split('%')[0])|int /10 %}
+                {{ LEDbrightness | int }}
+              {% endif %}
+
+##################
+# LED strip brightness when off
+##################
+  - choose:
+    - conditions: >
+        {{ LEDbrightness_off is defined and LEDbrightness_off != 11 }}
+      sequence:
+        - service: zwave.set_config_parameter
+          data_template:
+            node_id: "{{ state_attr(entity,'node_id') }}"
+            parameter: >
+              {% if 'LZW31' in state_attr(entity, 'product_name') %}
+                15
+              {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Light' %}
+                22
+              {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Fan' %}
+                23
+              {% else %} 
+                7 
+              {% endif %}
+            size: 1
+            value: >
+              {# Red series dimmer takes input as '100%' but the light switch and fan / light combo switch needs an integer between 1 – 10. #}
+              {% if 'LZW31' in state_attr(entity, 'product_name') %}
+                {{ LEDbrightness_off }}
+              {% else %}
+                {% set LEDbrightness_off = (LEDbrightness_off.split('%')[0])|int /10 %}
+                {{ LEDbrightness_off | int }}
+              {% endif %}              
+
+
+#################
+# Effects (fully defined)
+# Calling a bulk set of parameters reduces Z-Wave traffic and writes to the switch's NVRAM, extending its life(?)
+##################
+  - choose:
+    - conditions: >
+        {{ effect != "off" and
+           color != "no change" and 
+           duration != "invalid" and
+           brightness != 11 }}
+      sequence:
+        - service: zwave.set_config_parameter
+          data_template:
+            node_id: "{{ state_attr(entity,'node_id') }}"
+            parameter: >-
+              {% if 'LZW31' in state_attr(entity, 'product_name') %}
+                16
+              {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Light' %}
+                24
+              {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Fan' %}
+                25
+              {% else %} 
+                8 
+              {% endif %}
+            size: 4
+            value: |
+              {% if model == "switch" %}
+                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (switch_effects[effect] * 16777216) }}
+              {% else %}
+                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (strip_effects[effect] * 16777216) }}
+              {% endif %}
+
+##################
+# Default will be to clear the effect and set the duration to 1 second.  
+# Setting only the effect to "off" turned the LED off on LZW36 fan / light combos for the duration (which could be "forever").
+#    This way it turns off for 1 sec before it returns to its default state, but until the min value for effect changes to 0 in the DB, that's the best I can do.
+# This way, "forever" effects can be set, then easily cleared.
+# It's also a safer way to fail since the worst case scenario is that an effect is cleared.
+##################
+    default: 
+      - service: zwave.set_config_parameter
+        data_template:
+          node_id: "{{ state_attr(entity,'node_id') }}"
+          parameter: >-
+            {% if 'LZW31' in state_attr(entity, 'product_name') %}
+              16
+            {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Light' %}
+              24
+            {% elif 'LZW36' in state_attr(entity, 'product_name') and Type == 'Fan' %}
+              25
+            {% else %} 
+              8 
+            {% endif %}
+          size: 4
+          value: 0
