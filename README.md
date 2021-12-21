@@ -1,24 +1,26 @@
 # Home-Assistant-Inovelli-Red-Dimmer-Switch
-# [Z-Wave JS to MQTT](https://hub.docker.com/r/zwavejs/zwavejs2mqtt) Container
+  
+  [Inovelli Calculations](https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing)
+  
+  [Z-Wave JS to MQTT](https://hub.docker.com/r/zwavejs/zwavejs2mqtt) Container
 
   Requires container 2.4.0
   
   This is a complete rewrite of the original work which was done by BrianHanifin on post: https://community.home-assistant.io/t/inovelli-z-wave-red-series-notification-led/165483
     
   **Features**
-  This script can set effects, the LED indicator strip, any single aspect of the LED strip, or clear an effect.  A nighttime automation could simply dim the LED indicator without changing the color; separate automations could handle the indicator brightness while another sets colors for morning, night, and holidays.  Changes to the LED brightness at night or during the day would be easy to manage and wouldn't have to be tracked down through multiple automations.  
+  This script can set and clear effects as well as configure the LED indicator strip or LED on Inovelli dimmers, switches, and fan / light combo dimmers.  Unfortunately, it's no longer possible to set aspects of the effect (like brightness or color) individually.  Changing an individual aspect restarts the duration, which makes the timing unpredictable.  If you want to be able to do this, you can uncomment the code near the end in the section titled "Effects (not fully defined)".  
   
-  The  LED indicator can now be set alongside an effect in a single call so that an indicator color change doesn't clear the effect and using the switch (which clears the effect in old firmware versions like mine) will still have a red "warning" LED indicator.  For example, setting "chase" for 1 second with a red indicator LED is a nice "hey, there's a door open" notification without being overly obnoxious and distracting.
+  The  LED indicator can be set alongside an effect in a single call so that an indicator color change doesn't clear the effect (this does restart the duration timer, however). For example, setting "chase" for 1 second with a red indicator LED is a nice notification that something changed without being overly obnoxious and distracting (like setting "fast blink" with an infinite duration).  The effect wears off after one second, but the indicator stays red afterwards.
   
-  Effects that have been set to "forever" can be cleared by just passing the entity and model.  There's no need to remember the effect, color, and brightness parameter or set them to 0.  It's easier to remember when you get to my age.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters since (most of the time) clearing the effect will have no visible result on the switch.
+  Effects that have been set to "forever" can be cleared by just passing the entity and model.  There's no need to remember the effect, color, and brightness parameter or set them to 0.  It's easier to remember when you get to my age, and less to type.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters since (most of the time) clearing the effect will have no visible result on the switch.
   
   Z-Wave JS can take multiple entities in a comma separate list, which makes setting the entire house easy (and copying the yaml into a new automation, too).
   
   I'm using lower case throughout the script since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
   
-  [Calculations](https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing) are no longer needed, since the dimmer takes effect parameters individually, which also means "pulse" works as an effect again and the "choose" code is a little cleaner than in the 2.2.0 container.
    
-  **Required parameters**
+ **Required parameters**
   
     - entity: (string) The entity ID from "Developer Tools" -> "States".  The device to be modified (e.g. light.office_lights_level)
         Can also be a comma separated list, if all entities are the same model.  For example, "light.office, light.family_room"
@@ -33,11 +35,11 @@
 
   **Required for setting LED effects**
   
-    - duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Second", "Seconds", "Minute", or "Minutes", "Hour", "Hours", "Indefinitely", or "Forever".
+    - duration: (string) Either "Off", or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
     - effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", or "Pulse".
     - brightness: (integer 1 – 10) Sets the brightness of the LED's effect
     - color: (string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
-        NOTE: Home Assistant will not pass any number 1 – 10 so teal and light pink won't work at the moment.  Setting the parameter in the zwavejs2mqtt web interface works fine.
+
 
   **Notification effect examples:**
 	
@@ -47,31 +49,31 @@
       model: dimmer
       duration: Forever
       effect: FAST BLINK
-      intensity: 8
-      color: red
+      brightness: 8
+      color: Hot Pink
       
     service: script.inovelli_led_zwavejs
     data:
-      entity: light.ceiling_FAN
+      entity: light.ceiling_fan
       model: combo_fan      
-      effect: FAST BLINK
-      intensity: 8
-      color: red
+      effect: chase
+      brightness: 8
+      color: GrEeN
       
     service: script.inovelli_led_zwavejs
     data:
       entity: light.ceiling_LIGHT
       model: combo_light     
-      effect: FAST BLINK
-      intensity: 8
+      effect: solid
+      brightness: 8
       color: red
             
     service: script.inovelli_led_zwavejs
     data:
       entity: switch.front_porch_lights
       model: switch
-      effect: FAST BLINK
-      intensity: 8
+      effect: pulse
+      brightness: 8
       color: red
       
   **Clearing an effect**
@@ -88,16 +90,16 @@
       entity: light.office
       model: dimmer   
       LEDcolor: blue
-      LEDintensity: 7
-      LEDintensity_off: 3
+      LEDbrightness: 7
+      LEDbrightness_off: 3
 
-  **LED intensity_off example: (maybe part of a nighttime routine?)**
+  **LEDbrightness_off example: (maybe part of a nighttime routine?)**
 
     service: script.inovelli_led_zwavejs
     data:
       entity: light.office
       model: dimmer   
-      LEDintensity_off: 2
+      LEDbrightness_off: 2
             
   **Effect to signal LED indicator transition**
   
@@ -106,12 +108,12 @@
       entity: light.office
       model: dimmer
       LEDcolor: green
-      LEDintensity: 7
-      LEDintensity_off: 3
+      LEDbrightness: 7
+      LEDbrightness_off: 3
       duration: 1 second
       effect: Chase
       color: green
-      intensity: 7
+      brightness: 7
 
 
 
