@@ -269,13 +269,13 @@ variables:
 ##################
   parameters:
     "dimmer_effect_bulk": 16
-    "dimmer_effect_color": "LED Effect Color"
-    "dimmer_effect_brightness": "LED Effect Brightness"
-    "dimmer_effect_duration": "LED Effect Duration"
-    "dimmer_effect_effect": "LED Effect Type"
-    "dimmer_ledcolor": "LED Indicator Color"
-    "dimmer_ledbrightness": "LED Indicator Brightness"
-    "dimmer_ledbrightness_off": "LED Indicator Brightness When Off"
+    "dimmer_effect_color": "LED Indicator: Effect Color"
+    "dimmer_effect_brightness": "LED Indicator: Effect Brightness"
+    "dimmer_effect_duration": "LED Indicator: Effect Duration"
+    "dimmer_effect_effect": "LED Indicator: Effect Type"
+    "dimmer_ledcolor": "LED Indicator: Color"
+    "dimmer_ledbrightness": "LED Indicator: Brightness When On"
+    "dimmer_ledbrightness_off": "LED Indicator: Brightness When Off"
 
     "switch_effect_bulk": 8
     "switch_effect_color": "LED Effect Color"
