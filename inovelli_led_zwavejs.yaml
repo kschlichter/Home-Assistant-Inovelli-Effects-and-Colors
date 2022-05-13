@@ -2,12 +2,10 @@ alias: Inovelli Dimmer and Switch LEDs ZwaveJS
 description: 'Handles setting the LED colors and notifications on Inovelli "Red" model switches and dimmers through the Zwave JS integration with zwavejs2mqtt 2.4.0 using webhooks.'
 ############
 # Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
-#   Note that the on/off switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
+#   Note that the on/off LZW30-SN switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
 #
-# Required parameters
-#   entity: (string) The entity ID from "Developer Tools" -> "States".  The device to be modified (e.g. light.office_lights_level)
-#           Can also be a comma separated list, if all entities are the same model.  For example, "light.office, light.family_room"
-#   model: (string) One of: dimmer, switch, combo_light, combo_fan
+# If LED indicator parameters have been passed, we'll set those before setting the effect. Once the effect clears or the device is used, the indicater will then display the new settings.
+#   This also allows a user to pass just a color or brightness change (perhaps at night).
 #
 # Required for setting the LED indicator
 #   LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
@@ -24,32 +22,48 @@ mode: parallel
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches
 
 fields:
+  area:
+    name: Area
+    description: Areas contaiting Inovelli devices.
+    required: no
+    #example:
+    selector:
+      area:
+        multiple: true
+        device: 
+          manufacturer: Inovelli
+          integration: zwave_js
+          #model: LZW36, LZW30-SN, LZW31-SN 
+
+  device: 
+    name: Device
+    description: Inovelli LZW36, LZW30-SN, LZW31-SN device IDs.  Mix and match as you like
+    required: no
+    #example: 
+    selector:
+      device: 
+        multiple: true
+        manufacturer: Inovelli  
+        integration: zwave_js
+        #model: LZW36, LZW30-SN, LZW31-SN 
+
   entity:
     name: Entity
-    description: The light.* entity for the LED we're setting.  Can be a comma separated list.
-    required: yes
-    example: light.office, light.guest_room
+    description: The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be a comma separated list. Mix and match as you like.
+    required: no
+    example: light.office, fan.guest_room
     selector:
       entity:
-        integration: zwave_js
-#         domain: light, fan #LZW36 fan / light combos are excluded if we set this to light.
-
-  model:
-    name: Model
-    description: What type of device is this?
-    required: yes
-    example: Dimmer
-    selector: 
-      select:
-        options:
-          - Dimmer
-          - Switch
-          - Combo_Light
-          - Combo_Fan
+        multiple: true
+        integration: zwave_js 
+        domain: 
+          - fan 
+          - light
+          - switch
 
   LEDcolor:
     name: LED Color (non-effect)
-    description: Sets the color of the LED indicating brightness levels
+    description: Sets the color of the LED indicator brightness levels
     required: no
     example: Blue
     selector:
@@ -305,174 +319,358 @@ variables:
     "combo_fan_ledbrightness_off": "Fan LED Strip Brightness When Off"
 
 sequence:
+
 ##################
 # Cleaning up inputs; using lower case since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
 # Brightness variables are set to 0 so they're skipped in the logic.  To turn the LED off, use "Off".
 ##################
   - variables:
-      entity: '{{ entity|lower }}'
-      model: '{{ model|lower }}'
-      color: '{{ color|default("No Change")|lower }}'
+      area: '{{ area|default("invalid")|lower }}'
+      device: '{{ device|default("invalid")|lower }}'
+      entity: > #Maintaining compatibily with automations written for the older script.
+        {% set entlist = namespace(entities=[]) %}
+        {% if entity is defined and ',' in entity %} 
+          {% set entnum = entity.split( '.' ) |count -1 %}
+          {% for i in range(0,entnum) %}
+            {% set entlist.entities = entlist.entities + [entity.split( ', ' )[i]|string|replace( ' ', '' ) ] %}
+            {% set next = i-1 %}
+          {% endfor %}
+        {% elif entity is defined and entity[0]|count == 1 %}
+            {% set entlist.entities = [entity|string|replace( ' ', '' )] %}
+        {% elif entity is defined and entity[0]|count > 1 %}
+          {% set entlist.entities = entity %}
+        {% endif %}
+        {{ entlist.entities|lower }} 
+      area_dimmer: >
+        {% set entities = namespace(areas=[]) %}
+        {% for dev in area %}
+          {% for ent in area_entities(dev) %}
+            {% if device_attr(device_id(ent),'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
+              {% set entities.areas = entities.areas + [ent | string] %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {{ entities.areas|lower }}
+      device_dimmer: >
+        {% set entities = namespace(devices=[]) %}
+        {% for dev in device %}
+          {% for ent in device_entities(dev) %}
+            {% if device_attr(device_id(ent),'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
+              {% set entities.devices = entities.devices + [ ent | string] %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {{ entities.devices|lower }}
+      entity_dimmer: >
+        {% set entities = namespace(entities=[]) %}
+        {% for ent in entity %}
+          {% if device_attr(ent,'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
+            {% set entities.entities = entities.entities + [ ent | string] %}
+          {% endif %}
+        {% endfor %}
+        {{ entities.entities|lower }}
+      area_switch: >
+        {% set entities = namespace(areas=[]) %}
+        {% for dev in area %}
+          {% for ent in area_entities(dev) %}
+            {% if device_attr(device_id(ent),'model') == 'LZW30-SN' and ent.split('.')[0] == 'switch' %}
+              {% set entities.areas = entities.areas + [ent | string] %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {{ entities.areas|lower }}
+      device_switch: >
+        {% set entities = namespace(devices=[]) %}
+        {% for dev in device %}
+          {% for ent in device_entities(dev) %}
+            {% if device_attr(device_id(ent),'model') == 'LZW30-SN' and ent.split('.')[0] == 'switch' %}
+              {% set entities.devices = entities.devices + [ ent | string] %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {{ entities.devices|lower }}
+      entity_switch: >
+        {% set entities = namespace(entities=[]) %}
+        {% for ent in entity %}
+          {% if device_attr(ent,'model') == 'LZW30-SN' and ent.split('.')[0] == 'switch' %}
+            {% set entities.entities = entities.entities + [ ent | string] %}
+          {% endif %}
+        {% endfor %}
+        {{ entities.entities|lower }}
+      area_combo_light: >
+        {% set entities = namespace(areas=[]) %}
+        {% for dev in area %}
+          {% for ent in area_entities(dev) %}
+            {% if device_attr(device_id(ent),'model') == 'LZW36' and ent.split('.')[0] == 'light' %}
+              {% set entities.areas = entities.areas + [ent | string] %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {{ entities.areas|lower }}
+      device_combo_light: >
+        {% set entities = namespace(devices=[]) %}
+        {% for dev in device %}
+          {% for ent in device_entities(dev) %}
+            {% if device_attr(device_id(ent),'model') == 'LZW36' and ent.split('.')[0] == 'light' %}
+              {% set entities.devices = entities.devices + [ ent | string] %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {{ entities.devices|lower }}
+      entity_combo_light: >
+        {% set entities = namespace(entities=[]) %}
+        {% for ent in entity %}
+          {% if device_attr(ent,'model') == 'LZW36' and ent.split('.')[0] == 'light' %}
+            {% set entities.entities = entities.entities + [ ent | string] %}
+          {% endif %}
+        {% endfor %}
+        {{ entities.entities|lower }}
+      area_combo_fan: >
+        {% set entities = namespace(areas=[]) %}
+        {% for dev in area %}
+          {% for ent in area_entities(dev) %}
+            {% if device_attr(device_id(ent),'model') == 'LZW36' and ent.split('.')[0] == 'fan' %}
+              {% set entities.areas = entities.areas + [ent | string] %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {{ entities.areas|lower }}
+      device_combo_fan: >
+        {% set entities = namespace(devices=[]) %}
+        {% for dev in device %}
+          {% for ent in device_entities(dev) %}
+            {% if device_attr(device_id(ent),'model') == 'LZW36' and ent.split('.')[0] == 'fan' %} 
+              {% set entities.devices = entities.devices + [ ent | string] %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {{ entities.devices|lower }}
+      entity_combo_fan: >
+        {% set entities = namespace(entities=[]) %}
+        {% for ent in entity %}
+          {% if device_attr(ent,'model') == 'LZW36' and ent.split('.')[0] == 'fan' %} 
+            {% set entities.entities = entities.entities + [ ent | string] %}
+          {% endif %}
+        {% endfor %}
+        {{ entities.entities|lower }}
+      color: '{{ color|default("no change")|lower }}'
       duration: '{{ duration|default("invalid")|lower }}'
       brightness: '{{ brightness|default("11")|int }}'
       effect: '{{ effect|default("off")|lower }}'
-      LEDcolor: '{{ LEDcolor|default("No Change")|lower }}'
+      LEDcolor: '{{ LEDcolor|default("no change")|lower }}'
       LEDbrightness: '{{ LEDbrightness|default("11")|int }}'
       LEDbrightness_off: '{{ LEDbrightness_off|default("11")|int }}'
 
-##################
-# Do not continue if we don't have at least entity and model
-#   Entity and model will be used as a default action to clear "forever" effects.
-##################
-  - condition: template
-    value_template: '{{ entity is defined and model is defined }}'
+  - repeat:
+      for_each:
+        - device_type: dimmer
+          entities: '{{ area_dimmer + device_dimmer + entity_dimmer }}'
+        - device_type: switch
+          entities: '{{ area_switch + device_switch + entity_switch }}'
+        - device_type: combo_light
+          entities: '{{ area_combo_light + device_combo_light + entity_combo_light }}'
+        - device_type: combo_fan
+          entities: '{{ area_combo_fan + device_combo_fan + entity_combo_fan }}'
+      sequence:
 
+ 
 ##################
-# If LED indicator parameters have been passed, we'll set those before setting the effect.
-# Once the effect clears or the switch is used, the indicater will then display the new settings.
-# This also allows a user to pass just a color or brightness change (perhaps at night). 
+# Do not continue if we don't have at least one entity of this type
 ##################
+        - condition: template
+          value_template: |
+            {{ repeat.item.entities |count >0 }}
+
 
 ##################
 # LED strip color
 ##################
-  - choose:
-    - conditions: >
-        {{ LEDcolor != "no change" }}
-      sequence:
-        - service: zwave_js.set_config_parameter
-          data:
-            entity_id: '{{ entity }}'
-            parameter: |
-              {% set effect_param = model + '_ledcolor' %}
-              {{ parameters[effect_param] }}
-            value: |
-              {{ color_set[LEDcolor] }}
+        - choose:
+          - conditions: >
+              {{ LEDcolor != "no change" }}
+            sequence:
+              - service: zwave_js.set_config_parameter
+                data:
+                  entity_id: '{{ repeat.item.entities }}'
+                  parameter: |
+                    {% set effect_param = repeat.item.device_type + '_ledcolor' %}
+                    {{ parameters[effect_param] }}
+                  value: |
+                    {{ color_set[LEDcolor] }}
 
 ##################
 # LED strip brightness
 ##################
-  - choose:
-    - conditions: >
-        {{ LEDbrightness is defined and LEDbrightness != 11 }}
-      sequence:
-        - service: zwave_js.set_config_parameter
-          data:
-            entity_id: '{{ entity }}'
-            parameter: |
-              {% set effect_param = model + '_ledbrightness' %}
-              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
-            value: |
-              {{ LEDbrightness }}
-
+        - choose:
+          - conditions: >
+              {{ LEDbrightness is defined and LEDbrightness != 11 }}
+            sequence:
+              - service: zwave_js.set_config_parameter
+                data:
+                  entity_id: '{{ repeat.item.entities }}'
+                  parameter: |
+                    {% set effect_param = repeat.item.device_type + '_ledbrightness' %}
+                    {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
+                  value: |
+                    {{ LEDbrightness }}
+ 
 ##################
 # LED strip brightness when off
 ##################
-  - choose:
-    - conditions: >
-        {{ LEDbrightness_off is defined and LEDbrightness_off != 11 }}
-      sequence:
-        - service: zwave_js.set_config_parameter
-          data:
-            entity_id: '{{ entity }}'
-            parameter: |
-              {% set effect_param = model + '_ledbrightness_off' %}
-              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
-            value: |
-              {{ LEDbrightness_off }}
+        - choose:
+          - conditions: >
+              {{ LEDbrightness_off is defined and LEDbrightness_off != 11 }}
+            sequence:
+              - service: zwave_js.set_config_parameter
+                data:
+                  entity_id: '{{ repeat.item.entities }}'
+                  parameter: |
+                    {% set effect_param = repeat.item.device_type + '_ledbrightness_off' %}
+                    {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
+                  value: |
+                    {{ LEDbrightness_off }}
+    
+    
+#################
+# Effects (fully defined)
+# Calling a bulk set of parameters reduces Z-Wave traffic and writes to the switch's NVRAM, extending its life(?)
+##################
+        - choose:
+          - conditions: >
+              {{ effect != "off" and
+                 color != "no change" and 
+                 duration != "invalid" and
+                 brightness != 11 }}
+            sequence:
+              - service: zwave_js.bulk_set_partial_config_parameters
+                data:
+                  entity_id: '{{ repeat.item.entities }}'
+                  parameter: |
+                    {% set bulk_param = repeat.item.device_type + '_effect_bulk' %}
+                    {{ parameters[bulk_param] }}
+                  value: |
+                    {% if repeat.item == "switch" %}
+                      {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (switch_effects[effect] * 16777216) }}
+                    {% else %}
+                      {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (strip_effects[effect] * 16777216) }}
+                    {% endif %}
+      
+#################
+# Effects (not fully defined)
+# We could change aspects of the effect without knowing everything (e.g. change the brightness but not color).
+#   It turns out that changing the color or brightness resets the duration, so I question the value here unless the duration is "forever".
+##################
+#              - service: zwave_js.set_config_parameter
+#                data:
+#                  entity_id: '{{ repeat.item.entities }}'
+#                  parameter: |
+#                    {% set effect_param = repeat.item.device_type + '_effect_color' %}
+#                    {{ parameters[effect_param] }}
+#                  value: |
+#                    {{ color_set[color] }}
+#              - service: zwave_js.set_config_parameter
+#                data:
+#                  entity_id: '{{ repeat.item.entities }}'
+#                  parameter: |
+#                    {% set effect_param = repeat.item.device_type + '_effect_brightness' %}
+#                    {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
+#                  value: |
+#                    {{ brightness }}
+#              - service: zwave_js.set_config_parameter
+#                data:
+#                  entity_id: '{{ repeat.item.entities }}'
+#                  parameter: |
+#                    {% set effect_param = repeat.item.device_type + '_effect_duration' %}
+#                    {{ parameters[effect_param] }}
+#                  value: |
+#                    {{ duration_values[duration] }}
+#              - service: zwave_js.set_config_parameter
+#                data:
+#                  entity_id: '{{ repeat.item.entities }}'
+#                  parameter: |
+#                    {% set effect_param = repeat.item.device_type + '_effect_effect' %}
+#                    {{ parameters[effect_param] }}
+#                  value: |
+#                    {% if repeat.item == "switch" %}
+#                      {{ switch_effects[effect] }}
+#                    {% else %}
+#                      {{ strip_effects[effect] }}
+#                    {% endif %}
 
 ##################
-# Effects (need to be fully defined)
-##################
-  - choose:
-    - conditions: >
-        {{ effect != "off" and
-           color != "off" }}
-      sequence:
-        - service: zwave_js.bulk_set_partial_config_parameters
-          data:
-            entity_id: '{{ entity }}'
-            parameter: |
-              {% set bulk_param = model + '_effect_bulk' %}
-              {{ parameters[bulk_param] }}
-            value: |
-              {% if model == "switch" %}
-                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (switch_effects[effect] * 16777216) }}
-              {% else %}
-                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (strip_effects[effect] * 16777216) }}
-              {% endif %}
-# Changing to a bulk set of parameters to reduce Z-Wave traffic and writes to the switch's NVRAM.
-#        - service: zwave_js.set_config_parameter
-#          data:
-#            entity_id: '{{ entity }}'
-#            parameter: |
-#              {% set effect_param = model + '_effect_color' %}
-#              {{ parameters[effect_param] }}
-#            value: |
-#              {{ color_set[color] }}
-#        - service: zwave_js.set_config_parameter
-#          data:
-#            entity_id: '{{ entity }}'
-#            parameter: |
-#              {% set effect_param = model + '_effect_brightness' %}
-#              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
-#            value: |
-#              {{ brightness }}
-#        - service: zwave_js.set_config_parameter
-#          data:
-#            entity_id: '{{ entity }}'
-#            parameter: |
-#              {% set effect_param = model + '_effect_duration' %}
-#              {{ parameters[effect_param] }}
-#            value: |
-#              {{ duration_values[duration] }}
-#        - service: zwave_js.set_config_parameter
-#          data:
-#            entity_id: '{{ entity }}'
-#            parameter: |
-#              {% set effect_param = model + '_effect_effect' %}
-#              {{ parameters[effect_param] }}
-#            value: |
-#              {% if model == "switch" %}
-#                {{ switch_effects[effect] }}
-#              {% else %}
-#                {{ strip_effects[effect] }}
-#              {% endif %}
-
-##################
-# Default will be to clear the effect and set the duration to 1sec.  
+# Default will be to clear the effect and set the duration to 1 second.  
 # Setting only the effect to "off" turned the LED off on LZW36 fan / light combos for the duration (which could be "forever").
 #    This way it turns off for 1 sec before it returns to its default state, but until the min value for effect changes to 0 in the DB, that's the best I can do.
 # This way, "forever" effects can be set, then easily cleared.
 # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
 ##################
-    default: 
-      - service: zwave_js.set_config_parameter
-        data:
-          entity_id: '{{ entity }}'
-          parameter: |
-            {% set effect_param = model + '_effect_effect' %}
-            {{ parameters[effect_param] }}
-          value: 0
-      - service: zwave_js.set_config_parameter
-        data:
-          entity_id: '{{ entity }}'
-          parameter: |
-            {% set effect_param = model + '_effect_duration' %}
-            {{ parameters[effect_param] }}
-          value: 1
-# Setting the duration to 0 was generating errors for some devices, and this generated unnecessary service calls anyhow
-#     - service: zwave_js.set_config_parameter
-#       data:
-#         entity_id: '{{ entity }}'
-#         parameter: |
-#           {% set effect_param = model + '_effect_color' %}
-#           {{ parameters[effect_param] }}
-#         value: 0
-#      - service: zwave_js.set_config_parameter
-#        data:
-#          entity_id: '{{ entity }}'
-#          parameter: |
-#            {% set effect_param = model + '_effect_brightness' %}
-#            {{ parameters[effect_param] }}
-#          value: 0
+          default: 
+            - service: zwave_js.set_config_parameter
+              data:
+                entity_id: '{{ repeat.item.entities }}'
+                parameter: |
+                  {% set effect_param = repeat.item.device_type + '_effect_effect' %}
+                  {{ parameters[effect_param] }}
+                value: 0
+            - service: zwave_js.set_config_parameter
+              data:
+                entity_id: '{{ repeat.item.entities }}'
+                parameter: |
+                  {% set effect_param = repeat.item.device_type + '_effect_duration' %}
+                  {{ parameters[effect_param] }}
+                value: 1
+# The code below was unnecessary service calls.
+#           - service: zwave_js.set_config_parameter
+#             data:
+#               entity_id: '{{ repeat.item.entities }}'
+#               parameter: |
+#                 {% set effect_param = repeat.item.device_type + '_effect_color' %}
+#                 {{ parameters[effect_param] }}
+#               value: 0
+#            - service: zwave_js.set_config_parameter
+#              data:
+#                entity_id: '{{ repeat.item.entities }}'
+#                parameter: |
+#                  {% set effect_param = repeat.item.device_type + '_effect_brightness' %}
+#                  {{ parameters[effect_param] }}
+#                value: 0
+
+
+##################
+# This was used in the template editor for debugging, in case I need to play around with it for something else later.
+##################
+#{% set area = namespace(areas=[]) %}
+#{% set area.areas = ['Family Room'] %}
+#{% set entities = namespace(areas=[]) %}
+#{% for dev in area.areas %}
+#  {% for ent in area_entities(dev) %}
+#    {% if device_attr(device_id(ent),'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
+#      {% set entities.areas = entities.areas + [ent | string] %}
+#    {% endif %}
+#  {% endfor %}
+#{% endfor %}
+#area entities:
+#{{ entities.areas }}
+#
+#{% set device = namespace(devices=[]) %}
+#{% set device.devices = ['42a63bef36fb235f4cf301b01b325a35'] %}
+#{% set entities = namespace(devices=[]) %}
+#{% for dev in device.devices %}
+#  {% for ent in device_entities(dev) %}
+#    {% if device_attr(device_id(ent),'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
+#      {% set entities.devices = entities.devices + [ ent | string] %}
+#    {% endif %}
+#  {% endfor %}
+#{% endfor %}
+#device entities:
+#{{ entities.devices }}
+#
+#{% set entities = namespace(entities=[]) %}
+#{% set entities.entities = ['light.office_lights_level'] %}
+#{% for ent in entities.entities %}
+#  {% if device_attr(ent,'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
+#    {% set entities.entities = entities.entities + [ ent | string] %}
+#  {% endif %}
+#{% endfor %}
+#entity entities:
+#{{entities.entities}}
