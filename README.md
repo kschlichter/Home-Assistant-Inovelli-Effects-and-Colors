@@ -115,9 +115,10 @@
                   area: >
                     {% set area = namespace(id=[]) %} {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
 		    {{ area.id|lower }}
-                  LEDcolor: yellow
-                  LEDbrightness: 6
-                  LEDbrightness_off: 3
+                    duration: Forever
+                    effect: Pulse
+                    brightness: 4
+                    color: Orange
           - conditions:
               - condition: template
                 value_template: >-
@@ -129,8 +130,5 @@
                   area: >
                     {% set area = namespace(id=[]) %} {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
 		    {{ area.id|lower }}
-                  LEDcolor: green
-                  LEDbrightness: 6
-                  LEDbrightness_off: 3
         default: []
     mode: single
