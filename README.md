@@ -85,52 +85,52 @@
   
   This automation listens for a config / 3rd button press, checks in the condition stage that it's an Inovelli device, toggles an input_boolean for the area of the device, then sets or clears an effect on every Inovelli device in the area depending on the new state of the boolean.  I use that boolean in other automations to disable lighting controls.  
       
-  alias: Light Locks
-  description: ''
-  trigger:
-    - platform: event
-      event_type: zwave_js_value_notification
-      event_data:
-        value: KeyPressed
-        label: Scene 003
-  condition:
-    - condition: template
-      value_template: >-
-        {{ device_attr(trigger.event.data.device_id,'manufacturer') == 'Inovelli' }}
-  action:
-    - service: input_boolean.toggle
-      data: {}
-      target:
-        entity_id: >-
-          {{ 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' }}
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {% set use_boolean = 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' %}
-                {{ is_state(use_boolean,'on') }}
-          sequence:
-           - service: script.inovelli_led_zwavejs
-              data:
-                area: >
-                  {% set area = namespace(id=[]) %} {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
-		  {{ area.id|lower }}
-                LEDcolor: yellow
-                LEDbrightness: 6
-                LEDbrightness_off: 3
-        - conditions:
-            - condition: template
-              value_template: >-
-                {% set use_boolean = 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' %}
-                {{ is_state(use_boolean,'off') }}
-          sequence:
-              - service: script.inovelli_led_zwavejs
-              data:
-                area: >
-                  {% set area = namespace(id=[]) %} {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
-		  {{ area.id|lower }}
-                LEDcolor: green
-                LEDbrightness: 6
-                LEDbrightness_off: 3
-      default: []
-  mode: single
+    alias: Light Locks
+    description: ''
+    trigger:
+      - platform: event
+        event_type: zwave_js_value_notification
+        event_data:
+          value: KeyPressed
+          label: Scene 003
+    condition:
+      - condition: template
+        value_template: >-
+          {{ device_attr(trigger.event.data.device_id,'manufacturer') == 'Inovelli' }}
+    action:
+      - service: input_boolean.toggle
+        data: {}
+        target:
+          entity_id: >-
+            {{ 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' }}
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: >-
+                  {% set use_boolean = 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' %}
+                  {{ is_state(use_boolean,'on') }}
+            sequence:
+             - service: script.inovelli_led_zwavejs
+                data:
+                  area: >
+                    {% set area = namespace(id=[]) %} {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
+		    {{ area.id|lower }}
+                  LEDcolor: yellow
+                  LEDbrightness: 6
+                  LEDbrightness_off: 3
+          - conditions:
+              - condition: template
+                value_template: >-
+                  {% set use_boolean = 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' %}
+                  {{ is_state(use_boolean,'off') }}
+            sequence:
+                - service: script.inovelli_led_zwavejs
+                data:
+                  area: >
+                    {% set area = namespace(id=[]) %} {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
+		    {{ area.id|lower }}
+                  LEDcolor: green
+                  LEDbrightness: 6
+                  LEDbrightness_off: 3
+        default: []
+    mode: single
