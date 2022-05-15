@@ -33,7 +33,7 @@
 	
     service: script.inovelli_led_zwavejs
     data:
-      entity: switch.office, light.family_room_2x, light.family_room_6x, fan.guest_room
+      area: 'Family Room' # This can also be an idea ID, if you're using a template.
       duration: Forever
       effect: CHASE
       brightness: 8
@@ -50,6 +50,7 @@
   
     service: script.inovelli_led_zwavejs
     data:
+      area: 'Family Room'
       entity: fan.front_porch
   
   **LED color example:**
@@ -113,12 +114,13 @@
              - service: script.inovelli_led_zwavejs
                 data:
                   area: >
-                    {% set area = namespace(id=[]) %} {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
+                    {% set area = namespace(id=[]) %} 
+		    {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
 		    {{ area.id|lower }}
-                    duration: Forever
-                    effect: Pulse
-                    brightness: 4
-                    color: Orange
+                  duration: Forever
+                  effect: Pulse
+                  brightness: 4
+                  color: Orange
           - conditions:
               - condition: template
                 value_template: >-
@@ -128,7 +130,8 @@
                 - service: script.inovelli_led_zwavejs
                 data:
                   area: >
-                    {% set area = namespace(id=[]) %} {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
+                    {% set area = namespace(id=[]) %} 
+		    {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
 		    {{ area.id|lower }}
         default: []
     mode: single
