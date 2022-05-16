@@ -332,7 +332,7 @@ sequence:
         {% if entity is defined and ',' in entity %} 
           {% set entnum = entity.split( '.' ) |count -1 %}
           {% for i in range(0,entnum) %}
-            {% set entlist.entities = entlist.entities + [entity.split( ', ' )[i]|string|replace( ' ', '' ) ] %}
+            {% set entlist.entities = entlist.entities + [entity.split( ',' )[i]|string|replace( ' ', '' ) ] %}
             {% set next = i-1 %}
           {% endfor %}
         {% elif entity is defined and entity[0]|count == 1 %}
