@@ -549,7 +549,7 @@ sequence:
                     {% set bulk_param = repeat.item.device_type + '_effect_bulk' %}
                     {{ parameters[bulk_param] }}
                   value: |
-                    {% if repeat.item == "switch" %}
+                    {% if repeat.item.device_type == "switch" %}
                       {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (switch_effects[effect] * 16777216) }}
                     {% else %}
                       {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (strip_effects[effect] * 16777216) }}
