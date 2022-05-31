@@ -35,7 +35,7 @@
 	
     service: script.inovelli_led_zwavejs
     data:
-      area: 'Family Room' # This can also be an idea ID, if you're using a template.
+      area: 'Family Room' # This can also be an adea ID, if you're using a template.
       duration: Forever
       effect: CHASE
       brightness: 8
