@@ -1,11 +1,9 @@
 alias: Inovelli Dimmer and Switch LEDs ZwaveJS
-description: 'Handles setting the LED colors and notifications on Inovelli "Red" model switches and dimmers through the Zwave JS integration with zwavejs2mqtt 2.4.0 using webhooks.'
+description: 'Handles setting the LED colors and notifications on Inovelli "Red" model switches and dimmers through the Zwave JS integration with Z-Wave JS to MQTT container 6.7.4 (server 9.0.4) and above.'
 ############
+# https://github.com/kschlichter/Home-Assistant-Inovelli-Red-Dimmer-Switch
 # Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
 #   Note that the on/off LZW30-SN switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
-#
-# If LED indicator parameters have been passed, we'll set those before setting the effect. Once the effect clears or the device is used, the indicater will then display the new settings.
-#   This also allows a user to pass just a color or brightness change (perhaps at night).
 #
 # Required for setting the LED indicator
 #   LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
@@ -24,9 +22,9 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 fields:
   area:
     name: Area
-    description: Areas contaiting Inovelli devices.
+    description: Area IDs of areas containing Inovelli devices.  You can find the ID in the URL when you're looking under settings -> area.
     required: no
-    #example:
+    example: b2d34df535b94a4882821dc3685a7aac
     selector:
       area:
         multiple: true
@@ -37,9 +35,9 @@ fields:
 
   device: 
     name: Device
-    description: Inovelli LZW36, LZW30-SN, LZW31-SN device IDs.  Mix and match as you like
+    description: Device IDs of any Inovelli LZW36, LZW30-SN, LZW31-SN devices.  Mix and match as you like.  You can find the ID in the URL when you're looking at the device, or in the zwave_js_notification.
     required: no
-    #example: 
+    example: d27ca3359003d482b3f54e3491bf75de
     selector:
       device: 
         multiple: true
@@ -263,8 +261,8 @@ variables:
   switch_effects:
     "off": 0
     "solid": 1
-    "fast blink": 2
     "chase": 2
+    "fast blink": 2
     "slow blink": 3
     "blink": 3
     "pulse": 4
