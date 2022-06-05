@@ -61,7 +61,7 @@ fields:
 
   LEDcolor:
     name: LED Color (non-effect)
-    description: Sets the color of the LED indicator brightness levels
+    description: Sets the color of the LED indicator, when not running an effect.
     required: no
     example: Blue
     selector:
