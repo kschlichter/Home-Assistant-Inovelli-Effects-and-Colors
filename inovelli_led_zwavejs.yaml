@@ -1,9 +1,11 @@
 alias: Inovelli Dimmer and Switch LEDs ZwaveJS
-description: 'Handles setting the LED colors and notifications on Inovelli "Red" model switches and dimmers through the Zwave JS integration with Z-Wave JS to MQTT container 6.7.4 (server 9.0.4) and above.'
+description: 'Handles setting the LED colors and notifications on Inovelli "Red" model switches and dimmers through the Zwave JS integration with zwavejs2mqtt 2.4.0 using webhooks.'
 ############
-# https://github.com/kschlichter/Home-Assistant-Inovelli-Red-Dimmer-Switch
 # Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
 #   Note that the on/off LZW30-SN switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
+#
+# If LED indicator parameters have been passed, we'll set those before setting the effect. Once the effect clears or the device is used, the indicater will then display the new settings.
+#   This also allows a user to pass just a color or brightness change (perhaps at night).
 #
 # Required for setting the LED indicator
 #   LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
@@ -22,9 +24,9 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 fields:
   area:
     name: Area
-    description: Area IDs of areas containing Inovelli devices.  You can find the ID in the URL when you're looking under settings -> area.
+    description: Area names or IDs contaiting Inovelli devices.
     required: no
-    example: b2d34df535b94a4882821dc3685a7aac
+    example: "['Family Room']"
     selector:
       area:
         multiple: true
@@ -35,9 +37,9 @@ fields:
 
   device: 
     name: Device
-    description: Device IDs of any Inovelli LZW36, LZW30-SN, LZW31-SN devices.  Mix and match as you like.  You can find the ID in the URL when you're looking at the device, or in the zwave_js_notification.
+    description: Device IDs for Inovelli LZW36, LZW30-SN, LZW31-SN device IDs.  Mix and match types as you like
     required: no
-    example: d27ca3359003d482b3f54e3491bf75de
+    example: "['0249abdc634c12cbf6cdc06d7a507495']"
     selector:
       device: 
         multiple: true
@@ -47,7 +49,7 @@ fields:
 
   entity:
     name: Entity
-    description: The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be a comma separated list. Mix and match as you like.
+    description: The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be a comma separated list. Mix and match types as you like.
     required: no
     example: light.office, fan.guest_room
     selector:
@@ -61,7 +63,7 @@ fields:
 
   LEDcolor:
     name: LED Color (non-effect)
-    description: Sets the color of the LED indicator, when not running an effect.
+    description: Sets the color of the LED status, which indicates brightness levels
     required: no
     example: Blue
     selector:
@@ -152,7 +154,7 @@ fields:
 
   effect: 
     name: Effect
-    description: Type of effect. NOTE – Chase is not available on devices of type switch.
+    description: Type of effect. NOTE – Chase is not available on devices of type switch and will blink instead.
     required: no
     example: Pulse
     selector:
@@ -261,8 +263,8 @@ variables:
   switch_effects:
     "off": 0
     "solid": 1
-    "chase": 2
     "fast blink": 2
+    "chase": 2
     "slow blink": 3
     "blink": 3
     "pulse": 4
@@ -316,6 +318,138 @@ variables:
     "combo_fan_ledbrightness": "Fan LED Strip Brightness"
     "combo_fan_ledbrightness_off": "Fan LED Strip Brightness When Off"
 
+##################
+# Working through provided areas, devices, and entities to group them into devices types.
+##################
+  area: '{{ area|default("invalid")|lower }}'
+  device: '{{ device|default("invalid")|lower }}'
+  entity_list: > #Maintaining compatibily with automations written for the older script.
+    {% set entlist = namespace(entities=[]) %}
+    {% if entity is defined and ',' in entity %}
+      {% set entnum = entity.split( '.' ) |count -1 %}
+      {% for i in range(0,entnum) %}
+        {% set entlist.entities = entlist.entities + [entity.split( ',' )[i]|string|trim ] %}
+      {% endfor %}
+    {% elif entity is defined and entity[0]|count == 1 %}
+        {% set entlist.entities = [entity|string|trim] %}
+    {% elif entity is defined and entity[0]|count > 1 %}
+      {% set entlist.entities = entity %}
+    {% endif %}
+    {{ entlist.entities|lower }}
+  area_dimmer: >
+    {% set entities = namespace(areas=[]) %}
+    {% for dev in area %}
+      {% for ent in area_entities(dev) %}
+        {% if is_device_attr(ent, 'model', 'LZW31-SN') and ent.split('.')[0] == 'light' %}
+          {% set entities.areas = entities.areas + [ent | string] %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {{ entities.areas|lower }}
+  device_dimmer: >
+    {% set entities = namespace(devices=[]) %}
+    {% for dev in device %}
+      {% for ent in device_entities(dev) %}
+        {% if is_device_attr(ent, 'model', 'LZW31-SN') and ent.split('.')[0] == 'light' %}
+          {% set entities.devices = entities.devices + [ ent | string] %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {{ entities.devices|lower }}
+  entity_dimmer: >
+    {% set entities = namespace(entities=[]) %}
+    {% for ent in entity_list %}
+      {% if is_device_attr(ent, 'model', 'LZW31-SN') and ent.split('.')[0] == 'light' %}
+        {% set entities.entities = entities.entities + [ ent | string] %}
+      {% endif %}
+    {% endfor %}
+    {{ entities.entities|lower }}
+  area_switch: >
+    {% set entities = namespace(areas=[]) %}
+    {% for dev in area %}
+      {% for ent in area_entities(dev) %}
+        {% if is_device_attr(ent, 'model', 'LZW30-SN') and ent.split('.')[0] == 'switch' %}
+          {% set entities.areas = entities.areas + [ent | string] %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {{ entities.areas|lower }}
+  device_switch: >
+    {% set entities = namespace(devices=[]) %}
+    {% for dev in device %}
+      {% for ent in device_entities(dev) %}
+        {% if is_device_attr(ent, 'model', 'LZW30-SN') and ent.split('.')[0] == 'switch' %}
+          {% set entities.devices = entities.devices + [ ent | string] %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {{ entities.devices|lower }}
+  entity_switch: >
+    {% set entities = namespace(entities=[]) %}
+    {% for ent in entity_list %}
+      {% if is_device_attr(ent, 'model', 'LZW30-SN') and ent.split('.')[0] == 'switch' %}
+        {% set entities.entities = entities.entities + [ ent | string] %}
+      {% endif %}
+    {% endfor %}
+    {{ entities.entities|lower }}
+  area_combo_light: >
+    {% set entities = namespace(areas=[]) %}
+    {% for dev in area %}
+      {% for ent in area_entities(dev) %}
+        {% if is_device_attr(ent, 'model', 'LZW36') and ent.split('.')[0] == 'light' %}
+          {% set entities.areas = entities.areas + [ent | string] %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {{ entities.areas|lower }}
+  device_combo_light: >
+    {% set entities = namespace(devices=[]) %}
+    {% for dev in device %}
+      {% for ent in device_entities(dev) %}
+        {% if is_device_attr(ent, 'model', 'LZW36') and ent.split('.')[0] == 'light' %}
+          {% set entities.devices = entities.devices + [ ent | string] %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {{ entities.devices|lower }}
+  entity_combo_light: >
+    {% set entities = namespace(entities=[]) %}
+    {% for ent in entity_list %}
+      {% if is_device_attr(ent, 'model', 'LZW36') and ent.split('.')[0] == 'light' %}
+        {% set entities.entities = entities.entities + [ ent | string] %}
+      {% endif %}
+    {% endfor %}
+    {{ entities.entities|lower }}
+  area_combo_fan: >
+    {% set entities = namespace(areas=[]) %}
+    {% for dev in area %}
+      {% for ent in area_entities(dev) %}
+        {% if is_device_attr(ent, 'model', 'LZW36') and ent.split('.')[0] == 'fan' %}
+          {% set entities.areas = entities.areas + [ent | string] %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {{ entities.areas|lower }}
+  device_combo_fan: >
+    {% set entities = namespace(devices=[]) %}
+    {% for dev in device %}
+      {% for ent in device_entities(dev) %}
+        {% if is_device_attr(ent, 'model', 'LZW36') and ent.split('.')[0] == 'fan' %}
+          {% set entities.devices = entities.devices + [ ent | string] %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {{ entities.devices|lower }}
+  entity_combo_fan: >
+    {% set entities = namespace(entities=[]) %}
+    {% for ent in entity_list %}
+      {% if is_device_attr(ent, 'model', 'LZW36') and ent.split('.')[0] == 'fan' %}
+        {% set entities.entities = entities.entities + [ ent | string] %}
+      {% endif %}
+    {% endfor %}
+    {{ entities.entities|lower }}
+    
+
 sequence:
 
 ##################
@@ -323,134 +457,6 @@ sequence:
 # Brightness variables are set to 0 so they're skipped in the logic.  To turn the LED off, use "Off".
 ##################
   - variables:
-      area: '{{ area|default("invalid")|lower }}'
-      device: '{{ device|default("invalid")|lower }}'
-      entity: > #Maintaining compatibily with automations written for the older script.
-        {% set entlist = namespace(entities=[]) %}
-        {% if entity is defined and ',' in entity %} 
-          {% set entnum = entity.split( '.' ) |count -1 %}
-          {% for i in range(0,entnum) %}
-            {% set entlist.entities = entlist.entities + [entity.split( ',' )[i]|string|replace( ' ', '' ) ] %}
-            {% set next = i-1 %}
-          {% endfor %}
-        {% elif entity is defined and entity[0]|count == 1 %}
-            {% set entlist.entities = [entity|string|replace( ' ', '' )] %}
-        {% elif entity is defined and entity[0]|count > 1 %}
-          {% set entlist.entities = entity %}
-        {% endif %}
-        {{ entlist.entities|lower }} 
-      area_dimmer: >
-        {% set entities = namespace(areas=[]) %}
-        {% for dev in area %}
-          {% for ent in area_entities(dev) %}
-            {% if device_attr(device_id(ent),'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
-              {% set entities.areas = entities.areas + [ent | string] %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        {{ entities.areas|lower }}
-      device_dimmer: >
-        {% set entities = namespace(devices=[]) %}
-        {% for dev in device %}
-          {% for ent in device_entities(dev) %}
-            {% if device_attr(device_id(ent),'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
-              {% set entities.devices = entities.devices + [ ent | string] %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        {{ entities.devices|lower }}
-      entity_dimmer: >
-        {% set entities = namespace(entities=[]) %}
-        {% for ent in entity %}
-          {% if device_attr(ent,'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
-            {% set entities.entities = entities.entities + [ ent | string] %}
-          {% endif %}
-        {% endfor %}
-        {{ entities.entities|lower }}
-      area_switch: >
-        {% set entities = namespace(areas=[]) %}
-        {% for dev in area %}
-          {% for ent in area_entities(dev) %}
-            {% if device_attr(device_id(ent),'model') == 'LZW30-SN' and ent.split('.')[0] == 'switch' %}
-              {% set entities.areas = entities.areas + [ent | string] %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        {{ entities.areas|lower }}
-      device_switch: >
-        {% set entities = namespace(devices=[]) %}
-        {% for dev in device %}
-          {% for ent in device_entities(dev) %}
-            {% if device_attr(device_id(ent),'model') == 'LZW30-SN' and ent.split('.')[0] == 'switch' %}
-              {% set entities.devices = entities.devices + [ ent | string] %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        {{ entities.devices|lower }}
-      entity_switch: >
-        {% set entities = namespace(entities=[]) %}
-        {% for ent in entity %}
-          {% if device_attr(ent,'model') == 'LZW30-SN' and ent.split('.')[0] == 'switch' %}
-            {% set entities.entities = entities.entities + [ ent | string] %}
-          {% endif %}
-        {% endfor %}
-        {{ entities.entities|lower }}
-      area_combo_light: >
-        {% set entities = namespace(areas=[]) %}
-        {% for dev in area %}
-          {% for ent in area_entities(dev) %}
-            {% if device_attr(device_id(ent),'model') == 'LZW36' and ent.split('.')[0] == 'light' %}
-              {% set entities.areas = entities.areas + [ent | string] %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        {{ entities.areas|lower }}
-      device_combo_light: >
-        {% set entities = namespace(devices=[]) %}
-        {% for dev in device %}
-          {% for ent in device_entities(dev) %}
-            {% if device_attr(device_id(ent),'model') == 'LZW36' and ent.split('.')[0] == 'light' %}
-              {% set entities.devices = entities.devices + [ ent | string] %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        {{ entities.devices|lower }}
-      entity_combo_light: >
-        {% set entities = namespace(entities=[]) %}
-        {% for ent in entity %}
-          {% if device_attr(ent,'model') == 'LZW36' and ent.split('.')[0] == 'light' %}
-            {% set entities.entities = entities.entities + [ ent | string] %}
-          {% endif %}
-        {% endfor %}
-        {{ entities.entities|lower }}
-      area_combo_fan: >
-        {% set entities = namespace(areas=[]) %}
-        {% for dev in area %}
-          {% for ent in area_entities(dev) %}
-            {% if device_attr(device_id(ent),'model') == 'LZW36' and ent.split('.')[0] == 'fan' %}
-              {% set entities.areas = entities.areas + [ent | string] %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        {{ entities.areas|lower }}
-      device_combo_fan: >
-        {% set entities = namespace(devices=[]) %}
-        {% for dev in device %}
-          {% for ent in device_entities(dev) %}
-            {% if device_attr(device_id(ent),'model') == 'LZW36' and ent.split('.')[0] == 'fan' %} 
-              {% set entities.devices = entities.devices + [ ent | string] %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        {{ entities.devices|lower }}
-      entity_combo_fan: >
-        {% set entities = namespace(entities=[]) %}
-        {% for ent in entity %}
-          {% if device_attr(ent,'model') == 'LZW36' and ent.split('.')[0] == 'fan' %} 
-            {% set entities.entities = entities.entities + [ ent | string] %}
-          {% endif %}
-        {% endfor %}
-        {{ entities.entities|lower }}
       color: '{{ color|default("no change")|lower }}'
       duration: '{{ duration|default("invalid")|lower }}'
       brightness: '{{ brightness|default("11")|int }}'
@@ -632,43 +638,3 @@ sequence:
 #                  {% set effect_param = repeat.item.device_type + '_effect_brightness' %}
 #                  {{ parameters[effect_param] }}
 #                value: 0
-
-
-##################
-# This was used in the template editor for debugging, in case I need to play around with it for something else later.
-##################
-#{% set area = namespace(areas=[]) %}
-#{% set area.areas = ['Family Room'] %}
-#{% set entities = namespace(areas=[]) %}
-#{% for dev in area.areas %}
-#  {% for ent in area_entities(dev) %}
-#    {% if device_attr(device_id(ent),'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
-#      {% set entities.areas = entities.areas + [ent | string] %}
-#    {% endif %}
-#  {% endfor %}
-#{% endfor %}
-#area entities:
-#{{ entities.areas }}
-#
-#{% set device = namespace(devices=[]) %}
-#{% set device.devices = ['42a63bef36fb235f4cf301b01b325a35'] %}
-#{% set entities = namespace(devices=[]) %}
-#{% for dev in device.devices %}
-#  {% for ent in device_entities(dev) %}
-#    {% if device_attr(device_id(ent),'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
-#      {% set entities.devices = entities.devices + [ ent | string] %}
-#    {% endif %}
-#  {% endfor %}
-#{% endfor %}
-#device entities:
-#{{ entities.devices }}
-#
-#{% set entities = namespace(entities=[]) %}
-#{% set entities.entities = ['light.office_lights_level'] %}
-#{% for ent in entities.entities %}
-#  {% if device_attr(ent,'model') == 'LZW31-SN' and ent.split('.')[0] == 'light' %}
-#    {% set entities.entities = entities.entities + [ ent | string] %}
-#  {% endif %}
-#{% endfor %}
-#entity entities:
-#{{entities.entities}}
