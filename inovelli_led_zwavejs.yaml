@@ -148,6 +148,7 @@ fields:
           - 45 Minutes
           - 1 Hour
           - 2 Hours
+          - indefinitely
 
   effect: 
     name: Effect
@@ -247,6 +248,11 @@ variables:
     "2 minutes": 62
     "3 minutes": 63
     "4 minutes": 64
+    "5 minutes": 65
+    "6 minutes": 66
+    "7 minutes": 67
+    "8 minutes": 68
+    "9 minutes": 69
     "10 minutes": 70
     "15 minutes": 75
     "30 minutes": 90
