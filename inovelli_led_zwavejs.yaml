@@ -148,6 +148,7 @@ fields:
           - 45 Minutes
           - 1 Hour
           - 2 Hours
+          - indefinitely
 
   effect: 
     name: Effect
