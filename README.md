@@ -45,9 +45,9 @@
     data:
       area: all # Requires Home Assistant 2023.04 or newer.
       duration: Forever
-      LEDcolor: red
-      LEDbrightness: 5
-      LEDbrightness_off: 1
+      effect: 'Fast Blink'
+      brightness: 8
+      color: 'light pink'
       
     service: script.inovelli_led_zwavejs
     data:
