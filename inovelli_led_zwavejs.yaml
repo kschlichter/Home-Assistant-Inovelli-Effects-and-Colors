@@ -21,16 +21,16 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 fields:
   area:
     name: Area
-    description: Area names or IDs contaiting Inovelli devices.
+    description: Area names or IDs containing Inovelli devices.
     required: no
     example: "['Family Room']"
     selector:
       area:
         multiple: true
         device: 
-          manufacturer: Inovelli
-          integration: zwave_js
-          #model: LZW36, LZW30-SN, LZW31-SN 
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW36, LZW30-SN, LZW31-SN 
 
   device: 
     name: Device
@@ -40,9 +40,16 @@ fields:
     selector:
       device: 
         multiple: true
-        manufacturer: Inovelli  
-        integration: zwave_js
-        #model: LZW36, LZW30-SN, LZW31-SN 
+        filter:
+          - integration: zwave_js
+            manufacturer: Inovelli  
+            model: LZW36
+          - integration: zwave_js
+            manufacturer: Inovelli  
+            model: LZW30-SN
+          - integration: zwave_js
+            manufacturer: Inovelli  
+            model: LZW31-SN 
 
   entity:
     name: Entity
@@ -52,11 +59,13 @@ fields:
     selector:
       entity:
         multiple: true
-        integration: zwave_js 
-        domain: 
-          - fan 
-          - light
-          - switch
+        filter:
+          - integration: zwave_js 
+            domain: 
+              - fan 
+              - light
+              - switch
+            #model: LZW36 # Device model should really be an option for entities.  
 
   LEDcolor:
     name: LED Color (non-effect)
@@ -328,22 +337,24 @@ variables:
   device: '{{ device|default("invalid")|lower }}'
   entity: '{{ entity|default("invalid")|lower }}'
   area_dimmer: >
-    {% set areas = namespace(areas=[]) %}
+    {% set area_array = namespace(area_list=[]) %}
     {% set dimmer = namespace(entities=[]) %}
     {% if area != 'invalid' %}
+      {% if area == 'all' %}
+        {% set area_array.area_list = areas() %}
       {# Converting to a list#}
-      {% if ',' in area %}
-        {% set areanum = area.split( ',' ) | count %}
+        {% elif ',' in area %}
+          {% set areanum = area.split( ',' ) | count %}
           {% for i in range(0,areanum) %}
-            {% set areas.areas = areas.areas + [area.split( ',' )[i]|string|trim ] %}
+            {% set area_array.area_list = area_array.area_list + [area.split( ',' )[i]|string|trim ] %}
           {% endfor %}
-        {% elif area[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
-          {% set areas.areas = areas.areas + [area|string|trim] %}
+        {% elif area[0]|count == 1 %} {# if the first item in the list has only a single character, it isn't a valid list #}
+          {% set area_array.area_list = area_array.area_list + [area|string|trim] %}
         {% else %}
-          {% set areas.areas = area %}
+          {% set area_array.area_list = area %}
       {% endif %}
       {# Detecting dimmers#}
-      {% for area in areas.areas %}
+      {% for area in area_array.area_list %}
         {% for ent in area_entities(area) %}
           {% if is_device_attr(ent,'model','LZW31-SN') and ent.split('.')[0] == 'light' %}
             {% set dimmer.entities = dimmer.entities + [ent|string|trim] %}
@@ -359,10 +370,10 @@ variables:
       {# Converting to a list#}
       {% if ',' in device %}
         {% set devicenum = device.split( ',' ) | count %}
-          {% for i in range(0,devicenum) %}
-            {% set devices.devices = devices.devices + [device.split( ',' )[i]|string|trim ] %}
-          {% endfor %}
-        {% elif device[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
+        {% for i in range(0,devicenum) %}
+          {% set devices.devices = devices.devices + [device.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
+        {% elif device[0]|count == 1 %} {# if the first item in the list has only a single character, it isn't be a valid list #}
           {% set devices.devices = devices.devices + [device|string|trim] %}
         {% else %}
           {% set devices.devices = device %}
@@ -384,10 +395,10 @@ variables:
       {# Converting to a list#}
       {% if ',' in entity %}
         {% set entitynum = entity.split( ',' ) | count %}
-          {% for i in range(0,entitynum) %}
-            {% set entities.entities = entities.entities + [entity.split( ',' )[i]|string|trim ] %}
-          {% endfor %}
-        {% elif entity[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
+        {% for i in range(0,entitynum) %}
+          {% set entities.entities = entities.entities + [entity.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
+        {% elif entity[0]|count == 1 %} {# if the first item in the list has only a single character, it isn't be a valid list #}
           {% set entities.entities = entities.entities + [entity|string|trim] %}
         {% else %}
           {% set entities.entities = entity %}
@@ -402,22 +413,24 @@ variables:
     {{ dimmer.entities|lower }}
 
   area_switch: >
-    {% set areas = namespace(areas=[]) %}
+    {% set area_array = namespace(area_list=[]) %}
     {% set switch = namespace(entities=[]) %}
     {% if area != 'invalid' %}
+      {% if area == 'all' %}
+        {% set area_array.area_list = areas() %}
       {# Converting to a list#}
-      {% if ',' in area %}
-        {% set areanum = area.split( ',' ) | count %}
+        {% elif ',' in area %}
+          {% set areanum = area.split( ',' ) | count %}
           {% for i in range(0,areanum) %}
-            {% set areas.areas = areas.areas + [area.split( ',' )[i]|string|trim ] %}
+            {% set area_array.area_list = area_array.area_list + [area.split( ',' )[i]|string|trim ] %}
           {% endfor %}
         {% elif area[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
-          {% set areas.areas = areas.areas + [area|string|trim] %}
+          {% set area_array.area_list = area_array.area_list + [area|string|trim] %}
         {% else %}
-          {% set areas.areas = area %}
+          {% set area_array.area_list = area %}
       {% endif %}
       {# Detecting switches#}
-      {% for area in areas.areas %}
+      {% for area in area_array.area_list %}
         {% for ent in area_entities(area) %}
           {% if is_device_attr(ent,'model','LZW30-SN') and ent.split('.')[0] == 'switch' %}
             {% set switch.entities = switch.entities + [ent|string|trim] %}
@@ -433,9 +446,9 @@ variables:
       {# Converting to a list#}
       {% if ',' in device %}
         {% set devicenum = device.split( ',' ) | count %}
-          {% for i in range(0,devicenum) %}
-            {% set devices.devices = devices.devices + [device.split( ',' )[i]|string|trim ] %}
-          {% endfor %}
+        {% for i in range(0,devicenum) %}
+          {% set devices.devices = devices.devices + [device.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
         {% elif device[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
           {% set devices.devices = devices.devices + [device|string|trim] %}
         {% else %}
@@ -458,9 +471,9 @@ variables:
       {# Converting to a list#}
       {% if ',' in entity %}
         {% set entitynum = entity.split( ',' ) | count %}
-          {% for i in range(0,entitynum) %}
-            {% set entities.entities = entities.entities + [entity.split( ',' )[i]|string|trim ] %}
-          {% endfor %}
+        {% for i in range(0,entitynum) %}
+          {% set entities.entities = entities.entities + [entity.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
         {% elif entity[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
           {% set entities.entities = entities.entities + [entity|string|trim] %}
         {% else %}
@@ -476,22 +489,24 @@ variables:
     {{ switch.entities|lower }}
 
   area_combo_light: >
-    {% set areas = namespace(areas=[]) %}
+    {% set area_array = namespace(area_list=[]) %}
     {% set combo_light = namespace(entities=[]) %}
     {% if area != 'invalid' %}
+      {% if area == 'all' %}
+        {% set area_array.area_list = areas() %}
       {# Converting to a list#}
-      {% if ',' in area %}
-        {% set areanum = area.split( ',' ) | count %}
+        {% elif ',' in area %}
+          {% set areanum = area.split( ',' ) | count %}
           {% for i in range(0,areanum) %}
-            {% set areas.areas = areas.areas + [area.split( ',' )[i]|string|trim ] %}
+            {% set area_array.area_list = area_array.area_list + [area.split( ',' )[i]|string|trim ] %}
           {% endfor %}
         {% elif area[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
-          {% set areas.areas = areas.areas + [area|string|trim] %}
+          {% set area_array.area_list = area_array.area_list + [area|string|trim] %}
         {% else %}
-          {% set areas.areas = area %}
+          {% set area_array.area_list = area %}
       {% endif %}
       {# Detecting combo_lights#}
-      {% for area in areas.areas %}
+      {% for area in area_array.area_list %}
         {% for ent in area_entities(area) %}
           {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'light' %}
             {% set combo_light.entities = combo_light.entities + [ent|string|trim] %}
@@ -507,9 +522,9 @@ variables:
       {# Converting to a list#}
       {% if ',' in device %}
         {% set devicenum = device.split( ',' ) | count %}
-          {% for i in range(0,devicenum) %}
-            {% set devices.devices = devices.devices + [device.split( ',' )[i]|string|trim ] %}
-          {% endfor %}
+        {% for i in range(0,devicenum) %}
+          {% set devices.devices = devices.devices + [device.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
         {% elif device[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
           {% set devices.devices = devices.devices + [device|string|trim] %}
         {% else %}
@@ -532,9 +547,9 @@ variables:
       {# Converting to a list#}
       {% if ',' in entity %}
         {% set entitynum = entity.split( ',' ) | count %}
-          {% for i in range(0,entitynum) %}
-            {% set entities.entities = entities.entities + [entity.split( ',' )[i]|string|trim ] %}
-          {% endfor %}
+        {% for i in range(0,entitynum) %}
+          {% set entities.entities = entities.entities + [entity.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
         {% elif entity[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
           {% set entities.entities = entities.entities + [entity|string|trim] %}
         {% else %}
@@ -550,22 +565,24 @@ variables:
     {{ combo_light.entities|lower }}
 
   area_combo_fan: >
-    {% set areas = namespace(areas=[]) %}
+    {% set area_array = namespace(area_list=[]) %}
     {% set combo_fan = namespace(entities=[]) %}
     {% if area != 'invalid' %}
+      {% if area == 'all' %}
+        {% set area_array.area_list = areas() %}
       {# Converting to a list#}
-      {% if ',' in area %}
-        {% set areanum = area.split( ',' ) | count %}
+        {% elif ',' in area %}
+          {% set areanum = area.split( ',' ) | count %}
           {% for i in range(0,areanum) %}
-            {% set areas.areas = areas.areas + [area.split( ',' )[i]|string|trim ] %}
+            {% set area_array.area_list = area_array.area_list + [area.split( ',' )[i]|string|trim ] %}
           {% endfor %}
         {% elif area[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
-          {% set areas.areas = areas.areas + [area|string|trim] %}
+          {% set area_array.area_list = area_array.area_list + [area|string|trim] %}
         {% else %}
-          {% set areas.areas = area %}
+          {% set area_array.area_list = area %}
       {% endif %}
       {# Detecting combo_fans#}
-      {% for area in areas.areas %}
+      {% for area in area_array.area_list %}
         {% for ent in area_entities(area) %}
           {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'fan' %}
             {% set combo_fan.entities = combo_fan.entities + [ent|string|trim] %}
@@ -581,9 +598,9 @@ variables:
       {# Converting to a list#}
       {% if ',' in device %}
         {% set devicenum = device.split( ',' ) | count %}
-          {% for i in range(0,devicenum) %}
-            {% set devices.devices = devices.devices + [device.split( ',' )[i]|string|trim ] %}
-          {% endfor %}
+        {% for i in range(0,devicenum) %}
+          {% set devices.devices = devices.devices + [device.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
         {% elif device[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
           {% set devices.devices = devices.devices + [device|string|trim] %}
         {% else %}
@@ -606,9 +623,9 @@ variables:
       {# Converting to a list#}
       {% if ',' in entity %}
         {% set entitynum = entity.split( ',' ) | count %}
-          {% for i in range(0,entitynum) %}
-            {% set entities.entities = entities.entities + [entity.split( ',' )[i]|string|trim ] %}
-          {% endfor %}
+        {% for i in range(0,entitynum) %}
+          {% set entities.entities = entities.entities + [entity.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
         {% elif entity[0]|count == 1 %} {# if the first item in the list has only a single character, it can't be a valid entity#}
           {% set entities.entities = entities.entities + [entity|string|trim] %}
         {% else %}
