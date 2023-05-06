@@ -32,6 +32,20 @@ fields:
             manufacturer: Inovelli
             model: LZW36, LZW30-SN, LZW31-SN
 
+  group:
+    name: Group
+    description: Group IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN devices.  Mix and match types as you like
+    required: no
+    example: "['0249abdc634c12cbf6cdc06d7a507495']"
+    selector:
+      entity:
+        multiple: true
+        filter:
+          - domain:
+              - fan
+              - light
+              - switch
+
   device:
     name: Device
     description: Device IDs for Inovelli LZW36, LZW30-SN, LZW31-SN device IDs.  Mix and match types as you like
@@ -176,8 +190,8 @@ fields:
           - Pulse
 
   brightness:
-    name: Effect Brightness Sets the brightness of the LED's effect.  0 means off
-    description: How bright the LED effect will be
+    name: Effect Brightness
+    description: Sets the brightness of the LED's effect.  0 means off
     required: no
     example: 8
     selector:
@@ -334,8 +348,10 @@ variables:
 # Working through provided areas, devices, and entities to group them into devices types.
 ##################
   area: '{{ area|default("invalid")|lower }}'
+  group: '{{ group|default("invalid")|lower }}'
   device: '{{ device|default("invalid")|lower }}'
   entity: '{{ entity|default("invalid")|lower }}'
+
   area_dimmer: >
     {% set area_array = namespace(area_list=[]) %}
     {% set dimmer = namespace(entities=[]) %}
@@ -356,6 +372,32 @@ variables:
       {# Detecting dimmers#}
       {% for area in area_array.area_list %}
         {% for ent in area_entities(area) %}
+          {% if is_device_attr(ent,'model','LZW31-SN') and ent.split('.')[0] == 'light' %}
+            {% set dimmer.entities = dimmer.entities + [ent|string|trim] %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+    {{ dimmer.entities|lower }}
+  group_dimmer: >
+    {% set group_array = namespace(group_list=[]) %}
+    {% set dimmer = namespace(entities=[]) %}
+    {% if group != 'invalid' %}
+      {# Converting to a list#}
+      {% if ',' in group %}
+        {% set groupnum = group.split( ',' ) | count %}
+        {% for i in range(0,groupnum) %}
+          {% set group_array.group_list = group_array.group_list + [group.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
+      {% elif group[0]|count == 1 %} {# if the first item in the list has only a single character, it isn't a valid list #}
+        {% set group_array.group_list = group_array.group_list + [group|string|trim] %}
+      {% else %}
+        {% set group_array.group_list = group %}
+      {% endif %}
+      {# Detecting dimmers#}
+      {% for group in group_array.group_list %}
+        {% for entity in expand(group) %}
+          {% set ent = entity.entity_id %}
           {% if is_device_attr(ent,'model','LZW31-SN') and ent.split('.')[0] == 'light' %}
             {% set dimmer.entities = dimmer.entities + [ent|string|trim] %}
           {% endif %}
@@ -439,6 +481,32 @@ variables:
       {% endfor %}
     {% endif %}
     {{ switch.entities|lower }}
+  group_switch: >
+    {% set group_array = namespace(group_list=[]) %}
+    {% set dimmer = namespace(entities=[]) %}
+    {% if group != 'invalid' %}
+      {# Converting to a list#}
+      {% if ',' in group %}
+        {% set groupnum = group.split( ',' ) | count %}
+        {% for i in range(0,groupnum) %}
+          {% set group_array.group_list = group_array.group_list + [group.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
+      {% elif group[0]|count == 1 %} {# if the first item in the list has only a single character, it isn't a valid list #}
+        {% set group_array.group_list = group_array.group_list + [group|string|trim] %}
+      {% else %}
+        {% set group_array.group_list = group %}
+      {% endif %}
+      {# Detecting dimmers#}
+      {% for group in group_array.group_list %}
+        {% for entity in expand(group) %}
+          {% set ent = entity.entity_id %}
+          {% if is_device_attr(ent,'model','LZW30-SN') and ent.split('.')[0] == 'light' %}
+            {% set dimmer.entities = dimmer.entities + [ent|string|trim] %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+    {{ dimmer.entities|lower }}
   device_switch: >
     {% set devices = namespace(devices=[]) %}
     {% set switch = namespace(entities=[]) %}
@@ -515,6 +583,32 @@ variables:
       {% endfor %}
     {% endif %}
     {{ combo_light.entities|lower }}
+  group_combo_light: >
+    {% set group_array = namespace(group_list=[]) %}
+    {% set dimmer = namespace(entities=[]) %}
+    {% if group != 'invalid' %}
+      {# Converting to a list#}
+      {% if ',' in group %}
+        {% set groupnum = group.split( ',' ) | count %}
+        {% for i in range(0,groupnum) %}
+          {% set group_array.group_list = group_array.group_list + [group.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
+      {% elif group[0]|count == 1 %} {# if the first item in the list has only a single character, it isn't a valid list #}
+        {% set group_array.group_list = group_array.group_list + [group|string|trim] %}
+      {% else %}
+        {% set group_array.group_list = group %}
+      {% endif %}
+      {# Detecting dimmers#}
+      {% for group in group_array.group_list %}
+        {% for entity in expand(group) %}
+          {% set ent = entity.entity_id %}
+          {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'light' %}
+            {% set dimmer.entities = dimmer.entities + [ent|string|trim] %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+    {{ dimmer.entities|lower }}
   device_combo_light: >
     {% set devices = namespace(devices=[]) %}
     {% set combo_light = namespace(entities=[]) %}
@@ -591,6 +685,32 @@ variables:
       {% endfor %}
     {% endif %}
     {{ combo_fan.entities|lower }}
+  group_combo_fan: >
+    {% set group_array = namespace(group_list=[]) %}
+    {% set dimmer = namespace(entities=[]) %}
+    {% if group != 'invalid' %}
+      {# Converting to a list#}
+      {% if ',' in group %}
+        {% set groupnum = group.split( ',' ) | count %}
+        {% for i in range(0,groupnum) %}
+          {% set group_array.group_list = group_array.group_list + [group.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
+      {% elif group[0]|count == 1 %} {# if the first item in the list has only a single character, it isn't a valid list #}
+        {% set group_array.group_list = group_array.group_list + [group|string|trim] %}
+      {% else %}
+        {% set group_array.group_list = group %}
+      {% endif %}
+      {# Detecting dimmers#}
+      {% for group in group_array.group_list %}
+        {% for entity in expand(group) %}
+          {% set ent = entity.entity_id %}
+          {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'light' %}
+            {% set dimmer.entities = dimmer.entities + [ent|string|trim] %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+    {{ dimmer.entities|lower }}
   device_combo_fan: >
     {% set devices = namespace(devices=[]) %}
     {% set combo_fan = namespace(entities=[]) %}
@@ -644,7 +764,7 @@ variables:
 sequence:
 
 ##################
-# Cleaning up inputs; using lower case since it's able to handle capitol letters in the middle of mistyped and camelcase words like "LightPink".
+# Cleaning up inputs; using lower case since it's able to handle capital letters in the middle of mistyped and camelcase words like "LightPink".
 # Brightness variables are set to 0 so they're skipped in the logic.  To turn the LED off, use "Off".
 ##################
   - variables:
@@ -659,13 +779,13 @@ sequence:
   - repeat:
       for_each:
         - device_type: dimmer
-          entities: '{{ area_dimmer + device_dimmer + entity_dimmer }}'
+          entities: '{{ area_dimmer + group_dimmer + device_dimmer + entity_dimmer }}'
         - device_type: switch
-          entities: '{{ area_switch + device_switch + entity_switch }}'
+          entities: '{{ area_switch + group_switch + device_switch + entity_switch }}'
         - device_type: combo_light
-          entities: '{{ area_combo_light + device_combo_light + entity_combo_light }}'
+          entities: '{{ area_combo_light + group_combo_light + device_combo_light + entity_combo_light }}'
         - device_type: combo_fan
-          entities: '{{ area_combo_fan + device_combo_fan + entity_combo_fan }}'
+          entities: '{{ area_combo_fan + group_combo_fan + device_combo_fan + entity_combo_fan }}'
       sequence:
 
 
@@ -737,6 +857,10 @@ sequence:
                  duration != "invalid" and
                  brightness != 11 }}
             sequence:
+              - service: notify.mobile_app_phone_scott
+                data:
+                  message: '{{ repeat.item.entities }}'
+
               - service: zwave_js.bulk_set_partial_config_parameters
                 data:
                   entity_id: '{{ repeat.item.entities }}'
