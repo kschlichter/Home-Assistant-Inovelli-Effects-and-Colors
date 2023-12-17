@@ -1,7 +1,7 @@
-alias: Inovelli Dimmer and Switch LEDs
+alias: Inovelli Zwave Dimmer and Switch LEDs
 description: 'Handles setting the switch and dimmer LED colors and notifications'
 ############
-# To make this script work with the new open z-wave 1.6, the "service" in each step needs to be changed. 
+# To make this script work with the new open z-wave 1.6, the "service" in each step needs to be changed.
 # I'd like to automagically detect if 1.4 or 1.6 is being used and then change to service_templates, but I'm not sure how to do that without requiring a sensor or adding yet another parameter that needs to be passed.
 # It's probably easier to simply change the service when you move to version 1.6 since there are only four changes to make.
 # z-wave 1.6: ozw.set_config_parameter
@@ -22,8 +22,8 @@ sequence:
           24
         {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
           25
-        {% else %} 
-          8 
+        {% else %}
+          8
         {% endif %}
       size: 4
       value: >
@@ -36,7 +36,7 @@ sequence:
           {% set level = level|default(0) %}{# 1-10 #}
           {% set duration = duration|default("Off") %}
           {% set effect = effect|default("Off") %}
-    
+
           {# Let's make things easy by using descriptive text instead of hard to understand numbers. #}
           {% set colors = {
             "Off": 0,
@@ -109,7 +109,7 @@ sequence:
           {{ colors[color|title] + (level * 256) + (durations[duration|title] * 65536) + (effects[effect|title] * 16777216) }}
         {% endif %}
 
-  # If an effect is being programmed setting the LED indicator will immediately override it.  These conditions ensure the necessary data is present, and an effect hasn't been set. 
+  # If an effect is being programmed setting the LED indicator will immediately override it.  These conditions ensure the necessary data is present, and an effect hasn't been set.
   - condition: and
     conditions:
       - condition: template
@@ -130,8 +130,8 @@ sequence:
           18
         {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
           20
-        {% else %} 
-          5 
+        {% else %}
+          5
         {% endif %}
       size: 2
       value: >
@@ -162,8 +162,8 @@ sequence:
           19
         {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
           21
-        {% else %} 
-          6 
+        {% else %}
+          6
         {% endif %}
       size: 1
       value: >
@@ -188,8 +188,8 @@ sequence:
           22
         {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
           23
-        {% else %} 
-          7 
+        {% else %}
+          7
         {% endif %}
       size: 1
       value: >
