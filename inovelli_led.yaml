@@ -336,6 +336,7 @@ variables:
 
   # the red dimmer has new effects, so storing them here for reference
   # but the above list is what is used in this script
+  # TODO update script to handle these new effects and map the old devices
   red_dimmer_switch_effects_real:
     "off": 0
     solid: 1
