@@ -42,10 +42,10 @@ fields:
         multiple: true
         filter:
           - domain:
+              - group
               - fan
               - light
               - switch
-              - group
 
   device:
     name: Device
@@ -484,7 +484,7 @@ variables:
     {{ switch.entities|lower }}
   group_switch: >
     {% set group_array = namespace(group_list=[]) %}
-    {% set dimmer = namespace(entities=[]) %}
+    {% set switch = namespace(entities=[]) %}
     {% if group != 'invalid' %}
       {# Converting to a list#}
       {% if ',' in group %}
@@ -497,22 +497,22 @@ variables:
       {% else %}
         {% set group_array.group_list = group %}
       {% endif %}
-      {# Detecting dimmers#}
+      {# Detecting switches #}
       {% for group in group_array.group_list %}
         {% for entity in expand(group) %}
           {% set ent = entity.entity_id %}
-          {% if is_device_attr(ent,'model','LZW30-SN') and ent.split('.')[0] == 'light' %}
-            {% set dimmer.entities = dimmer.entities + [ent|string|trim] %}
+          {% if is_device_attr(ent,'model','LZW30-SN') and ent.split('.')[0] == 'switch' %}
+            {% set switch.entities = switch.entities + [ent|string|trim] %}
           {% endif %}
         {% endfor %}
       {% endfor %}
     {% endif %}
-    {{ dimmer.entities|lower }}
+    {{ switch.entities|lower }}
   device_switch: >
     {% set devices = namespace(devices=[]) %}
     {% set switch = namespace(entities=[]) %}
     {% if device != 'invalid' %}
-      {# Converting to a list#}
+      {# Converting to a list #}
       {% if ',' in device %}
         {% set devicenum = device.split( ',' ) | count %}
         {% for i in range(0,devicenum) %}
@@ -523,7 +523,7 @@ variables:
         {% else %}
           {% set devices.devices = device %}
       {% endif %}
-      {# Detecting switches#}
+      {# Detecting switches #}
       {% for device in devices.devices %}
         {% for ent in device_entities(device) %}
           {% if is_device_attr(ent,'model','LZW30-SN') and ent.split('.')[0] == 'switch' %}
@@ -537,7 +537,7 @@ variables:
     {% set entities = namespace(entities=[]) %}
     {% set switch = namespace(entities=[]) %}
     {% if entity != 'invalid' %}
-      {# Converting to a list#}
+      {# Converting to a list #}
       {% if ',' in entity %}
         {% set entitynum = entity.split( ',' ) | count %}
         {% for i in range(0,entitynum) %}
@@ -548,7 +548,7 @@ variables:
         {% else %}
           {% set entities.entities = entity %}
       {% endif %}
-      {# Detecting switches#}
+      {# Detecting switches #}
       {% for ent in entities.entities %}
         {% if is_device_attr(ent,'model','LZW30-SN') and ent.split('.')[0] == 'switch' %}
           {% set switch.entities = switch.entities + [ent|string|trim] %}
@@ -563,7 +563,7 @@ variables:
     {% if area != 'invalid' %}
       {% if area == 'all' %}
         {% set area_array.area_list = areas() %}
-      {# Converting to a list#}
+      {# Converting to a list #}
         {% elif ',' in area %}
           {% set areanum = area.split( ',' ) | count %}
           {% for i in range(0,areanum) %}
@@ -574,7 +574,7 @@ variables:
         {% else %}
           {% set area_array.area_list = area %}
       {% endif %}
-      {# Detecting combo_lights#}
+      {# Detecting combo_lights #}
       {% for area in area_array.area_list %}
         {% for ent in area_entities(area) %}
           {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'light' %}
@@ -588,7 +588,7 @@ variables:
     {% set group_array = namespace(group_list=[]) %}
     {% set dimmer = namespace(entities=[]) %}
     {% if group != 'invalid' %}
-      {# Converting to a list#}
+      {# Converting to a list #}
       {% if ',' in group %}
         {% set groupnum = group.split( ',' ) | count %}
         {% for i in range(0,groupnum) %}
@@ -599,7 +599,7 @@ variables:
       {% else %}
         {% set group_array.group_list = group %}
       {% endif %}
-      {# Detecting dimmers#}
+      {# Detecting dimmers #}
       {% for group in group_array.group_list %}
         {% for entity in expand(group) %}
           {% set ent = entity.entity_id %}
@@ -614,7 +614,7 @@ variables:
     {% set devices = namespace(devices=[]) %}
     {% set combo_light = namespace(entities=[]) %}
     {% if device != 'invalid' %}
-      {# Converting to a list#}
+      {# Converting to a list #}
       {% if ',' in device %}
         {% set devicenum = device.split( ',' ) | count %}
         {% for i in range(0,devicenum) %}
@@ -625,7 +625,7 @@ variables:
         {% else %}
           {% set devices.devices = device %}
       {% endif %}
-      {# Detecting combo_lights#}
+      {# Detecting combo_lights #}
       {% for device in devices.devices %}
         {% for ent in device_entities(device) %}
           {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'light' %}
@@ -639,7 +639,7 @@ variables:
     {% set entities = namespace(entities=[]) %}
     {% set combo_light = namespace(entities=[]) %}
     {% if entity != 'invalid' %}
-      {# Converting to a list#}
+      {# Converting to a list #}
       {% if ',' in entity %}
         {% set entitynum = entity.split( ',' ) | count %}
         {% for i in range(0,entitynum) %}
@@ -650,7 +650,7 @@ variables:
         {% else %}
           {% set entities.entities = entity %}
       {% endif %}
-      {# Detecting combo_lights#}
+      {# Detecting combo_lights #}
       {% for ent in entities.entities %}
         {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'light' %}
           {% set combo_light.entities = combo_light.entities + [ent|string|trim] %}
@@ -665,7 +665,7 @@ variables:
     {% if area != 'invalid' %}
       {% if area == 'all' %}
         {% set area_array.area_list = areas() %}
-      {# Converting to a list#}
+      {# Converting to a list #}
         {% elif ',' in area %}
           {% set areanum = area.split( ',' ) | count %}
           {% for i in range(0,areanum) %}
@@ -676,7 +676,7 @@ variables:
         {% else %}
           {% set area_array.area_list = area %}
       {% endif %}
-      {# Detecting combo_fans#}
+      {# Detecting combo_fans #}
       {% for area in area_array.area_list %}
         {% for ent in area_entities(area) %}
           {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'fan' %}
@@ -688,9 +688,9 @@ variables:
     {{ combo_fan.entities|lower }}
   group_combo_fan: >
     {% set group_array = namespace(group_list=[]) %}
-    {% set dimmer = namespace(entities=[]) %}
+    {% set combo_fan = namespace(entities=[]) %}
     {% if group != 'invalid' %}
-      {# Converting to a list#}
+      {# Converting to a list #}
       {% if ',' in group %}
         {% set groupnum = group.split( ',' ) | count %}
         {% for i in range(0,groupnum) %}
@@ -701,17 +701,17 @@ variables:
       {% else %}
         {% set group_array.group_list = group %}
       {% endif %}
-      {# Detecting dimmers#}
+      {# Detecting combo_fans #}
       {% for group in group_array.group_list %}
         {% for entity in expand(group) %}
           {% set ent = entity.entity_id %}
-          {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'light' %}
-            {% set dimmer.entities = dimmer.entities + [ent|string|trim] %}
+          {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'fan' %}
+            {% set combo_fan.entities = combo_fan.entities + [ent|string|trim] %}
           {% endif %}
         {% endfor %}
       {% endfor %}
     {% endif %}
-    {{ dimmer.entities|lower }}
+    {{ combo_fan.entities|lower }}
   device_combo_fan: >
     {% set devices = namespace(devices=[]) %}
     {% set combo_fan = namespace(entities=[]) %}
