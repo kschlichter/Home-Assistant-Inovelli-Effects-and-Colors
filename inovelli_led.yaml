@@ -49,6 +49,7 @@ fields:
         multiple: true
         filter:
           - domain:
+              - group
               - fan
               - light
               - switch
