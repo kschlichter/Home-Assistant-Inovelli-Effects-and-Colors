@@ -858,10 +858,6 @@ sequence:
                  duration != "invalid" and
                  brightness != 11 }}
             sequence:
-              - service: notify.mobile_app_phone_scott
-                data:
-                  message: '{{ repeat.item.entities }}'
-
               - service: zwave_js.bulk_set_partial_config_parameters
                 data:
                   entity_id: '{{ repeat.item.entities }}'
