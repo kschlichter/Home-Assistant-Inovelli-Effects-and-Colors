@@ -17,7 +17,7 @@ alias: Inovelli LED Settings and Effects
 ############
 description: >-
   Handles setting the LED colors and notifications on Inovelli "Red" and "Blue"
-  model switches and dimmers through the Zwave JS and zigbee2mqtt integrations
+  model switches and dimmers through the Zwave JS and zigbee2mqtt integrations.
 mode: parallel
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches
 
@@ -40,10 +40,10 @@ fields:
   group:
     name: Group
     description: >-
-      Group IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN,
-      VZW31-SN devices.  Mix and match types as you like
+      Group names IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN,
+      VZW31-SN devices.  Mix and match types as you like.
     required: false
-    example: "['0249abdc634c12cbf6cdc06d7a507495']"
+    example: "['group.lights_and_switches', '0249abdc634c12cbf6cdc06d7a507495']"
     selector:
       entity:
         multiple: true
@@ -57,7 +57,7 @@ fields:
     name: Device
     description: >-
       Device IDs for Inovelli LZW36, LZW30-SN, LZW31-SN, VZM31-SN, VZW31-SN
-      device IDs.  Mix and match types as you like
+      device IDs.  Mix and match types as you like.
     required: false
     example: "['0249abdc634c12cbf6cdc06d7a507495']"
     selector:
@@ -98,7 +98,7 @@ fields:
 
   LEDcolor:
     name: LED Color (non-effect)
-    description: Sets the color of the LED status, which indicates brightness levels
+    description: Sets the color of the LED status, which indicates brightness levels.
     required: false
     example: Blue
     selector:
@@ -119,7 +119,7 @@ fields:
           - White
   LEDbrightness:
     name: LED Brightness On (non-effect)
-    description: Sets the brightness of the LED status when on. 0 means off
+    description: Sets the brightness of the LED status when on. 0 means off.
     required: false
     example: "6"
     selector:
@@ -130,7 +130,7 @@ fields:
         mode: slider
   LEDbrightness_off:
     name: LED Brightness When Off (non-effect)
-    description: Sets the brightness of the LED status when off. 0 means off
+    description: Sets the brightness of the LED status when off. 0 means off.
     required: false
     example: "2"
     selector:
@@ -201,7 +201,7 @@ fields:
           - Pulse
   brightness:
     name: Effect Brightness
-    description: Sets the brightness of the LED's effect.  0 means off
+    description: Sets the brightness of the LED's effect.  0 means off.
     required: false
     example: "8"
     selector:
