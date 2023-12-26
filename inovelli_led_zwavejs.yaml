@@ -1,4 +1,4 @@
-alias: Inovelli LED Settings and Effects (Zwave)
+alias: Inovelli Dimmer and Switch LEDs ZwaveJS
 description: 'Handles setting the LED colors and notifications on Inovelli "Red" model switches and dimmers through the Zwave JS integration with zwavejs2mqtt 2.4.0 using webhooks.'
 ############
 # Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
@@ -176,7 +176,7 @@ fields:
 
   effect:
     name: Effect
-    description: Type of effect
+    description: Type of effect. NOTE – Chase is not available on devices of type switch and will blink instead.
     required: no
     example: Pulse
     selector:
