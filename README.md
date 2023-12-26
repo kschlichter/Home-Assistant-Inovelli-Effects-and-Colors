@@ -49,6 +49,13 @@
       brightness: 8
       color: 'light pink'
       
+    *** Group with light.* switch.* and fan.* entities ***  
+    service: script.inovelli_led
+    data:
+      group:
+        - group.test_lights
+      LEDcolor: Green  
+      
     service: script.inovelli_led_zwavejs
     data:
       entity: fan.front_porch
