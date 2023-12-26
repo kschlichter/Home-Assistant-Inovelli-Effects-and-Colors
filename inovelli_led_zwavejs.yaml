@@ -34,9 +34,9 @@ fields:
 
   group:
     name: Group
-    description: Group IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN devices.  Mix and match types as you like
+    description: Group names or IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN devices.  Mix and match types as you like
     required: no
-    example: "['0249abdc634c12cbf6cdc06d7a507495']"
+    example: "['group.lights_and_switches', '0249abdc634c12cbf6cdc06d7a507495']"
     selector:
       entity:
         multiple: true
@@ -45,6 +45,7 @@ fields:
               - fan
               - light
               - switch
+              - group
 
   device:
     name: Device
