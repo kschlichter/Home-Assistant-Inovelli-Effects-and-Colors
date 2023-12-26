@@ -1,0 +1,202 @@
+alias: Inovelli Zwave Dimmer and Switch LEDs
+description: 'Handles setting the switch and dimmer LED colors and notifications'
+############
+# To make this script work with the new open z-wave 1.6, the "service" in each step needs to be changed.
+# I'd like to automagically detect if 1.4 or 1.6 is being used and then change to service_templates, but I'm not sure how to do that without requiring a sensor or adding yet another parameter that needs to be passed.
+# It's probably easier to simply change the service when you move to version 1.6 since there are only four changes to make.
+# z-wave 1.6: ozw.set_config_parameter
+# z-wave 1.4: zwave.set_config_parameter
+############
+mode: parallel
+sequence:
+#########
+# Effects
+#########
+  - service: zwave.set_config_parameter
+    data_template:
+      node_id: "{{ state_attr(entity_id,'node_id') }}"
+      parameter: >-
+        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
+          16
+        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Light' %}
+          24
+        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
+          25
+        {% else %}
+          8
+        {% endif %}
+      size: 4
+      value: >
+        {# Skip the calculations for effect = "off". #}
+        {% if effect|title == "Off" or effect is not defined or color|title == "Off" or color is not defined or duration|title == "Off" or duration is not defined or level|title == "Off" or level is not defined %}
+          0
+        {% else %}
+          {# Set default values if any needed values are missing. Old code that doesn't do anything now, but may be useful to someone #}
+          {% set color = color|default("Off") %}
+          {% set level = level|default(0) %}{# 1-10 #}
+          {% set duration = duration|default("Off") %}
+          {% set effect = effect|default("Off") %}
+
+          {# Let's make things easy by using descriptive text instead of hard to understand numbers. #}
+          {% set colors = {
+            "Off": 0,
+            "Red": 1,
+            "Orange": 8,
+            "Yellow": 42,
+            "Green": 85,
+            "Cyan": 127,
+            "Teal": 145,
+            "Blue": 170,
+            "Purple": 195,
+            "Light Pink": 220,
+            "Pink": 234
+          } %}
+          {% set durations = {
+            "Off": 0,
+            "1 Second": 1,
+            "2 Seconds": 2,
+            "3 Seconds": 3,
+            "4 Seconds": 4,
+            "5 Seconds": 5,
+            "6 Seconds": 6,
+            "7 Seconds": 7,
+            "8 Seconds": 8,
+            "9 Seconds": 9,
+            "10 Seconds": 10,
+            "15 Seconds": 15,
+            "20 Seconds": 20,
+            "25 Seconds": 25,
+            "30 Seconds": 30,
+            "35 Seconds": 35,
+            "40 Seconds": 40,
+            "45 Seconds": 45,
+            "50 Seconds": 50,
+            "55 Seconds": 55,
+            "60 Seconds": 60,
+            "2 Minutes": 62,
+            "3 Minutes": 63,
+            "4 Minutes": 64,
+            "10 Minutes": 70,
+            "15 Minutes": 75,
+            "30 Minutes": 90,
+            "45 Minutes": 105,
+            "1 Hour": 120,
+            "2 Hours": 122,
+            "Indefinitely": 255
+          } %}
+          {% if 'LZW31' in state_attr(entity_id, 'product_name') or 'LZW36' in state_attr(entity_id, 'product_name') %}
+            {% set effects = {
+              "Off": 0,
+              "Solid": 1,
+              "Chase": 2,
+              "Fast Blink": 3,
+              "Slow Blink": 4,
+              "Blink": 4,
+              "Pulse": 5,
+              "Breath": 5
+            } %}
+          {% else %}
+            {% set effects = {
+              "Off": 0,
+              "Solid": 1,
+              "Fast Blink": 2,
+              "Slow Blink": 3,
+              "Pulse": 4,
+              "Breath": 4
+            } %}
+          {% endif %}
+          {# Perform the Inovelli math #}
+          {{ colors[color|title] + (level * 256) + (durations[duration|title] * 65536) + (effects[effect|title] * 16777216) }}
+        {% endif %}
+
+  # If an effect is being programmed setting the LED indicator will immediately override it.  These conditions ensure the necessary data is present, and an effect hasn't been set.
+  - condition: and
+    conditions:
+      - condition: template
+        value_template: "{{ LEDcolor is defined and LEDintensity is defined and LEDintensity_off is defined }}"
+      - condition: template
+        value_template: "{{ effect is not defined or effect == 'Off'}}"
+
+  #################
+  # Indicator Color
+  #################
+  - service: zwave.set_config_parameter
+    data_template:
+      node_id: "{{ state_attr(entity_id,'node_id') }}"
+      parameter: >
+        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
+          13
+        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Light' %}
+          18
+        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
+          20
+        {% else %}
+          5
+        {% endif %}
+      size: 2
+      value: >
+        {% set colors = {
+          "Red": 1,
+          "Orange": 8,
+          "Yellow": 42,
+          "Green": 85,
+          "Cyan": 127,
+          "Teal": 145,
+          "Blue": 170,
+          "Purple": 195,
+          "Light Pink": 220,
+          "Pink": 234
+        } %}
+        {{ colors[LEDcolor|title] }}
+
+  #########################
+  # LED Indicator Intensity
+  #########################
+  - service: zwave.set_config_parameter
+    data_template:
+      node_id: "{{ state_attr(entity_id,'node_id') }}"
+      parameter: >
+        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
+          14
+        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Light' %}
+          19
+        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
+          21
+        {% else %}
+          6
+        {% endif %}
+      size: 1
+      value: >
+        {# Red series dimmer takes input as '100%' but the light switch and fan / light combo switch needs an integer between 1 – 10. #}
+        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
+          {{ LEDintensity }}
+        {% else %}
+          {% set LEDintensity = (LEDintensity.split('%')[0])|int /10 %}
+          {{ LEDintensity | int }}
+        {% endif %}
+
+  ####################################
+  # LED Indicator Intensity (when off)
+  ####################################
+  - service: zwave.set_config_parameter
+    data_template:
+      node_id: "{{ state_attr(entity_id,'node_id') }}"
+      parameter: >
+        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
+          15
+        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Light' %}
+          22
+        {% elif 'LZW36' in state_attr(entity_id, 'product_name') and Type == 'Fan' %}
+          23
+        {% else %}
+          7
+        {% endif %}
+      size: 1
+      value: >
+        {# Red series dimmer takes input as '100%' but the light switch and fan / light combo switch needs an integer between 1 – 10. #}
+        {% if 'LZW31' in state_attr(entity_id, 'product_name') %}
+          {{ LEDintensity_off }}
+        {% else %}
+          {% set LEDintensity_off = (LEDintensity_off.split('%')[0])|int /10 %}
+          {{ LEDintensity_off | int }}
+        {% endif %}
