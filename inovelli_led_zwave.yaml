@@ -1,5 +1,5 @@
-alias: Inovelli Zwave Dimmer and Switch LEDs
-description: 'Handles setting the switch and dimmer LED colors and notifications'
+alias: Inovelli Dimmer and Switch LEDs
+description: 'This script is unmaintained and not receiving updates since the old Open Z-Wave 1.4 was deprecated in Home Assistant.  Handles setting the switch and dimmer LED colors and notifications'
 ############
 # To make this script work with the new open z-wave 1.6, the "service" in each step needs to be changed.
 # I'd like to automagically detect if 1.4 or 1.6 is being used and then change to service_templates, but I'm not sure how to do that without requiring a sensor or adding yet another parameter that needs to be passed.
