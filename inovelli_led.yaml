@@ -26,7 +26,7 @@ fields:
     name: Area
     description: Area names or IDs containing Inovelli devices.
     required: false
-    example: "['Family Room']"
+    example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
     selector:
       area:
         multiple: true
@@ -43,7 +43,7 @@ fields:
       Group names IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN,
       VZW31-SN devices.  Mix and match types as you like.
     required: false
-    example: "['group.lights_and_switches', '0249abdc634c12cbf6cdc06d7a507495']"
+    example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
     selector:
       entity:
         multiple: true
@@ -59,7 +59,7 @@ fields:
       Device IDs for Inovelli LZW36, LZW30-SN, LZW31-SN, VZM31-SN, VZW31-SN
       device IDs.  Mix and match types as you like.
     required: false
-    example: "['0249abdc634c12cbf6cdc06d7a507495']"
+    example: '0249abdc634c12cbf6cdc06d7a507495'
     selector:
       device:
         multiple: true
