@@ -32,7 +32,7 @@
 
 
 ## Notification effect examples:
-  Area and group values can be IDs or names, mixed as a proper list or a string of comma-separated values.
+  Area and group values can be IDs or names, mixed as a proper list or a string of comma-separated values.  Entities must use the entity name, and devices must use the device ID.
 
    **String of comma-separated values**
    
@@ -66,6 +66,8 @@
       color: red
       
 ## Clearing an effect
+
+  ** Mix and match areas, groups, devices, and entities **
   
     service: script.inovelli_led_zwavejs
     data:
@@ -76,7 +78,9 @@
 
     service: script.inovelli_led_zwavejs
     data:
-      entity: light.office
+      device:
+        - 531d79e9270d72d9cab44a4f295967d4
+        - ef82d0eb91499feadf45e257c0e5eda1
       LEDcolor: blue
       LEDbrightness: 7
       LEDbrightness_off: 3
