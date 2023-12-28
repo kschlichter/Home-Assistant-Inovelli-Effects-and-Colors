@@ -439,6 +439,8 @@ variables:
     {% set area_array = namespace(area_list=[]) %}
     {% set entities = namespace(entities=[]) %}
     {% if area != 'invalid' %}
+      {# I'd like to handle 'all' as a list for templating simplicity #}
+      {# changing this to 'all' in area would trigger an area named 'all upstairs' #}
       {% if area == 'all' %}
         {% set area_array.area_list = areas() %}
 
@@ -487,10 +489,8 @@ variables:
       {% for group in group_array.group_list %}
         {% for entity in expand(group) %}
           {% set ent = entity.entity_id %}
-          {% if ent.split('.')[0] == 'light' %}
-            {% if ent.split('.')[0] in allowed_domains %}
-              {% set entities.entities = entities.entities + [ent|string|trim] %}
-            {% endif %}
+          {% if ent.split('.')[0] in allowed_domains %}
+            {% set entities.entities = entities.entities + [ent|string|trim] %}
           {% endif %}
         {% endfor %}
       {% endfor %}
