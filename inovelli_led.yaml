@@ -40,7 +40,7 @@ fields:
   group:
     name: Group
     description: >-
-      Group names IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN,
+      Group names or IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN,
       VZW31-SN devices.  Mix and match types as you like.
     required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
