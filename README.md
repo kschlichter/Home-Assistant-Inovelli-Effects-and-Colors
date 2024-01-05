@@ -31,55 +31,73 @@
     - color: (int or string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
 
 
-  **Notification effect examples:**
-	
+## Notification effect examples:
+  Area and group values can be IDs or names, mixed as a proper list or a string of comma-separated values.  Entities must use the entity name, and devices must use the device ID.
+
+   **String of comma-separated values**
+   
     service: script.inovelli_led_zwavejs
     data:
-      area: 'Family Room' # This can also be an area ID, if you're using a template.
+      area: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c' 
       duration: Forever
       effect: CHASE
       brightness: 8
       color: Teal
 
+  **'area: all' will find any compatible Inovelli devices in Home Assistant 2023.04 or newer.**
+  
     service: script.inovelli_led_zwavejs
     data:
-      area: all # Requires Home Assistant 2023.04 or newer.
+      area: all
       duration: Forever
       effect: 'Fast Blink'
       brightness: 8
       color: 'light pink'
-      
+
+  **Proper list format**
+  
     service: script.inovelli_led_zwavejs
     data:
-      entity: fan.front_porch
+      group:
+        - group.lights_and_switches
+        - 0249abdc634c12cbf6cdc06d7a507495
       effect: pulse
       brightness: 8
       color: red
       
-  **Clearing an effect**
+## Clearing an effect
+
+  ** Mix and match areas, groups, devices, and entities **
   
     service: script.inovelli_led_zwavejs
     data:
       area: 'Family Room'
       entity: fan.front_porch
   
-  **LED color example:**
+## LED color example:
 
     service: script.inovelli_led_zwavejs
     data:
-      entity: light.office
+      device:
+        - 531d79e9270d72d9cab44a4f295967d4
+        - ef82d0eb91499feadf45e257c0e5eda1
       LEDcolor: blue
       LEDbrightness: 7
       LEDbrightness_off: 3
 
-  **LEDbrightness_off example: (maybe part of a nighttime routine?)**
+    service: script.inovelli_led
+    data:
+      group: group.outside_front_lights
+      LEDcolor: Green  
+      
+## LEDbrightness_off example: (maybe part of a nighttime routine?)
 
     service: script.inovelli_led_zwavejs
     data:
       entity: light.office
       LEDbrightness_off: 2
             
-  **Effect to signal LED indicator transition**
+## Effect to signal LED indicator transition
   
     service: script.inovelli_led_zwavejs
     data:
@@ -92,9 +110,9 @@
       color: green
       brightness: 7
 
-  **Automation to listen for a config button press and set everything in the area to "pulse"**
+## Automation to listen for a config button press and set everything in the area to "pulse"
   
-  This automation listens for a config / 3rd button press, checks in the condition stage that it's an Inovelli device, toggles an input_boolean for the area of the device, then sets or clears an effect on every Inovelli device in the area depending on the new state of the boolean.  I use that boolean in other automations to disable lighting controls.  
+  This automation listens for a config / 3rd button press, checks in the condition stage that it's an Inovelli device, toggles an input_boolean for the area of the device (set this up separately), then sets or clears an effect on every Inovelli device in the area depending on the new state of the boolean.  I use that boolean in other automations to disable lighting controls (like motion timeouts).  
       
     alias: Light Locks
     description: ''
