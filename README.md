@@ -36,7 +36,7 @@
 
    **String of comma-separated values**
    
-    service: script.inovelli_led_zwavejs
+    service: script.inovelli_led
     data:
       area: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c' 
       duration: Forever
@@ -46,7 +46,7 @@
 
   **'area: all' will find any compatible Inovelli devices in Home Assistant 2023.04 or newer.**
   
-    service: script.inovelli_led_zwavejs
+    service: script.inovelli_led
     data:
       area: all
       duration: Forever
@@ -56,7 +56,7 @@
 
   **Proper list format**
   
-    service: script.inovelli_led_zwavejs
+    service: script.inovelli_led
     data:
       group:
         - group.lights_and_switches
@@ -69,14 +69,14 @@
 
   ** Mix and match areas, groups, devices, and entities **
   
-    service: script.inovelli_led_zwavejs
+    service: script.inovelli_led
     data:
       area: 'Family Room'
       entity: fan.front_porch
   
 ## LED color example:
 
-    service: script.inovelli_led_zwavejs
+    service: script.inovelli_led
     data:
       device:
         - 531d79e9270d72d9cab44a4f295967d4
@@ -92,14 +92,14 @@
       
 ## LEDbrightness_off example: (maybe part of a nighttime routine?)
 
-    service: script.inovelli_led_zwavejs
+    service: script.inovelli_led
     data:
       entity: light.office
       LEDbrightness_off: 2
             
 ## Effect to signal LED indicator transition
   
-    service: script.inovelli_led_zwavejs
+    service: script.inovelli_led
     data:
       entity: light.office
       LEDcolor: green
@@ -139,7 +139,7 @@
                   {% set use_boolean = 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' %}
                   {{ is_state(use_boolean,'on') }}
             sequence:
-             - service: script.inovelli_led_zwavejs
+             - service: script.inovelli_led
                 data:
                   area: >
                     {% set area = namespace(id=[]) %} 
@@ -155,7 +155,7 @@
                   {% set use_boolean = 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' %}
                   {{ is_state(use_boolean,'off') }}
             sequence:
-                - service: script.inovelli_led_zwavejs
+                - service: script.inovelli_led
                 data:
                   area: >
                     {% set area = namespace(id=[]) %} 
