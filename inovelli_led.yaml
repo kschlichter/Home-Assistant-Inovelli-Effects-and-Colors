@@ -359,7 +359,6 @@ variables:
     slow blink: 3
     blink: 3
     pulse: 4
-  ### Remapped to supported effects ###
     aurora: 4
     blink fast: 2
     blink medium: 3
@@ -386,7 +385,6 @@ variables:
     slow blink: 4
     blink: 4
     pulse: 5
-  ### Remapped to supported effects ###
     aurora: 2
     blink fast: 3
     blink medium: 4
@@ -413,7 +411,6 @@ variables:
     slow blink: 4
     blink: 4
     pulse: 5
-  ### Remapped to supported effects ###
     aurora: 2
     blink fast: 3
     blink medium: 4
@@ -439,7 +436,6 @@ variables:
     slow blink: 4
     blink: 4
     pulse: 5
-  ### Remapped to supported effects ###
     aurora: 2
     blink fast: 3
     blink medium: 4
@@ -457,8 +453,8 @@ variables:
     siren slow: 5
     siren fast: 5
 
-  ### Blue Series Dimmer ###
-  VZM31SN_effects:
+  ### Red 800 Series Dimmer ###
+  VZW31SN_effects:
     "off": 0
     aurora: 8
     blink fast: 2
@@ -480,8 +476,8 @@ variables:
     siren fast: 18
     solid: 1
 
-  ### Red 800 Series Dimmer ###
-  VZW31SN_effects:
+  ### Blue Series Dimmer ###
+  VZM31SN_effects:
     "off": 0
     aurora: 8
     blink fast: 2
@@ -511,6 +507,7 @@ variables:
     - LZW30-SN # switch
     - LZW36 # combo_light, combo_fan
     - VZW31-SN # 800 series dimmer
+
   zigbee_models: # BLUE
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # blue_dimmer_switch
 
