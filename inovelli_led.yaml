@@ -5,7 +5,8 @@ alias: Inovelli LED Settings and Effects
 #
 # Required for setting the LED indicator
 #   LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
-#     Note that the Blue 2-in-1 switch/dimmer supports separate colors for on and off; but currently this just sets them both to whatever color is selected
+#   LEDcolor_off: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+#     Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the original Red Series devices do not
 #   LEDbrightness: (whole integer 1 – 10) Sets the brightness of the LED status when on.
 #   LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the LED status when off.
 #
@@ -14,6 +15,9 @@ alias: Inovelli LED Settings and Effects
 #   effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", or "Pulse".
 #   brightness: (integer 1 – 10) Sets the brightness of the LED's effect
 #   color: (string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+#
+# Effects not working?  Check that your device supports the effect you're selecting at https://inovelliusa.github.io/inovelli-switch-toolbox/
+#   Effects that are not supported on a specific device are remapped to a supported effect.  
 ############
 description: >-
   Handles setting the LED colors and notifications on Inovelli "Red" and "Blue"
@@ -22,6 +26,7 @@ mode: parallel
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches
 
 fields:
+
   area:
     name: Area
     description: Area names or IDs containing Inovelli devices.
@@ -37,6 +42,7 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+
   group:
     name: Group
     description: >-
@@ -53,6 +59,7 @@ fields:
               - fan
               - light
               - switch
+
   device:
     name: Device
     description: >-
@@ -79,6 +86,7 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+
   entity:
     name: Entity
     description: >-
@@ -97,7 +105,7 @@ fields:
             #model: LZW36 # Device model should really be an option for entities.
 
   LEDcolor:
-    name: LED Color (non-effect)
+    name: LED Color When On (non-effect)
     description: Sets the color of the LED status, which indicates brightness levels.
     required: false
     example: Blue
@@ -117,8 +125,31 @@ fields:
           - Pink
           - Hot Pink
           - White
+
+  LEDcolor_off:
+    name: LED Color When Off (non-effect)
+    description: Sets the color of the LED status, which indicates brightness levels.
+    required: false
+    example: Blue
+    selector:
+      select:
+        options:
+          - "Off"
+          - Red
+          - Orange
+          - Yellow
+          - Green
+          - Cyan
+          - Teal
+          - Blue
+          - Purple
+          - Light Pink
+          - Pink
+          - Hot Pink
+          - White
+
   LEDbrightness:
-    name: LED Brightness On (non-effect)
+    name: LED Brightness When On (non-effect)
     description: Sets the brightness of the LED status when on. 0 means off.
     required: false
     example: "6"
@@ -128,6 +159,7 @@ fields:
         max: 10
         step: 1
         mode: slider
+
   LEDbrightness_off:
     name: LED Brightness When Off (non-effect)
     description: Sets the brightness of the LED status when off. 0 means off.
@@ -139,6 +171,7 @@ fields:
         max: 10
         step: 1
         mode: slider
+
   duration:
     name: Duration of Effect
     description: How long the effect will last.
@@ -184,6 +217,7 @@ fields:
           - 1 Hour
           - 2 Hours
           - indefinitely
+
   effect:
     name: Effect
     description: Type of effect
@@ -192,13 +226,27 @@ fields:
     selector:
       select:
         options:
-          - "Off"
-          - Solid
+          - "off"
+          - Aurora
+          - Blink Fast
+          - Blink medium
+          - Blink Slow
+          - Chase Slow
           - Chase
-          - Fast Blink
-          - Slow Blink
-          - Blink
+          - Chase Fast
+          - Fall Slow
+          - Fall Medium
+          - Fall Fast
+          - Open Close
           - Pulse
+          - Rise Slow
+          - Rise Medium
+          - Rise Fast
+          - Small to Big
+          - Siren Slow
+          - Siren Fast
+          - Solid
+
   brightness:
     name: Effect Brightness
     description: Sets the brightness of the LED's effect.  0 means off.
@@ -210,6 +258,7 @@ fields:
         max: 10
         step: 1
         mode: slider
+
   color:
     name: Effect Color
     description: Color of LED effect
@@ -221,16 +270,21 @@ fields:
           - "Off"
           - Red
           - Orange
+          - Lemon
           - Yellow
+          - Lime
           - Green
           - Cyan
           - Teal
           - Blue
           - Purple
+          - Magenta
           - Light Pink
           - Pink
           - Hot Pink
           - White
+          
+
 variables:
 ##################
 # Look-up tables for easy reference and future maintenance.
@@ -239,35 +293,20 @@ variables:
     "off": 0
     red: 0
     orange: 8
+    lemon: 28
     yellow: 42
+    lime: 64
     green: 85
     cyan: 127
     teal: 145
     blue: 170
-    purple: 195
+    purple: 190
+    magenta: 212
     light pink: 220
     pink: 234
     hot pink: 234
     white: 255
-  color_set_red_dimmer_switch:
-    "off": 0
-    red: 0
-    orange: 7
-    yellow: 28
-    lemon: 28
-    lime: 64
-    green: 85
-    teal: 106
-    cyan: 127
-    aqua: 148
-    blue: 170
-    violet: 190
-    purple: 190
-    magenta: 212
-    light pink: 212
-    pink: 234
-    hot pink: 234
-    white: 255
+
   duration_values:
     "off": 0
     1 second: 1
@@ -310,7 +349,9 @@ variables:
     2 hours: 122
     forever: 255
     indefinitely: 255
-  switch_effects:
+
+  ### Red Series Switch ###
+  LZW30SN_effects:
     "off": 0
     solid: 1
     fast blink: 2
@@ -318,7 +359,26 @@ variables:
     slow blink: 3
     blink: 3
     pulse: 4
-  strip_effects:
+  ### Remapped to supported effects ###
+    aurora: 4
+    blink fast: 2
+    blink medium: 3
+    blink slow: 3
+    chase slow: 3
+    chase fast: 2
+    fall slow: 3
+    fall medium: 3
+    fall fast: 2
+    open close: 4
+    rise slow: 3
+    rise medium: 3
+    rise fast: 2
+    small to big: 4
+    siren slow: 4
+    siren fast: 4
+
+  ### Red Series Dimmer ###
+  LZW31SN_effects:
     "off": 0
     solid: 1
     chase: 2
@@ -326,39 +386,122 @@ variables:
     slow blink: 4
     blink: 4
     pulse: 5
-  red_dimmer_switch_effects:
-    "off": 0
-    solid: 1
-    chase: 5
-    fast blink: 2
-    slow blink: 3
-    blink: 15
-    pulse: 4
+  ### Remapped to supported effects ###
+    aurora: 2
+    blink fast: 3
+    blink medium: 4
+    blink slow: 4
+    chase slow: 2
+    chase fast: 2
+    fall slow: 2
+    fall medium: 2
+    fall fast: 2
+    open close: 5
+    rise slow: 2
+    rise medium: 2
+    rise fast: 2
+    small to big: 5
+    siren slow: 5
+    siren fast: 5
 
-  # the red dimmer has new effects, so storing them here for reference
-  # but the above list is what is used in this script
-  # TODO update script to handle these new effects and map the old devices
-  red_dimmer_switch_effects_real:
+  ### Red Series Fan Light Combo ###
+  LZW36_light_effects:
     "off": 0
     solid: 1
-    fast blink: 2
-    slow blink: 3
-    pulse: 4
-    chase: 5
-    open close: 6
-    small to big: 7
+    chase: 2
+    fast blink: 3
+    slow blink: 4
+    blink: 4
+    pulse: 5
+  ### Remapped to supported effects ###
+    aurora: 2
+    blink fast: 3
+    blink medium: 4
+    blink slow: 4
+    chase slow: 2
+    chase fast: 2
+    fall slow: 2
+    fall medium: 2
+    fall fast: 2
+    open close: 5
+    rise slow: 2
+    rise medium: 2
+    rise fast: 2
+    small to big: 5
+    siren slow: 5
+    siren fast: 5
+
+  LZW36_fan_effects:
+    "off": 0
+    solid: 1
+    chase: 2
+    fast blink: 3
+    slow blink: 4
+    blink: 4
+    pulse: 5
+  ### Remapped to supported effects ###
+    aurora: 2
+    blink fast: 3
+    blink medium: 4
+    blink slow: 4
+    chase slow: 2
+    chase fast: 2
+    fall slow: 2
+    fall medium: 2
+    fall fast: 2
+    open close: 5
+    rise slow: 2
+    rise medium: 2
+    rise fast: 2
+    small to big: 5
+    siren slow: 5
+    siren fast: 5
+
+  ### Blue Series Dimmer ###
+  VZM31SN_effects:
+    "off": 0
     aurora: 8
-    slow fall: 9
-    medium fall: 10
-    fast fall: 11
-    slow rise: 12
-    medium rise: 13
-    fast rise: 14
-    medium blink: 15
-    slow chase: 16
-    fast chase: 17
-    fast siren: 18
-    slow siren: 19
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase slow: 16
+    chase: 5
+    chase fast: 17
+    fall slow: 9
+    fall medium: 10
+    fall fast: 11
+    open close: 6
+    pulse: 4
+    rise slow: 12
+    rise medium: 13
+    rise fast: 14
+    small to big: 7
+    siren slow: 19
+    siren fast: 18
+    solid: 1
+
+  ### Red 800 Series Dimmer ###
+  VZW31SN_effects:
+    "off": 0
+    aurora: 8
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase slow: 16
+    chase: 5
+    chase fast: 17
+    fall slow: 9
+    fall medium: 10
+    fall fast: 11
+    open close: 6
+    pulse: 4
+    rise slow: 12
+    rise medium: 13
+    rise fast: 14
+    small to big: 7
+    siren slow: 19
+    siren fast: 18
+    solid: 1
 
   ##################
   # Store model names for RED and BLUE versions for reference and validation checks if necessary
@@ -367,6 +510,7 @@ variables:
     - LZW31-SN # dimmer
     - LZW30-SN # switch
     - LZW36 # combo_light, combo_fan
+    - VZW31-SN # 800 series dimmer
   zigbee_models: # BLUE
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # blue_dimmer_switch
 
@@ -382,50 +526,51 @@ variables:
 # There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
 ##################
   parameters:
-    dimmer_effect_bulk: 16
-    dimmer_effect_color: "LED Indicator: Effect Color"
-    dimmer_effect_brightness: "LED Indicator: Effect Brightness"
-    dimmer_effect_duration: "LED Indicator: Effect Duration"
-    dimmer_effect_effect: "LED Indicator: Effect Type"
-    dimmer_ledcolor: "LED Indicator: Color"
-    dimmer_ledbrightness: "LED Indicator: Brightness When On"
-    dimmer_ledbrightness_off: "LED Indicator: Brightness When Off"
+    LZW31SN_effect_bulk: 16
+    LZW31SN_effect_color: "LED Indicator: Effect Color"
+    LZW31SN_effect_brightness: "LED Indicator: Effect Brightness"
+    LZW31SN_effect_duration: "LED Indicator: Effect Duration"
+    LZW31SN_effect_effect: "LED Indicator: Effect Type"
+    LZW31SN_ledcolor: "LED Indicator: Color"
+    LZW31SN_ledbrightness: "LED Indicator: Brightness When On"
+    LZW31SN_ledbrightness_off: "LED Indicator: Brightness When Off"
 
-    switch_effect_bulk: 8
-    switch_effect_color: LED Effect Color
-    switch_effect_brightness: LED Effect Brightness
-    switch_effect_duration: LED Effect Duration
-    switch_effect_effect: LED Effect Type
-    switch_ledcolor: LED Indicator Color
-    switch_ledbrightness: LED Indicator Brightness
-    switch_ledbrightness_off: LED Indicator Brightness When Off
+    LZW30SN_effect_bulk: 8
+    LZW30SN_effect_color: LED Effect Color
+    LZW30SN_effect_brightness: LED Effect Brightness
+    LZW30SN_effect_duration: LED Effect Duration
+    LZW30SN_effect_effect: LED Effect Type
+    LZW30SN_ledcolor: LED Indicator Color
+    LZW30SN_ledbrightness: LED Indicator Brightness
+    LZW30SN_ledbrightness_off: LED Indicator Brightness When Off
 
-    combo_light_effect_bulk: 24
-    combo_light_effect_color: Light LED Effect Color
-    combo_light_effect_brightness: Light LED Effect Brightness
-    combo_light_effect_duration: Light LED Effect Duration
-    combo_light_effect_effect: Light LED Effect Type
-    combo_light_ledcolor: Light LED Indicator Color
-    combo_light_ledbrightness: Light LED Strip Brightness
-    combo_light_ledbrightness_off: Light LED Strip Brightness When Off
+    LZW36_light_effect_bulk: 24
+    LZW36_light_effect_color: Light LED Effect Color
+    LZW36_light_effect_brightness: Light LED Effect Brightness
+    LZW36_light_effect_duration: Light LED Effect Duration
+    LZW36_light_effect_effect: Light LED Effect Type
+    LZW36_light_ledcolor: Light LED Indicator Color
+    LZW36_light_ledbrightness: Light LED Strip Brightness
+    LZW36_light_ledbrightness_off: Light LED Strip Brightness When Off
 
-    combo_fan_effect_bulk: 25
-    combo_fan_effect_color: Fan LED Effect Color
-    combo_fan_effect_brightness: Fan LED Effect Brightness
-    combo_fan_effect_duration: Fan LED Effect Duration
-    combo_fan_effect_effect: Fan LED Effect Type
-    combo_fan_ledcolor: Fan LED Indicator Color
-    combo_fan_ledbrightness: Fan LED Strip Brightness
-    combo_fan_ledbrightness_off: Fan LED Strip Brightness When Off
+    LZW36_fan_effect_bulk: 25
+    LZW36_fan_effect_color: Fan LED Effect Color
+    LZW36_fan_effect_brightness: Fan LED Effect Brightness
+    LZW36_fan_effect_duration: Fan LED Effect Duration
+    LZW36_fan_effect_effect: Fan LED Effect Type
+    LZW36_fan_ledcolor: Fan LED Indicator Color
+    LZW36_fan_ledbrightness: Fan LED Strip Brightness
+    LZW36_fan_ledbrightness_off: Fan LED Strip Brightness When Off
 
-    red_dimmer_switch_effect_bulk: 99
-    red_dimmer_switch_effect_color: All LED Strip Effect - Color
-    red_dimmer_switch_effect_brightness: All LED Strip Effect - Level
-    red_dimmer_switch_effect_duration: All LED Strip Effect - Duration
-    red_dimmer_switch_effect_effect: All LED Strip Effect - Effect
-    red_dimmer_switch_ledcolor: All LED Strip Effect - Color
-    red_dimmer_switch_ledbrightness: "LED Indicator: Brightness When On"
-    red_dimmer_switch_ledbrightness_off: "LED Indicator: Brightness When Off"
+    VZW31SN_effect_bulk: 99
+    VZW31SN_effect_color: All LED Strip Effect - Color
+    VZW31SN_effect_brightness: All LED Strip Effect - Level
+    VZW31SN_effect_duration: All LED Strip Effect - Duration
+    VZW31SN_effect_effect: All LED Strip Effect - Effect
+    VZW31SN_ledcolor: Default All LED Strip Color When On
+    VZW31SN_ledcolor_off: Default All LED Strip Color When Off
+    VZW31SN_ledbrightness: Default All LED Strip Brightness When On
+    VZW31SN_ledbrightness_off: Default All LED Strip Brightness When Off
 
   ##################
   # Working through provided areas, devices, and entities to group them into devices types.
@@ -566,6 +711,7 @@ sequence:
       brightness: "{{ brightness|default(\"11\")|int }}"
       effect: "{{ effect|default(\"off\")|lower }}"
       LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
+      LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
       LEDbrightness: "{{ LEDbrightness|default(\"11\")|int }}"
       LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|int }}"
 
@@ -574,7 +720,7 @@ sequence:
   ##################
   - repeat:
       for_each:
-        - device_type: dimmer
+        - device_type: LZW31SN
           call_type: zwave_js
           entities: >-
             {% set entities = namespace(entities=[]) %}
@@ -585,7 +731,7 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
-        - device_type: switch
+        - device_type: LZW30SN
           call_type: zwave_js
           entities: >-
             {% set entities = namespace(entities=[]) %}
@@ -596,7 +742,7 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
-        - device_type: combo_light
+        - device_type: LZW36_light
           call_type: zwave_js
           entities: >-
             {% set entities = namespace(entities=[]) %}
@@ -607,7 +753,7 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
-        - device_type: combo_fan
+        - device_type: LZW36_fan
           call_type: zwave_js
           entities: >-
             {% set entities = namespace(entities=[]) %}
@@ -629,7 +775,7 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
-        - device_type: red_dimmer_switch
+        - device_type: VZW31SN
           call_type: zwave_js
           entities: >-
             {% set entities = namespace(entities=[]) %}
@@ -677,12 +823,43 @@ sequence:
                                   topic: >-
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
-                                    { "ledColorWhenOn": {{ color_set[LEDcolor] }}, "ledColorWhenOff": {{ color_set[LEDcolor] }} }
+                                    { "ledColorWhenOn": {{ color_set[LEDcolor] }} }
+        ##################
+        # LED strip color when off
+        ##################
         - choose:
+            - conditions: "{{ LEDcolor_off != \"no change\" }}"
+              sequence:
+                - choose:
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type == 'VZW31SN' }}"
+                      sequence:
+                        # Zwave JS
+                        - service: zwave_js.set_config_parameter
+                          data:
+                            entity_id: "{{ repeat.item.entities }}"
+                            parameter: >
+                              {% set effect_param = repeat.item.device_type + '_ledcolor_off' %}
+                              {{ parameters[effect_param] }}
+                            value: "{{ color_set[LEDcolor_off] }} "
+                - choose:
+                    - conditions: "{{ repeat.item.call_type == 'z2m' }}"
+                      sequence:
+                        # Zigbee2mqtt
+                        - repeat:
+                            for_each: "{{ repeat.item.entities }} "
+                            sequence:
+                              - service: mqtt.publish
+                                data:
+                                  topic: >-
+                                    zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                  payload: >-
+                                    { "ledColorWhenOff": {{ color_set[LEDcolor_off] }} }
 
-            ##################
-            # LED strip brightness
-            ##################
+
+        ##################
+        # LED strip brightness
+        ##################
+        - choose:
             - conditions: "{{ LEDbrightness is defined and LEDbrightness != 11 }} "
               sequence:
                 - choose:
@@ -708,10 +885,11 @@ sequence:
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     { "ledIntensityWhenOn": {{ (LEDbrightness * 256 / 10) }} }
+
+        ##################
+        # LED strip brightness when off
+        ##################
         - choose:
-            ##################
-            # LED strip brightness when off
-            ##################
             - conditions: "{{ LEDbrightness_off is defined and LEDbrightness_off != 11 }} "
               sequence:
                 - choose:
@@ -737,14 +915,16 @@ sequence:
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     { "ledIntensityWhenOff": {{ (LEDbrightness_off * 256 / 10) }} }
+
+
+        #################
+        # Effects (fully defined)
+        # Calling a bulk set of parameters reduces Z-Wave traffic and writes to the switch's NVRAM, extending its life(?)
+        ##################
         - choose:
             - conditions: >-
                 {{ effect != "off" and  color != "no change" and  duration != "invalid" and  brightness != 11 }}
               sequence:
-                #################
-                # Effects (fully defined)
-                # Calling a bulk set of parameters reduces Z-Wave traffic and writes to the switch's NVRAM, extending its life(?)
-                ##################
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
                       sequence:
@@ -756,12 +936,16 @@ sequence:
                               {% set bulk_param = repeat.item.device_type + '_effect_bulk' %}
                               {{ parameters[bulk_param] }}
                             value: >-
-                              {% if repeat.item.device_type == "switch" %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (switch_effects[effect] * 16777216) }}
-                              {% elif repeat.item.device_type == "red_dimmer_switch" %}
-                                {{ (color_set_red_dimmer_switch[color]*65536) + (brightness*10 * 256) + (duration_values[duration]) + (red_dimmer_switch_effects[effect] * 16777216) }}
-                              {% else %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (strip_effects[effect] * 16777216) }}
+                              {% if repeat.item.device_type == "LZW30SN" %}
+                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW30SN_effects[effect] * 16777216) }}
+                              {% elif repeat.item.device_type == "LZW31SN" %}
+                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW31SN_effects[effect] * 16777216) }}
+                              {% elif repeat.item.device_type == "LZW36_light" %}
+                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW36_light_effects[effect] * 16777216) }}
+                              {% elif repeat.item.device_type == "LZW36_fan" %}
+                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
+                              {% elif repeat.item.device_type == "VZW31SN" %}
+                                {{ (color_set[color] * 65536) + (brightness*10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}
                               {% endif %}
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
@@ -784,7 +968,6 @@ sequence:
             # This way, "forever" effects can be set, then easily cleared.
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
             ##################
-
             - choose:
                 - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
                   sequence:
