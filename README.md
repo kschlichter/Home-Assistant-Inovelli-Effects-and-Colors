@@ -1,4 +1,4 @@
-# Home-Assistant-Inovelli-Red-Dimmer-Switch
+# Home-Assistant-Inovelli-Effects-and-Colors
   
   [Inovelli Calculations](https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing)
   
