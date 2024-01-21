@@ -8,7 +8,6 @@
 
   Requires container 2.4.0 or greater.
   
-  This is a complete rewrite of the original work which was done by BrianHanifin on post: https://community.home-assistant.io/t/inovelli-z-wave-red-series-notification-led/165483
     
   **Features**
   This script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers.  Devices of different types can be set in a single call.  It will accept entities of Inovelli devices, the device itself in the form of the device ID, or an area ID to set all Inovelli devices in that area.
