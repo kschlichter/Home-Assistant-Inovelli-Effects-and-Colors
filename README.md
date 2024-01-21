@@ -6,7 +6,13 @@
   
   [Home Assistant Forum Post](https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-dimmers-switches-and-combo-fan-lights-by-area-device-or-entity/421862)
 
-  Requires container 2.4.0 or greater.
+  Supported Inovelli devices:
+  * LZW30-SN Red Series switch
+  * LZW31-SN Red Series dimmer
+  * LZW36 Red Series fan / light combo
+  * [VZW31-SN Red 800 Series 2-in-1 dimmer](https://inovelli.com/products/z-wave-800-red-series-smart-2-1-on-off-dimmer-switch)
+  * [VZM31-SN Blue Series (Zigbee) 2-in-1 dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
+  
   
     
   **Features**
