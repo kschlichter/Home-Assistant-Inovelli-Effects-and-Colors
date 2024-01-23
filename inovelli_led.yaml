@@ -359,7 +359,7 @@ variables:
     indefinitely: 255
 
   ### Black 500 Series Dimmer ###
-  VZW31SN_effects:
+  LZW30_effects:
     "off": 0
     aurora: 0
     blink fast: 0
@@ -380,7 +380,30 @@ variables:
     siren slow: 0
     siren fast: 0
     solid: 0
-    
+
+  ### Black 500 Series Dimmer ###
+  LZW31_effects:
+    "off": 0
+    aurora: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase slow: 0
+    chase: 0
+    chase fast: 0
+    fall slow: 0
+    fall medium: 0
+    fall fast: 0
+    open close: 0
+    pulse: 0
+    rise slow: 0
+    rise medium: 0
+    rise fast: 0
+    small to big: 0
+    siren slow: 0
+    siren fast: 0
+    solid: 0
+   
   ### Red 500 Series Switch ###
   LZW30SN_effects:
     "off": 0
