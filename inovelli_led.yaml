@@ -29,8 +29,8 @@ fields:
 
   area:
     name: Area
-    description: Area names or IDs containing Inovelli LZW36, LZW30-SN, LZW31-SN,
-      VZW31-SN, LZW30, or LZW31 devices.  Mix and match types as you like.
+    description: Area names or IDs containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
+      LZW36, or VZW31-SN devices.  Mix and match types as you like.
     required: false
     example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
     selector:
@@ -39,7 +39,7 @@ fields:
         device:
           - integration: zwave_js
             manufacturer: Inovelli
-            model: LZW36, LZW30-SN, LZW31-SN, VZW31-SN, LZW30, LZW31
+            model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN 
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
@@ -47,8 +47,8 @@ fields:
   group:
     name: Group
     description: >-
-      Group names or IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN,
-      VZW31-SN, LZW30, or LZW31 devices.  Mix and match types as you like.
+      Group names or IDs for groups containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
+      LZW36, or VZW31-SN devices.  Mix and match types as you like.
     required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -64,8 +64,8 @@ fields:
   device:
     name: Device
     description: >-
-      Device IDs for Inovelli LZW36, LZW30-SN, LZW31-SN,
-      VZW31-SN, LZW30, or LZW31 devices.  Mix and match types as you like.
+      Device IDs for Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
+      LZW36, or VZW31-SN devices.  Mix and match types as you like.
     required: false
     example: '0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -74,7 +74,10 @@ fields:
         filter:
           - integration: zwave_js
             manufacturer: Inovelli
-            model: LZW36
+            model: LZW30
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW31
           - integration: zwave_js
             manufacturer: Inovelli
             model: LZW30-SN
@@ -83,10 +86,7 @@ fields:
             model: LZW31-SN
           - integration: zwave_js
             manufacturer: Inovelli
-            model: LZW30
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31
+            model: LZW36
           - integration: zwave_js
             manufacturer: Inovelli
             model: VZW31-SN
@@ -98,8 +98,8 @@ fields:
     name: Entity
     description: >-
       The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
-      a comma separated list of Inovelli LZW36, LZW30-SN, LZW31-SN,
-      VZW31-SN, LZW30, or LZW31 devices.  Mix and match types as you like.
+      a comma separated list of Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
+      LZW36, or VZW31-SN devices.  Mix and match types as you like.
     required: false
     example: light.office, fan.guest_room
     selector:
