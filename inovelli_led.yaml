@@ -17,7 +17,7 @@ alias: Inovelli LED Settings and Effects
 #   color: (string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
 #
 # Effects not working?  Check that your device supports the effect you're selecting at https://inovelliusa.github.io/inovelli-switch-toolbox/
-#   Effects that are not supported on a specific device are remapped to a supported effect.  
+#   Effects that are not supported on a specific device are remapped to a supported effect.  Black 500 Series devices do not support effects.
 ############
 description: >-
   Handles setting the LED colors and notifications on Inovelli "Red" and "Blue"
