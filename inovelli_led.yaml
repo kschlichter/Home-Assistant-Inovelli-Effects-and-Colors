@@ -29,7 +29,8 @@ fields:
 
   area:
     name: Area
-    description: Area names or IDs containing Inovelli devices.
+    description: Area names or IDs containing Inovelli LZW36, LZW30-SN, LZW31-SN,
+      VZW31-SN, LZW30, or LZW31 devices.  Mix and match types as you like.
     required: false
     example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
     selector:
@@ -47,7 +48,7 @@ fields:
     name: Group
     description: >-
       Group names or IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN,
-      VZW31-SN devices.  Mix and match types as you like.
+      VZW31-SN, LZW30, or LZW31 devices.  Mix and match types as you like.
     required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -63,8 +64,8 @@ fields:
   device:
     name: Device
     description: >-
-      Device IDs for Inovelli LZW36, LZW30-SN, LZW31-SN, VZM31-SN, VZW31-SN
-      device IDs.  Mix and match types as you like.
+      Device IDs for Inovelli LZW36, LZW30-SN, LZW31-SN,
+      VZW31-SN, LZW30, or LZW31 devices.  Mix and match types as you like.
     required: false
     example: '0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -91,7 +92,8 @@ fields:
     name: Entity
     description: >-
       The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
-      a comma separated list. Mix and match types as you like.
+      a comma separated list of Inovelli LZW36, LZW30-SN, LZW31-SN,
+      VZW31-SN, LZW30, or LZW31 devices.  Mix and match types as you like.
     required: false
     example: light.office, fan.guest_room
     selector:
