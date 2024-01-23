@@ -350,7 +350,30 @@ variables:
     forever: 255
     indefinitely: 255
 
-  ### Red Series Switch ###
+  ### Black 500 Series Dimmer ###
+  VZW31SN_effects:
+    "off": 0
+    aurora: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase slow: 0
+    chase: 0
+    chase fast: 0
+    fall slow: 0
+    fall medium: 0
+    fall fast: 0
+    open close: 0
+    pulse: 0
+    rise slow: 0
+    rise medium: 0
+    rise fast: 0
+    small to big: 0
+    siren slow: 0
+    siren fast: 0
+    solid: 0
+    
+  ### Red 500 Series Switch ###
   LZW30SN_effects:
     "off": 0
     solid: 1
@@ -376,7 +399,7 @@ variables:
     siren slow: 4
     siren fast: 4
 
-  ### Red Series Dimmer ###
+  ### Red 500 Series Dimmer ###
   LZW31SN_effects:
     "off": 0
     solid: 1
@@ -402,7 +425,7 @@ variables:
     siren slow: 5
     siren fast: 5
 
-  ### Red Series Fan Light Combo ###
+  ### Red 500 Series Fan Light Combo ###
   LZW36_light_effects:
     "off": 0
     solid: 1
@@ -502,11 +525,13 @@ variables:
   ##################
   # Store model names for RED and BLUE versions for reference and validation checks if necessary
   ##################
-  zwave_models: # RED
-    - LZW31-SN # dimmer
-    - LZW30-SN # switch
-    - LZW36 # combo_light, combo_fan
-    - VZW31-SN # 800 series dimmer
+  zwave_models:
+    - LZW30    # Black 500 Series switch
+    - LZW31    # Black 500 Series dimmer
+    - LZW31-SN # Red 500 Series dimmer
+    - LZW30-SN # Red 500 Series switch
+    - LZW36    # Red 500 Series combo_light, combo_fan
+    - VZW31-SN # Red 800 series dimmer
 
   zigbee_models: # BLUE
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # blue_dimmer_switch
@@ -523,6 +548,24 @@ variables:
 # There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
 ##################
   parameters:
+    LZW30_effect_bulk: "null"
+    LZW30_effect_color: "null"
+    LZW30_effect_brightness: "null"
+    LZW30_effect_duration: "null"
+    LZW30_effect_effect: "null"
+    LZW30_ledcolor: "LED Indicator Color"
+    LZW30_ledbrightness: "LED Indicator Intensity (When on)"
+    LZW30_ledbrightness_off: "LED Indicator Intensity (When Off)"
+    
+    LZW31_effect_bulk: "null"
+    LZW31_effect_color: "null"
+    LZW31_effect_brightness: "null"
+    LZW31_effect_duration: "null"
+    LZW31_effect_effect: "null"
+    LZW31_ledcolor: "LED Indicator Color"
+    LZW31_ledbrightness: "LED Indicator Intensity"
+    LZW31_ledbrightness_off: "LED Indicator Intensity (When Off)"
+  
     LZW31SN_effect_bulk: 16
     LZW31SN_effect_color: "LED Indicator: Effect Color"
     LZW31SN_effect_brightness: "LED Indicator: Effect Brightness"
@@ -717,12 +760,23 @@ sequence:
   ##################
   - repeat:
       for_each:
-        - device_type: LZW31SN
+        - device_type: LZW30
           call_type: zwave_js
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','LZW31-SN') and ent.split('.')[0] == 'light' %}
+              {% if is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+        - device_type: LZW31
+          call_type: zwave_js
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if is_device_attr(ent,'model','LZW31') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -734,6 +788,17 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if is_device_attr(ent,'model','LZW30-SN') and ent.split('.')[0] == 'switch' %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+        - device_type: LZW31SN
+          call_type: zwave_js
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if is_device_attr(ent,'model','LZW31-SN') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -920,7 +985,8 @@ sequence:
         ##################
         - choose:
             - conditions: >-
-                {{ effect != "off" and  color != "no change" and  duration != "invalid" and  brightness != 11 }}
+                {{ effect != "off" and  color != "no change" and  duration != "invalid" and brightness != 11 and 
+                   repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
               sequence:
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
@@ -966,7 +1032,7 @@ sequence:
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
             ##################
             - choose:
-                - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
+                - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}"
                   sequence:
                     # Zwave JS
                     - service: zwave_js.set_config_parameter
