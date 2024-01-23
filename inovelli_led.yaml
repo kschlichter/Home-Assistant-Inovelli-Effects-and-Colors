@@ -39,7 +39,7 @@ fields:
         device:
           - integration: zwave_js
             manufacturer: Inovelli
-            model: LZW36, LZW30-SN, LZW31-SN, VZW31-SN
+            model: LZW36, LZW30-SN, LZW31-SN, VZW31-SN, LZW30, LZW31
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
@@ -81,6 +81,12 @@ fields:
           - integration: zwave_js
             manufacturer: Inovelli
             model: LZW31-SN
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW30
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW31
           - integration: zwave_js
             manufacturer: Inovelli
             model: VZW31-SN
