@@ -791,6 +791,9 @@ sequence:
   ##################
   - repeat:
       for_each:
+          ##################
+          # Z-Wave
+          ##################          
         - device_type: LZW30
           call_type: zwave_js
           entities: >-
@@ -856,18 +859,7 @@ sequence:
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
-
-        - device_type: VZM31SN
-          call_type: z2m
-          entities: >-
-            {% set entities = namespace(entities=[]) %}
-            {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','Inovelli 2-in-1 switch + dimmer (VZM31-SN)') and ent.split('.')[0] == 'light' %}
-                {% set entities.entities = entities.entities + [ent] %}
-              {% endif %}
-            {% endfor %}
-            {{ entities.entities }}
-
+            
         - device_type: VZW31SN
           call_type: zwave_js
           entities: >-
@@ -879,8 +871,21 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
-      sequence:
+          ##################
+          # Zigbee
+          ##################
+        - device_type: VZM31SN
+          call_type: z2m
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if is_device_attr(ent,'model','Inovelli 2-in-1 switch + dimmer (VZM31-SN)') and ent.split('.')[0] == 'light' %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
 
+      sequence:
         ##################
         # Do not continue if we don't have at least one entity of this type
         ##################
