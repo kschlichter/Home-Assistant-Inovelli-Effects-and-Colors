@@ -761,7 +761,7 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
-        - device_type: blue_dimmer_switch
+        - device_type: VZM31SN
           call_type: z2m
           entities: >-
             {% set entities = namespace(entities=[]) %}
