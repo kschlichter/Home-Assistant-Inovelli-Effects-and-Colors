@@ -17,6 +17,7 @@
   * Zigbee:
     * [VZM31-SN Blue Series 2-in-1 Dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
     * [VZM35-SN Blue Series 3-Speed Fan Switch](https://inovelli.com/products/blue-series-fan-switch-zigbee-3-0)
+    * [DZM32-SN Blue Series mmWave Presence Sensor Dimmer](https://inovelli.com/products/zigbee-matter-blue-series-mmwave-presence-sensor-smart-dimmer-switch)
   
   
     
