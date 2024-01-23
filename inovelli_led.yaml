@@ -42,7 +42,7 @@ fields:
             model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN 
           - integration: mqtt
             manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN)
 
   group:
     name: Group
@@ -93,6 +93,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: Inovelli Fan Controller (VZM35-SN)
 
   entity:
     name: Entity
@@ -552,6 +555,29 @@ variables:
     siren slow: 19
     siren fast: 18
     solid: 1
+    
+  ### Blue Series Fan ###
+  VZM35SN_effects:
+    "off": 0
+    aurora: 8
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase slow: 16
+    chase: 5
+    chase fast: 17
+    fall slow: 9
+    fall medium: 10
+    fall fast: 11
+    open close: 6
+    pulse: 4
+    rise slow: 12
+    rise medium: 13
+    rise fast: 14
+    small to big: 7
+    siren slow: 19
+    siren fast: 18
+    solid: 1
 
   ##################
   # Store model names for RED and BLUE versions for reference and validation checks if necessary
@@ -565,7 +591,8 @@ variables:
     - VZW31-SN # Red 800 series dimmer
 
   zigbee_models: # BLUE
-    - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # blue_dimmer_switch
+    - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer
+    - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan
 
   ##################
   # Allowed domains to limit which types of entities are processed
@@ -880,6 +907,17 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if is_device_attr(ent,'model','Inovelli 2-in-1 switch + dimmer (VZM31-SN)') and ent.split('.')[0] == 'light' %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+            
+        - device_type: VZM35SN
+          call_type: z2m
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if is_device_attr(ent,'model','Inovelli Fan Controller (VZM35-SN)') and ent.split('.')[0] == 'fan' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
