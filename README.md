@@ -17,10 +17,8 @@
   * Zigbee:
     * [VZM31-SN Blue Series 2-in-1 Dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
     * [VZM35-SN Blue Series 3-Speed Fan Switch](https://inovelli.com/products/blue-series-fan-switch-zigbee-3-0)
-    * [DZM32-SN Blue Series mmWave Presence Sensor Dimmer](https://inovelli.com/products/zigbee-matter-blue-series-mmwave-presence-sensor-smart-dimmer-switch)
   
   
-    
   **Features**
   This script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers.  Devices of different types can be set in a single call.  It will accept entities of Inovelli devices, the device itself in the form of the device ID, or an area ID to set all Inovelli devices in that area.
 
