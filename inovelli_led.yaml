@@ -1082,7 +1082,7 @@ sequence:
                               {% elif repeat.item.device_type == "LZW36_fan" %}
                                 {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "VZW31SN" %}
-                                {{ (color_set[color] * 65536) + (brightness*10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}
+                                {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}
                               {% endif %}
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
