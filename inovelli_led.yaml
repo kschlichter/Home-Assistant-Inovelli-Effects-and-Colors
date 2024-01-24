@@ -30,7 +30,7 @@ fields:
   area:
     name: Area
     description: Area names or IDs containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, or VZW31-SN devices.  Mix and match types as you like.
+      LZW36, VZW31-SN, VZM31-SN, VZM35 devices.  Mix and match types as you like.
     required: false
     example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
     selector:
@@ -42,13 +42,13 @@ fields:
             model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN 
           - integration: mqtt
             manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN) ###, Inovelli Fan Controller (VZM35-SN)
+            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN)
 
   group:
     name: Group
     description: >-
       Group names or IDs for groups containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, or VZW31-SN devices.  Mix and match types as you like.
+      LZW36, VZW31-SN, VZM31-SN, VZM35 devices.  Mix and match types as you like.
     required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -65,7 +65,7 @@ fields:
     name: Device
     description: >-
       Device IDs for Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, or VZW31-SN devices.  Mix and match types as you like.
+      LZW36, VZW31-SN, VZM31-SN, VZM35 devices.  Mix and match types as you like.
     required: false
     example: '0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -95,14 +95,14 @@ fields:
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
           - integration: mqtt
             manufacturer: Inovelli
-            model: Inovelli Fan Controller (VZM35-SN)
+            model: Inovelli Fan Controller (VZM35)
 
   entity:
     name: Entity
     description: >-
       The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
       a comma separated list of Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, or VZW31-SN devices.  Mix and match types as you like.
+      LZW36, VZW31-SN, VZM31-SN, VZM35 devices.  Mix and match types as you like.
     required: false
     example: light.office, fan.guest_room
     selector:
@@ -240,22 +240,22 @@ fields:
           - "off"
           - Aurora
           - Blink Fast
-          - Blink medium
+          - Blink Medium
           - Blink Slow
-          - Chase Slow
-          - Chase
           - Chase Fast
-          - Fall Slow
-          - Fall Medium
+          - Chase Medium
+          - Chase Slow
           - Fall Fast
+          - Fall Medium
+          - Fall Slow
           - Open Close
           - Pulse
-          - Rise Slow
-          - Rise Medium
           - Rise Fast
-          - Small to Big
-          - Siren Slow
+          - Rise Medium
+          - Rise Slow
           - Siren Fast
+          - Siren Slow
+          - Small to Big
           - Solid
 
   brightness:
@@ -365,220 +365,243 @@ variables:
   LZW30_effects:
     "off": 0
     aurora: 0
+    blink: 0
     blink fast: 0
     blink medium: 0
     blink slow: 0
-    chase slow: 0
     chase: 0
     chase fast: 0
-    fall slow: 0
-    fall medium: 0
+    chase medium: 0
+    chase slow: 0
     fall fast: 0
+    fall medium: 0
+    fall slow: 0
     open close: 0
     pulse: 0
-    rise slow: 0
-    rise medium: 0
     rise fast: 0
-    small to big: 0
-    siren slow: 0
+    rise medium: 0
+    rise slow: 0
     siren fast: 0
+    siren slow: 0
+    small to big: 0
     solid: 0
+    fast blink: 0
+    slow blink: 0
 
   ### Black 500 Series Dimmer ###
   LZW31_effects:
     "off": 0
     aurora: 0
+    blink: 0
     blink fast: 0
     blink medium: 0
     blink slow: 0
-    chase slow: 0
     chase: 0
     chase fast: 0
-    fall slow: 0
-    fall medium: 0
+    chase medium: 0
+    chase slow: 0
     fall fast: 0
+    fall medium: 0
+    fall slow: 0
     open close: 0
     pulse: 0
-    rise slow: 0
-    rise medium: 0
     rise fast: 0
-    small to big: 0
-    siren slow: 0
+    rise medium: 0
+    rise slow: 0
     siren fast: 0
+    siren slow: 0
+    small to big: 0
     solid: 0
+    fast blink: 0
+    slow blink: 0
    
   ### Red 500 Series Switch ###
   LZW30SN_effects:
     "off": 0
-    solid: 1
-    fast blink: 2
-    chase: 2
-    slow blink: 3
-    blink: 3
-    pulse: 4
     aurora: 4
+    blink: 3
     blink fast: 2
     blink medium: 3
     blink slow: 3
-    chase slow: 3
+    chase: 2
     chase fast: 2
-    fall slow: 3
-    fall medium: 3
+    chase medium: 2
+    chase slow: 3
     fall fast: 2
+    fall medium: 3
+    fall slow: 3
     open close: 4
-    rise slow: 3
-    rise medium: 3
+    pulse: 4
     rise fast: 2
-    small to big: 4
-    siren slow: 4
+    rise medium: 3
+    rise slow: 3
     siren fast: 4
+    siren slow: 4
+    small to big: 4
+    solid: 1
+    fast blink: 2
+    slow blink: 3
 
   ### Red 500 Series Dimmer ###
   LZW31SN_effects:
     "off": 0
-    solid: 1
-    chase: 2
-    fast blink: 3
-    slow blink: 4
+    aurora: 4
     blink: 4
-    pulse: 5
-    aurora: 2
     blink fast: 3
     blink medium: 4
     blink slow: 4
-    chase slow: 2
+    chase: 2
     chase fast: 2
-    fall slow: 2
-    fall medium: 2
+    chase medium: 2
+    chase slow: 2
     fall fast: 2
-    open close: 5
-    rise slow: 2
-    rise medium: 2
+    fall medium: 2
+    fall slow: 2
+    open close: 2
+    pulse: 5
     rise fast: 2
-    small to big: 5
-    siren slow: 5
-    siren fast: 5
+    rise medium: 2
+    rise slow: 2
+    siren slow: 2
+    siren fast: 2
+    small to big: 2
+    solid: 1
+    fast blink: 3
+    slow blink: 4
 
   ### Red 500 Series Fan Light Combo ###
   LZW36_light_effects:
     "off": 0
-    solid: 1
-    chase: 2
-    fast blink: 3
-    slow blink: 4
+    aurora: 4
     blink: 4
-    pulse: 5
-    aurora: 2
     blink fast: 3
     blink medium: 4
     blink slow: 4
-    chase slow: 2
+    chase: 2
     chase fast: 2
-    fall slow: 2
-    fall medium: 2
+    chase medium: 2
+    chase slow: 2
     fall fast: 2
-    open close: 5
-    rise slow: 2
-    rise medium: 2
+    fall medium: 2
+    fall slow: 2
+    open close: 2
+    pulse: 5
     rise fast: 2
-    small to big: 5
-    siren slow: 5
-    siren fast: 5
+    rise medium: 2
+    rise slow: 2
+    siren slow: 2
+    siren fast: 2
+    small to big: 2
+    solid: 1
+    fast blink: 3
+    slow blink: 4
 
   LZW36_fan_effects:
     "off": 0
-    solid: 1
-    chase: 2
-    fast blink: 3
-    slow blink: 4
+    aurora: 4
     blink: 4
-    pulse: 5
-    aurora: 2
     blink fast: 3
     blink medium: 4
     blink slow: 4
-    chase slow: 2
+    chase: 2
     chase fast: 2
-    fall slow: 2
-    fall medium: 2
+    chase medium: 2
+    chase slow: 2
     fall fast: 2
-    open close: 5
-    rise slow: 2
-    rise medium: 2
+    fall medium: 2
+    fall slow: 2
+    open close: 2
+    pulse: 5
     rise fast: 2
-    small to big: 5
-    siren slow: 5
-    siren fast: 5
+    rise medium: 2
+    rise slow: 2
+    siren slow: 2
+    siren fast: 2
+    small to big: 2
+    solid: 1
+    fast blink: 3
+    slow blink: 4
 
   ### Red 800 Series Dimmer ###
   VZW31SN_effects:
     "off": 0
     aurora: 8
+    blink: 15
     blink fast: 2
     blink medium: 15
     blink slow: 3
-    chase slow: 16
     chase: 5
     chase fast: 17
-    fall slow: 9
-    fall medium: 10
+    chase medium: 5
+    chase slow: 16
     fall fast: 11
+    fall medium: 10
+    fall slow: 9
     open close: 6
     pulse: 4
-    rise slow: 12
-    rise medium: 13
     rise fast: 14
-    small to big: 7
-    siren slow: 19
+    rise medium: 13
+    rise slow: 12
     siren fast: 18
+    siren slow: 19
+    small to big: 7
     solid: 1
+    fast blink: 2
+    slow blink: 3
 
   ### Blue Series Dimmer ###
   VZM31SN_effects:
     "off": 0
     aurora: 8
+    blink: 15
     blink fast: 2
     blink medium: 15
     blink slow: 3
-    chase slow: 16
     chase: 5
     chase fast: 17
-    fall slow: 9
-    fall medium: 10
+    chase medium: 5
+    chase slow: 16
     fall fast: 11
+    fall medium: 10
+    fall slow: 9
     open close: 6
     pulse: 4
-    rise slow: 12
-    rise medium: 13
     rise fast: 14
-    small to big: 7
-    siren slow: 19
+    rise medium: 13
+    rise slow: 12
     siren fast: 18
+    siren slow: 19
+    small to big: 7
     solid: 1
+    fast blink: 2
+    slow blink: 3
     
   ### Blue Series Fan ###
-  ### Same as Blue Dimmer? ###
-  #VZM35SN_effects:
-  #  "off": 0
-  #  aurora: 8
-  #  blink fast: 2
-  #  blink medium: 15
-  #  blink slow: 3
-  #  chase slow: 16
-  #  chase: 5
-  #  chase fast: 17
-  #  fall slow: 9
-  #  fall medium: 10
-  #  fall fast: 11
-  #  open close: 6
-  #  pulse: 4
-  #  rise slow: 12
-  #  rise medium: 13
-  #  rise fast: 14
-  #  small to big: 7
-  #  siren slow: 19
-  #  siren fast: 18
-  #  solid: 1
+  VZM35SN_effects:
+    "off": 0
+    aurora: 8
+    blink: 15
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase: 5
+    chase fast: 17
+    chase medium: 5
+    chase slow: 16
+    fall fast: 11
+    fall medium: 10
+    fall slow: 9
+    open close: 6
+    pulse: 4
+    rise fast: 14
+    rise medium: 13
+    rise slow: 12
+    siren fast: 18
+    siren slow: 19
+    small to big: 7
+    solid: 1
+    fast blink: 2
+    slow blink: 3
 
   ##################
   # Store model names for RED and BLUE versions for reference and validation checks if necessary
@@ -593,7 +616,7 @@ variables:
 
   zigbee_models: # BLUE
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer
-    #- Inovelli Fan Controller (VZM35-SN)         # Blue Series fan
+    - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan
 
   ##################
   # Allowed domains to limit which types of entities are processed
