@@ -30,7 +30,7 @@ fields:
   area:
     name: Area
     description: Area names or IDs containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, VZW31-SN, VZM31-SN, VZM35 devices.  Mix and match types as you like.
+      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
     required: false
     example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
     selector:
@@ -48,7 +48,7 @@ fields:
     name: Group
     description: >-
       Group names or IDs for groups containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, VZW31-SN, VZM31-SN, VZM35 devices.  Mix and match types as you like.
+      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
     required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -65,7 +65,7 @@ fields:
     name: Device
     description: >-
       Device IDs for Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, VZW31-SN, VZM31-SN, VZM35 devices.  Mix and match types as you like.
+      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
     required: false
     example: '0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -95,14 +95,14 @@ fields:
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
           - integration: mqtt
             manufacturer: Inovelli
-            model: Inovelli Fan Controller (VZM35)
+            model: Inovelli Fan Controller (VZM35-SN)
 
   entity:
     name: Entity
     description: >-
       The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
       a comma separated list of Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, VZW31-SN, VZM31-SN, VZM35 devices.  Mix and match types as you like.
+      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
     required: false
     example: light.office, fan.guest_room
     selector:
@@ -554,23 +554,23 @@ variables:
     "off": 0
     aurora: 8
     blink: 15
-    blink fast: 2
+    blink fast: 3
     blink medium: 15
-    blink slow: 3
+    blink slow: 4
     chase: 5
     chase fast: 17
-    chase medium: 5
+    chase medium: 2
     chase slow: 16
     fall fast: 11
     fall medium: 10
     fall slow: 9
     open close: 6
-    pulse: 4
+    pulse: 5
     rise fast: 14
     rise medium: 13
     rise slow: 12
-    siren fast: 18
-    siren slow: 19
+    siren fast: 17
+    siren slow: 16
     small to big: 7
     solid: 1
     fast blink: 2
@@ -596,8 +596,8 @@ variables:
     rise fast: 14
     rise medium: 13
     rise slow: 12
-    siren fast: 18
-    siren slow: 19
+    siren fast: 19
+    siren slow: 18
     small to big: 7
     solid: 1
     fast blink: 2
