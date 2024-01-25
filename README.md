@@ -7,14 +7,18 @@
   [Home Assistant Forum Post](https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-dimmers-switches-and-combo-fan-lights-by-area-device-or-entity/421862)
 
   Supported Inovelli devices:
-  * LZW30-SN Red Series switch
-  * LZW31-SN Red Series dimmer
-  * LZW36 Red Series fan / light combo
-  * [VZW31-SN Red 800 Series 2-in-1 dimmer](https://inovelli.com/products/z-wave-800-red-series-smart-2-1-on-off-dimmer-switch)
-  * [VZM31-SN Blue Series (Zigbee) 2-in-1 dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
+  * Z-Wave:
+    * [LZW30 Black 500 Series Switch](https://help.inovelli.com/en/articles/8454923-black-series-on-off-switch-manual)
+    * [LZW31 Black 500 series Dimmer](https://inovelli.com/products/z-wave-black-series-smart-dimmer-switch)
+    * [LZW30-SN Red 500 Series Switch](https://help.inovelli.com/en/articles/8453781-red-series-on-off-switch-manual)
+    * [LZW31-SN Red 500 Series Dimmer](https://help.inovelli.com/en/articles/8319390-red-series-dimmer-switch-manual)
+    * [LZW36 Red 500 Series Fan / Light Combo](https://help.inovelli.com/en/articles/8483467-red-series-fan-light-switch-manual)
+    * [VZW31-SN Red 800 Series 2-in-1 Dimmer](https://inovelli.com/products/z-wave-800-red-series-smart-2-1-on-off-dimmer-switch)
+  * Zigbee:
+    * [VZM31-SN Blue Series 2-in-1 Dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
+    * [VZM35-SN Blue Series 3-Speed Fan Switch](https://inovelli.com/products/blue-series-fan-switch-zigbee-3-0)
   
   
-    
   **Features**
   This script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers.  Devices of different types can be set in a single call.  It will accept entities of Inovelli devices, the device itself in the form of the device ID, or an area ID to set all Inovelli devices in that area.
 

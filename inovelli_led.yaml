@@ -17,7 +17,7 @@ alias: Inovelli LED Settings and Effects
 #   color: (string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
 #
 # Effects not working?  Check that your device supports the effect you're selecting at https://inovelliusa.github.io/inovelli-switch-toolbox/
-#   Effects that are not supported on a specific device are remapped to a supported effect.  
+#   Effects that are not supported on a specific device are remapped to a supported effect.  Black 500 Series devices do not support effects.
 ############
 description: >-
   Handles setting the LED colors and notifications on Inovelli "Red" and "Blue"
@@ -29,7 +29,8 @@ fields:
 
   area:
     name: Area
-    description: Area names or IDs containing Inovelli devices.
+    description: Area names or IDs containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
+      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
     required: false
     example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
     selector:
@@ -38,16 +39,16 @@ fields:
         device:
           - integration: zwave_js
             manufacturer: Inovelli
-            model: LZW36, LZW30-SN, LZW31-SN, VZW31-SN
+            model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN 
           - integration: mqtt
             manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN)
 
   group:
     name: Group
     description: >-
-      Group names or IDs for groups containing Inovelli LZW36, LZW30-SN, LZW31-SN,
-      VZW31-SN devices.  Mix and match types as you like.
+      Group names or IDs for groups containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
+      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
     required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -63,8 +64,8 @@ fields:
   device:
     name: Device
     description: >-
-      Device IDs for Inovelli LZW36, LZW30-SN, LZW31-SN, VZM31-SN, VZW31-SN
-      device IDs.  Mix and match types as you like.
+      Device IDs for Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
+      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
     required: false
     example: '0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -73,7 +74,10 @@ fields:
         filter:
           - integration: zwave_js
             manufacturer: Inovelli
-            model: LZW36
+            model: LZW30
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW31
           - integration: zwave_js
             manufacturer: Inovelli
             model: LZW30-SN
@@ -82,16 +86,23 @@ fields:
             model: LZW31-SN
           - integration: zwave_js
             manufacturer: Inovelli
+            model: LZW36
+          - integration: zwave_js
+            manufacturer: Inovelli
             model: VZW31-SN
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: Inovelli Fan Controller (VZM35-SN)
 
   entity:
     name: Entity
     description: >-
       The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
-      a comma separated list. Mix and match types as you like.
+      a comma separated list of Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
+      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
     required: false
     example: light.office, fan.guest_room
     selector:
@@ -229,22 +240,22 @@ fields:
           - "off"
           - Aurora
           - Blink Fast
-          - Blink medium
+          - Blink Medium
           - Blink Slow
-          - Chase Slow
-          - Chase
           - Chase Fast
-          - Fall Slow
-          - Fall Medium
+          - Chase Medium
+          - Chase Slow
           - Fall Fast
+          - Fall Medium
+          - Fall Slow
           - Open Close
           - Pulse
-          - Rise Slow
-          - Rise Medium
           - Rise Fast
-          - Small to Big
-          - Siren Slow
+          - Rise Medium
+          - Rise Slow
           - Siren Fast
+          - Siren Slow
+          - Small to Big
           - Solid
 
   brightness:
@@ -350,166 +361,262 @@ variables:
     forever: 255
     indefinitely: 255
 
-  ### Red Series Switch ###
+  ### Black 500 Series Dimmer ###
+  LZW30_effects:
+    "off": 0
+    aurora: 0
+    blink: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase: 0
+    chase fast: 0
+    chase medium: 0
+    chase slow: 0
+    fall fast: 0
+    fall medium: 0
+    fall slow: 0
+    open close: 0
+    pulse: 0
+    rise fast: 0
+    rise medium: 0
+    rise slow: 0
+    siren fast: 0
+    siren slow: 0
+    small to big: 0
+    solid: 0
+    fast blink: 0
+    slow blink: 0
+
+  ### Black 500 Series Dimmer ###
+  LZW31_effects:
+    "off": 0
+    aurora: 0
+    blink: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase: 0
+    chase fast: 0
+    chase medium: 0
+    chase slow: 0
+    fall fast: 0
+    fall medium: 0
+    fall slow: 0
+    open close: 0
+    pulse: 0
+    rise fast: 0
+    rise medium: 0
+    rise slow: 0
+    siren fast: 0
+    siren slow: 0
+    small to big: 0
+    solid: 0
+    fast blink: 0
+    slow blink: 0
+   
+  ### Red 500 Series Switch ###
   LZW30SN_effects:
     "off": 0
-    solid: 1
-    fast blink: 2
-    chase: 2
-    slow blink: 3
-    blink: 3
-    pulse: 4
     aurora: 4
+    blink: 3
     blink fast: 2
     blink medium: 3
     blink slow: 3
-    chase slow: 3
+    chase: 2
     chase fast: 2
-    fall slow: 3
-    fall medium: 3
+    chase medium: 2
+    chase slow: 3
     fall fast: 2
+    fall medium: 3
+    fall slow: 3
     open close: 4
-    rise slow: 3
-    rise medium: 3
+    pulse: 4
     rise fast: 2
-    small to big: 4
-    siren slow: 4
+    rise medium: 3
+    rise slow: 3
     siren fast: 4
+    siren slow: 4
+    small to big: 4
+    solid: 1
+    fast blink: 2
+    slow blink: 3
 
-  ### Red Series Dimmer ###
+  ### Red 500 Series Dimmer ###
   LZW31SN_effects:
     "off": 0
-    solid: 1
-    chase: 2
-    fast blink: 3
-    slow blink: 4
+    aurora: 4
     blink: 4
-    pulse: 5
-    aurora: 2
     blink fast: 3
     blink medium: 4
     blink slow: 4
-    chase slow: 2
+    chase: 2
     chase fast: 2
-    fall slow: 2
-    fall medium: 2
+    chase medium: 2
+    chase slow: 2
     fall fast: 2
-    open close: 5
-    rise slow: 2
-    rise medium: 2
+    fall medium: 2
+    fall slow: 2
+    open close: 2
+    pulse: 5
     rise fast: 2
-    small to big: 5
-    siren slow: 5
-    siren fast: 5
+    rise medium: 2
+    rise slow: 2
+    siren slow: 2
+    siren fast: 2
+    small to big: 2
+    solid: 1
+    fast blink: 3
+    slow blink: 4
 
-  ### Red Series Fan Light Combo ###
+  ### Red 500 Series Fan Light Combo ###
   LZW36_light_effects:
     "off": 0
-    solid: 1
-    chase: 2
-    fast blink: 3
-    slow blink: 4
+    aurora: 4
     blink: 4
-    pulse: 5
-    aurora: 2
     blink fast: 3
     blink medium: 4
     blink slow: 4
-    chase slow: 2
+    chase: 2
     chase fast: 2
-    fall slow: 2
-    fall medium: 2
+    chase medium: 2
+    chase slow: 2
     fall fast: 2
-    open close: 5
-    rise slow: 2
-    rise medium: 2
+    fall medium: 2
+    fall slow: 2
+    open close: 2
+    pulse: 5
     rise fast: 2
-    small to big: 5
-    siren slow: 5
-    siren fast: 5
+    rise medium: 2
+    rise slow: 2
+    siren slow: 2
+    siren fast: 2
+    small to big: 2
+    solid: 1
+    fast blink: 3
+    slow blink: 4
 
   LZW36_fan_effects:
     "off": 0
-    solid: 1
-    chase: 2
-    fast blink: 3
-    slow blink: 4
+    aurora: 4
     blink: 4
-    pulse: 5
-    aurora: 2
     blink fast: 3
     blink medium: 4
     blink slow: 4
-    chase slow: 2
+    chase: 2
     chase fast: 2
-    fall slow: 2
-    fall medium: 2
+    chase medium: 2
+    chase slow: 2
     fall fast: 2
-    open close: 5
-    rise slow: 2
-    rise medium: 2
+    fall medium: 2
+    fall slow: 2
+    open close: 2
+    pulse: 5
     rise fast: 2
-    small to big: 5
-    siren slow: 5
-    siren fast: 5
+    rise medium: 2
+    rise slow: 2
+    siren slow: 2
+    siren fast: 2
+    small to big: 2
+    solid: 1
+    fast blink: 3
+    slow blink: 4
 
   ### Red 800 Series Dimmer ###
   VZW31SN_effects:
     "off": 0
     aurora: 8
+    blink: 15
     blink fast: 2
     blink medium: 15
     blink slow: 3
-    chase slow: 16
     chase: 5
     chase fast: 17
-    fall slow: 9
-    fall medium: 10
+    chase medium: 5
+    chase slow: 16
     fall fast: 11
+    fall medium: 10
+    fall slow: 9
     open close: 6
     pulse: 4
-    rise slow: 12
-    rise medium: 13
     rise fast: 14
-    small to big: 7
-    siren slow: 19
+    rise medium: 13
+    rise slow: 12
     siren fast: 18
+    siren slow: 19
+    small to big: 7
     solid: 1
+    fast blink: 2
+    slow blink: 3
 
   ### Blue Series Dimmer ###
   VZM31SN_effects:
     "off": 0
     aurora: 8
+    blink: 15
+    blink fast: 3
+    blink medium: 15
+    blink slow: 4
+    chase: 5
+    chase fast: 17
+    chase medium: 2
+    chase slow: 16
+    fall fast: 11
+    fall medium: 10
+    fall slow: 9
+    open close: 6
+    pulse: 5
+    rise fast: 14
+    rise medium: 13
+    rise slow: 12
+    siren fast: 17
+    siren slow: 16
+    small to big: 7
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+    
+  ### Blue Series Fan ###
+  VZM35SN_effects:
+    "off": 0
+    aurora: 8
+    blink: 15
     blink fast: 2
     blink medium: 15
     blink slow: 3
-    chase slow: 16
     chase: 5
     chase fast: 17
-    fall slow: 9
-    fall medium: 10
+    chase medium: 5
+    chase slow: 16
     fall fast: 11
+    fall medium: 10
+    fall slow: 9
     open close: 6
     pulse: 4
-    rise slow: 12
-    rise medium: 13
     rise fast: 14
+    rise medium: 13
+    rise slow: 12
+    siren fast: 19
+    siren slow: 18
     small to big: 7
-    siren slow: 19
-    siren fast: 18
     solid: 1
+    fast blink: 2
+    slow blink: 3
 
   ##################
   # Store model names for RED and BLUE versions for reference and validation checks if necessary
   ##################
-  zwave_models: # RED
-    - LZW31-SN # dimmer
-    - LZW30-SN # switch
-    - LZW36 # combo_light, combo_fan
-    - VZW31-SN # 800 series dimmer
+  zwave_models:
+    - LZW30    # Black 500 Series switch
+    - LZW31    # Black 500 Series dimmer
+    - LZW31-SN # Red 500 Series dimmer
+    - LZW30-SN # Red 500 Series switch
+    - LZW36    # Red 500 Series combo_light, combo_fan
+    - VZW31-SN # Red 800 series dimmer
 
   zigbee_models: # BLUE
-    - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # blue_dimmer_switch
+    - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer
+    - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan
 
   ##################
   # Allowed domains to limit which types of entities are processed
@@ -523,6 +630,24 @@ variables:
 # There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
 ##################
   parameters:
+    LZW30_effect_bulk: "null"
+    LZW30_effect_color: "null"
+    LZW30_effect_brightness: "null"
+    LZW30_effect_duration: "null"
+    LZW30_effect_effect: "null"
+    LZW30_ledcolor: "LED Indicator Color"
+    LZW30_ledbrightness: "LED Indicator Intensity (When on)"
+    LZW30_ledbrightness_off: "LED Indicator Intensity (When Off)"
+    
+    LZW31_effect_bulk: "null"
+    LZW31_effect_color: "null"
+    LZW31_effect_brightness: "null"
+    LZW31_effect_duration: "null"
+    LZW31_effect_effect: "null"
+    LZW31_ledcolor: "LED Indicator Color"
+    LZW31_ledbrightness: "LED Indicator Intensity"
+    LZW31_ledbrightness_off: "LED Indicator Intensity (When Off)"
+  
     LZW31SN_effect_bulk: 16
     LZW31SN_effect_color: "LED Indicator: Effect Color"
     LZW31SN_effect_brightness: "LED Indicator: Effect Brightness"
@@ -717,12 +842,26 @@ sequence:
   ##################
   - repeat:
       for_each:
-        - device_type: LZW31SN
+          ##################
+          # Z-Wave
+          ##################          
+        - device_type: LZW30
           call_type: zwave_js
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','LZW31-SN') and ent.split('.')[0] == 'light' %}
+              {% if is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+        - device_type: LZW31
+          call_type: zwave_js
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if is_device_attr(ent,'model','LZW31') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -734,6 +873,17 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if is_device_attr(ent,'model','LZW30-SN') and ent.split('.')[0] == 'switch' %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+        - device_type: LZW31SN
+          call_type: zwave_js
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if is_device_attr(ent,'model','LZW31-SN') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -760,18 +910,7 @@ sequence:
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
-
-        - device_type: blue_dimmer_switch
-          call_type: z2m
-          entities: >-
-            {% set entities = namespace(entities=[]) %}
-            {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','Inovelli 2-in-1 switch + dimmer (VZM31-SN)') and ent.split('.')[0] == 'light' %}
-                {% set entities.entities = entities.entities + [ent] %}
-              {% endif %}
-            {% endfor %}
-            {{ entities.entities }}
-
+            
         - device_type: VZW31SN
           call_type: zwave_js
           entities: >-
@@ -783,8 +922,32 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
-      sequence:
+          ##################
+          # Zigbee
+          ##################
+        - device_type: VZM31SN
+          call_type: z2m
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if is_device_attr(ent,'model','Inovelli 2-in-1 switch + dimmer (VZM31-SN)') and ent.split('.')[0] == 'light' %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+            
+        - device_type: VZM35SN
+          call_type: z2m
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if is_device_attr(ent,'model','Inovelli Fan Controller (VZM35-SN)') and ent.split('.')[0] == 'fan' %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
 
+      sequence:
         ##################
         # Do not continue if we don't have at least one entity of this type
         ##################
@@ -920,7 +1083,8 @@ sequence:
         ##################
         - choose:
             - conditions: >-
-                {{ effect != "off" and  color != "no change" and  duration != "invalid" and  brightness != 11 }}
+                {{ effect != "off" and  color != "no change" and  duration != "invalid" and brightness != 11 and 
+                   repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
               sequence:
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
@@ -942,7 +1106,7 @@ sequence:
                               {% elif repeat.item.device_type == "LZW36_fan" %}
                                 {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "VZW31SN" %}
-                                {{ (color_set[color] * 65536) + (brightness*10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}
+                                {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}
                               {% endif %}
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
@@ -966,7 +1130,7 @@ sequence:
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
             ##################
             - choose:
-                - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
+                - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}"
                   sequence:
                     # Zwave JS
                     - service: zwave_js.set_config_parameter
