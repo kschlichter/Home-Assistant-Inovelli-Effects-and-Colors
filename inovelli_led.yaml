@@ -1,5 +1,9 @@
 alias: Inovelli LED Settings and Effects
 ############
+# Forum: https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-red-and-blue-dimmers-switches-and-combo-fan-lights-by-area-group-device-or-entity/421862
+#
+# Github: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors
+#
 # Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
 #
 # Required for setting the LED indicator
