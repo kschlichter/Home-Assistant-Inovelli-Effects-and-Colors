@@ -20,7 +20,7 @@
   
   
   **Features**
-  This script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers.  Devices of different types can be set in a single call.  It will accept entities of Inovelli devices, the device itself in the form of the device ID, or an area ID to set all Inovelli devices in that area.
+  This script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series.  Devices of different types can be called simultaneously.  It will accept entities of Inovelli devices, the device itself in the form of the device ID, groups of entities, or areas and find all Inovelli devices in that area.
 
   The  LED indicator can be set alongside an effect in a single call so that an indicator color change doesn't clear the effect (this does restart the duration timer, however). For example, setting "chase" for 1 second with a red indicator LED is a nice notification that something changed without being overly obnoxious and distracting (like setting "fast blink" with an infinite duration).  The effect wears off after one second, but the indicator stays red afterwards.
   
