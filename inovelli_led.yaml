@@ -1,4 +1,3 @@
-alias: Inovelli LED Settings and Effects
 ############
 # Forum: https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-red-and-blue-dimmers-switches-and-combo-fan-lights-by-area-group-device-or-entity/421862
 #
@@ -20,22 +19,27 @@ alias: Inovelli LED Settings and Effects
 #   brightness: (integer 1 – 10) Sets the brightness of the LED's effect
 #   color: (string) Sets color of LED effect.
 #
-# Effects not working?  Black 500 Series devices do not support effects.
+# Effects not working?
+#   Black 500 Series devices do not support effects.
 #   Check that your device supports the effect you're selecting at https://inovelliusa.github.io/inovelli-switch-toolbox/
 ############
-description: >-
-  Handles setting the LED colors and notifications on Inovelli "Black", "Red 500", "Red 800" and "Blue"
-  series switches and dimmers through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series
-  can be used together, and can be called by area, group, device, and / or entity.
+
 mode: parallel
-max: 100 # Default max is 10, which might be an issue if you have a lot of switches
+max: 100 # Default max is 10, which might be an issue if you have a lot of switches and you're calling the script per entity for some goofy reason.
+
+
+alias: Inovelli LED Settings and Effects Debug
+description: >-
+    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800" and "Blue" series switches, dimmers, and fan controllers
+    through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series can be used together,
+    and can be called by area, group, device, and entity.
+
 
 fields:
 
   area:
     name: Area
-    description: Area names or IDs containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
+    description: Area names or IDs containing Inovelli devices.  Mix and match types as you like.
     required: false
     example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
     selector:
@@ -44,16 +48,14 @@ fields:
         device:
           - integration: zwave_js
             manufacturer: Inovelli
-            model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN 
+            model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN)
 
   group:
     name: Group
-    description: >-
-      Group names or IDs for groups containing Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
+    description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
     required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -68,9 +70,7 @@ fields:
 
   device:
     name: Device
-    description: >-
-      Device IDs for Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
+    description: Device IDs of Inovelli devices.  Mix and match types as you like.
     required: false
     example: '0249abdc634c12cbf6cdc06d7a507495'
     selector:
@@ -106,8 +106,7 @@ fields:
     name: Entity
     description: >-
       The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
-      a comma separated list of Inovelli LZW30, LZW31, LZW30-SN, LZW31-SN,
-      LZW36, VZW31-SN, VZM31-SN, VZM35-SN devices.  Mix and match types as you like.
+      a comma separated list of Inovelli devices.  Mix and match types as you like.
     required: false
     example: light.office, fan.guest_room
     selector:
@@ -232,7 +231,7 @@ fields:
           - 45 Minutes
           - 1 Hour
           - 2 Hours
-          - indefinitely
+          - Indefinitely
 
   effect:
     name: Effect
@@ -299,7 +298,7 @@ fields:
           - Pink
           - Hot Pink
           - White
-          
+
 
 variables:
 ##################
@@ -419,7 +418,7 @@ variables:
     solid: 0
     fast blink: 0
     slow blink: 0
-   
+
   ### Red 500 Series Switch ###
   LZW30SN_effects:
     "off": 0
@@ -580,7 +579,7 @@ variables:
     solid: 1
     fast blink: 2
     slow blink: 3
-    
+
   ### Blue Series Fan ###
   VZM35SN_effects:
     "off": 0
@@ -643,7 +642,7 @@ variables:
     LZW30_ledcolor: "LED Indicator Color"
     LZW30_ledbrightness: "LED Indicator Intensity (When on)"
     LZW30_ledbrightness_off: "LED Indicator Intensity (When Off)"
-    
+
     LZW31_effect_bulk: "null"
     LZW31_effect_color: "null"
     LZW31_effect_brightness: "null"
@@ -652,7 +651,7 @@ variables:
     LZW31_ledcolor: "LED Indicator Color"
     LZW31_ledbrightness: "LED Indicator Intensity"
     LZW31_ledbrightness_off: "LED Indicator Intensity (When Off)"
-  
+
     LZW31SN_effect_bulk: 16
     LZW31SN_effect_color: "LED Indicator: Effect Color"
     LZW31SN_effect_brightness: "LED Indicator: Effect Brightness"
@@ -849,7 +848,7 @@ sequence:
       for_each:
           ##################
           # Z-Wave
-          ##################          
+          ##################
         - device_type: LZW30
           call_type: zwave_js
           entities: >-
@@ -915,7 +914,7 @@ sequence:
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
-            
+
         - device_type: VZW31SN
           call_type: zwave_js
           entities: >-
@@ -940,7 +939,7 @@ sequence:
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
-            
+
         - device_type: VZM35SN
           call_type: z2m
           entities: >-
@@ -1088,7 +1087,7 @@ sequence:
         ##################
         - choose:
             - conditions: >-
-                {{ effect != "off" and  color != "no change" and  duration != "invalid" and brightness != 11 and 
+                {{ effect != "off" and  color != "no change" and  duration != "invalid" and brightness != 11 and
                    repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
               sequence:
                 - choose:
