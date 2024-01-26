@@ -20,8 +20,9 @@ alias: Inovelli LED Settings and Effects
 #   Effects that are not supported on a specific device are remapped to a supported effect.  Black 500 Series devices do not support effects.
 ############
 description: >-
-  Handles setting the LED colors and notifications on Inovelli "Red" and "Blue"
-  model switches and dimmers through the Zwave JS and zigbee2mqtt integrations.
+  Handles setting the LED colors and notifications on Inovelli "Black", "Red 500", "Red 800" and "Blue"
+  series switches and dimmers through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series
+  can be used together, and can be called by area, group, device, and / or entity.
 mode: parallel
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches
 
