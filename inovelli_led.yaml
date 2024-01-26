@@ -1,23 +1,23 @@
 alias: Inovelli LED Settings and Effects
 ############
 # Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
-#   Note that the on/off LZW30-SN switch has 1 fewer effect, which makes its math slightly different than the dimmers or other devices with a full LED bar.
 #
 # Required for setting the LED indicator
-#   LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
-#   LEDcolor_off: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
-#     Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the original Red Series devices do not
-#   LEDbrightness: (whole integer 1 – 10) Sets the brightness of the LED status when on.
-#   LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the LED status when off.
+#   LEDcolor: (int or string) Sets color of status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
+#   LEDbrightness: (whole integer 1 – 10) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
+# Optional
+#   LEDcolor_off: (int or string) Sets color of status LED when off, for devices that support this feature.
+#   LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the status LED when off, for devices that support this feature.
+#     Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the Black 500 and Red 500 Series devices do not.
 #
 # Required for setting LED effects
-#   duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Second", "Seconds", "Minute", or "Minutes", "Hour", "Hours", "Indefinitely", or "Forever".
-#   effect: (string) One of: "Off", "Solid", "Chase" (not available on switches), "Fast Blink", "Slow Blink", "Blink", or "Pulse".
+#   duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
+#   effect: (string): Where older devices don't support a new effect, that effect has been mapped to something else.
 #   brightness: (integer 1 – 10) Sets the brightness of the LED's effect
-#   color: (string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+#   color: (string) Sets color of LED effect.
 #
-# Effects not working?  Check that your device supports the effect you're selecting at https://inovelliusa.github.io/inovelli-switch-toolbox/
-#   Effects that are not supported on a specific device are remapped to a supported effect.  Black 500 Series devices do not support effects.
+# Effects not working?  Black 500 Series devices do not support effects.
+#   Check that your device supports the effect you're selecting at https://inovelliusa.github.io/inovelli-switch-toolbox/
 ############
 description: >-
   Handles setting the LED colors and notifications on Inovelli "Black", "Red 500", "Red 800" and "Blue"
