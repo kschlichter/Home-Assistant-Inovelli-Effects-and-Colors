@@ -28,7 +28,7 @@ mode: parallel
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches and you're calling the script per entity for some goofy reason.
 
 
-alias: Inovelli LED Settings and Effects Debug
+alias: Inovelli LED Settings and Effects
 description: >-
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800" and "Blue" series switches, dimmers, and fan controllers
     through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series can be used together,
