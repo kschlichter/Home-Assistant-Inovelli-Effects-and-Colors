@@ -33,321 +33,321 @@ mode: parallel
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches and you're calling the script per entity for some goofy reason.
 
 
-#blueprint:
-#  name: Inovelli LED Settings and Effects Blueprint
-#  domain: script
-#  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
-#  description: >-
-#    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" series switches, dimmers, and fan controllers
-#    through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series can be used together,
-#    and can be called by area, group, device, and entity.
-#  homeassistant:
-#    min_version: 2023.04.0
-#  input:
-
-alias: Inovelli LED Settings and Effects
-description: >-
+blueprint:
+  name: Inovelli LED Settings and Effects Blueprint
+  domain: script
+  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
+  description: >-
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" series switches, dimmers, and fan controllers
     through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series can be used together,
     and can be called by area, group, device, and entity.
-fields:
+  homeassistant:
+    min_version: 2023.04.0
+  input:
+
+#alias: Inovelli LED Settings and Effects
+#description: >-
+#    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" series switches, dimmers, and fan controllers
+#    through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series can be used together,
+#    and can be called by area, group, device, and entity.
+#fields:
 
 
-  area:
-    name: Area
-    description: Area names or IDs containing Inovelli devices.  Mix and match types as you like.
-    #required: false
-    example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
-    default: 'invalid'
-    selector:
-      area:
-        multiple: true
+    area:
+      name: Area
+      description: Area names or IDs containing Inovelli devices.  Mix and match types as you like.
+      #required: false
+      #example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
+      default: 'invalid'
+      selector:
+        area:
+          multiple: true
+          device:
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN)
+  
+    group:
+      name: Group
+      description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
+      #required: false
+      #example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
+      default: 'invalid'
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain:
+                - group
+                - fan
+                - light
+                - switch
+  
+    device:
+      name: Device
+      description: Device IDs of Inovelli devices.  Mix and match types as you like.
+      #required: false
+      #example: '0249abdc634c12cbf6cdc06d7a507495'
+      default: 'invalid'
+      selector:
         device:
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN)
-
-  group:
-    name: Group
-    description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
-    #required: false
-    example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
-    default: 'invalid'
-    selector:
-      entity:
-        multiple: true
-        filter:
-          - domain:
-              - group
-              - fan
-              - light
-              - switch
-
-  device:
-    name: Device
-    description: Device IDs of Inovelli devices.  Mix and match types as you like.
-    #required: false
-    example: '0249abdc634c12cbf6cdc06d7a507495'
-    default: 'invalid'
-    selector:
-      device:
-        multiple: true
-        filter:
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW36
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: VZW31-SN
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli Fan Controller (VZM35-SN)
-
-  entity:
-    name: Entity
-    description: >-
-      The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
-      a comma separated list of Inovelli devices.  Mix and match types as you like.
-    #required: false
-    example: light.office, fan.guest_room
-    default: 'invalid'
-    selector:
-      entity:
-        multiple: true
-        filter:
-          - domain:
-              - fan
-              - light
-              - switch
-            #model: LZW36 # Device model should really be an option for entities.
-
-  LEDcolor:
-    name: LED Color When On (non-effect)
-    description: Sets the color of the LED status, which indicates brightness levels.
-    #required: false
-    example: Blue
-    default: 'no change'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Red
-          - Orange
-          - Lemon
-          - Yellow
-          - Lime
-          - Green
-          - Cyan
-          - Teal
-          - Blue
-          - Purple
-          - Magenta
-          - Light Pink
-          - Pink
-          - Hot Pink
-          - White
-
-  LEDcolor_off:
-    name: LED Color When Off (non-effect)
-    description: Sets the color of the LED status, which indicates brightness levels.
-    #required: false
-    example: Blue
-    default: 'no change'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Red
-          - Orange
-          - Lemon
-          - Yellow
-          - Lime
-          - Green
-          - Cyan
-          - Teal
-          - Blue
-          - Purple
-          - Magenta
-          - Light Pink
-          - Pink
-          - Hot Pink
-          - White
-
-  LEDbrightness:
-    name: LED Brightness When On (non-effect)
-    description: Sets the brightness of the LED status when on. 0 means off.
-    #required: false
-    example: "6"
-    default: '11'
-    selector:
-      number:
-        min: 0
-        max: 10
-        step: 1
-        mode: slider
-
-  LEDbrightness_off:
-    name: LED Brightness When Off (non-effect)
-    description: Sets the brightness of the LED status when off. 0 means off.
-    #required: false
-    example: "2"
-    default: '11'
-    selector:
-      number:
-        min: 0
-        max: 10
-        step: 1
-        mode: slider
-
-  duration:
-    name: Duration of Effect
-    description: How long the effect will last.
-    #required: false
-    example: "Off"
-    default: 'invalid'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Forever
-          - 1 Second
-          - 2 Seconds
-          - 3 Seconds
-          - 4 Seconds
-          - 5 Seconds
-          - 6 Seconds
-          - 7 Seconds
-          - 8 Seconds
-          - 9 Seconds
-          - 10 Seconds
-          - 15 Seconds
-          - 20 Seconds
-          - 25 Seconds
-          - 30 Seconds
-          - 35 Seconds
-          - 40 Seconds
-          - 45 Seconds
-          - 50 Seconds
-          - 55 Seconds
-          - 60 Seconds
-          - 2 Minutes
-          - 3 Minutes
-          - 4 Minutes
-          - 5 Minutes
-          - 6 Minutes
-          - 7 Minutes
-          - 8 Minutes
-          - 9 Minutes
-          - 10 Minutes
-          - 15 Minutes
-          - 30 Minutes
-          - 45 Minutes
-          - 1 Hour
-          - 2 Hours
-          - Indefinitely
-
-  effect:
-    name: Effect
-    description: Type of effect
-    #required: false
-    example: Pulse
-    default: 'off'
-    selector:
-      select:
-        options:
-          - "off"
-          - Aurora
-          - Blink Fast
-          - Blink Medium
-          - Blink Slow
-          - Chase Fast
-          - Chase Medium
-          - Chase Slow
-          - Fall Fast
-          - Fall Medium
-          - Fall Slow
-          - Open Close
-          - Pulse
-          - Rise Fast
-          - Rise Medium
-          - Rise Slow
-          - Siren Fast
-          - Siren Slow
-          - Small to Big
-          - Solid
-
-  brightness:
-    name: Effect Brightness
-    description: Sets the brightness of the LED's effect.  0 means off.
-    #required: false
-    example: "8"
-    default: '11'
-    selector:
-      number:
-        min: 0
-        max: 10
-        step: 1
-        mode: slider
-
-  color:
-    name: Effect Color
-    description: Color of LED effect
-    #required: false
-    example: Red
-    default: 'no change'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Red
-          - Orange
-          - Lemon
-          - Yellow
-          - Lime
-          - Green
-          - Cyan
-          - Teal
-          - Blue
-          - Purple
-          - Magenta
-          - Light Pink
-          - Pink
-          - Hot Pink
-          - White
+          multiple: true
+          filter:
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW36
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: VZW31-SN
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli Fan Controller (VZM35-SN)
+  
+    entity:
+      name: Entity
+      description: >-
+        The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
+        a comma separated list of Inovelli devices.  Mix and match types as you like.
+      #required: false
+      #example: light.office, fan.guest_room
+      default: 'invalid'
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain:
+                - fan
+                - light
+                - switch
+              #model: LZW36 # Device model should really be an option for entities.
+  
+    LEDcolor:
+      name: LED Color When On (non-effect)
+      description: Sets the color of the LED status, which indicates brightness levels.
+      #required: false
+      #example: Blue
+      default: 'no change'
+      selector:
+        select:
+          options:
+            - "Off"
+            - Red
+            - Orange
+            - Lemon
+            - Yellow
+            - Lime
+            - Green
+            - Cyan
+            - Teal
+            - Blue
+            - Purple
+            - Magenta
+            - Light Pink
+            - Pink
+            - Hot Pink
+            - White
+  
+    LEDcolor_off:
+      name: LED Color When Off (non-effect)
+      description: Sets the color of the LED status, which indicates brightness levels.
+      #required: false
+      #example: Blue
+      default: 'no change'
+      selector:
+        select:
+          options:
+            - "Off"
+            - Red
+            - Orange
+            - Lemon
+            - Yellow
+            - Lime
+            - Green
+            - Cyan
+            - Teal
+            - Blue
+            - Purple
+            - Magenta
+            - Light Pink
+            - Pink
+            - Hot Pink
+            - White
+  
+    LEDbrightness:
+      name: LED Brightness When On (non-effect)
+      description: Sets the brightness of the LED status when on. 0 means off.
+      #required: false
+      #example: "6"
+      default: '11'
+      selector:
+        number:
+          min: 0
+          max: 10
+          step: 1
+          mode: slider
+  
+    LEDbrightness_off:
+      name: LED Brightness When Off (non-effect)
+      description: Sets the brightness of the LED status when off. 0 means off.
+      #required: false
+      #example: "2"
+      default: '11'
+      selector:
+        number:
+          min: 0
+          max: 10
+          step: 1
+          mode: slider
+  
+    duration:
+      name: Duration of Effect
+      description: How long the effect will last.
+      #required: false
+      #example: "Off"
+      default: 'invalid'
+      selector:
+        select:
+          options:
+            - "Off"
+            - Forever
+            - 1 Second
+            - 2 Seconds
+            - 3 Seconds
+            - 4 Seconds
+            - 5 Seconds
+            - 6 Seconds
+            - 7 Seconds
+            - 8 Seconds
+            - 9 Seconds
+            - 10 Seconds
+            - 15 Seconds
+            - 20 Seconds
+            - 25 Seconds
+            - 30 Seconds
+            - 35 Seconds
+            - 40 Seconds
+            - 45 Seconds
+            - 50 Seconds
+            - 55 Seconds
+            - 60 Seconds
+            - 2 Minutes
+            - 3 Minutes
+            - 4 Minutes
+            - 5 Minutes
+            - 6 Minutes
+            - 7 Minutes
+            - 8 Minutes
+            - 9 Minutes
+            - 10 Minutes
+            - 15 Minutes
+            - 30 Minutes
+            - 45 Minutes
+            - 1 Hour
+            - 2 Hours
+            - Indefinitely
+  
+    effect:
+      name: Effect
+      description: Type of effect
+      #required: false
+      #example: Pulse
+      default: 'off'
+      selector:
+        select:
+          options:
+            - "off"
+            - Aurora
+            - Blink Fast
+            - Blink Medium
+            - Blink Slow
+            - Chase Fast
+            - Chase Medium
+            - Chase Slow
+            - Fall Fast
+            - Fall Medium
+            - Fall Slow
+            - Open Close
+            - Pulse
+            - Rise Fast
+            - Rise Medium
+            - Rise Slow
+            - Siren Fast
+            - Siren Slow
+            - Small to Big
+            - Solid
+  
+    brightness:
+      name: Effect Brightness
+      description: Sets the brightness of the LED's effect.  0 means off.
+      #required: false
+      #example: "8"
+      default: '11'
+      selector:
+        number:
+          min: 0
+          max: 10
+          step: 1
+          mode: slider
+  
+    color:
+      name: Effect Color
+      description: Color of LED effect
+      #required: false
+      #example: Red
+      default: 'no change'
+      selector:
+        select:
+          options:
+            - "Off"
+            - Red
+            - Orange
+            - Lemon
+            - Yellow
+            - Lime
+            - Green
+            - Cyan
+            - Teal
+            - Blue
+            - Purple
+            - Magenta
+            - Light Pink
+            - Pink
+            - Hot Pink
+            - White
 
 
 variables:
-#  input_area: !input area
-#  input_group: !input group
-#  input_device: !input device
-#  input_entity: !input entity
+  input_area: !input area
+  input_group: !input group
+  input_device: !input device
+  input_entity: !input entity
 
-#  input_color: !input color
-#  input_duration: !input duration
-#  input_brightness: !input brightness
-#  input_effect: !input effect
-#  input_LEDcolor: !input LEDcolor
-#  input_LEDcolor_off: !input LEDcolor_off
-#  input_LEDbrightness: !input LEDbrightness
-#  input_LEDbrightness_off: !input LEDbrightness_off
+  input_color: !input color
+  input_duration: !input duration
+  input_brightness: !input brightness
+  input_effect: !input effect
+  input_LEDcolor: !input LEDcolor
+  input_LEDcolor_off: !input LEDcolor_off
+  input_LEDbrightness: !input LEDbrightness
+  input_LEDbrightness_off: !input LEDbrightness_off
 
 
   ##################
@@ -750,15 +750,15 @@ variables:
   ##################
   # Clean up inputs; filter for supported entities from provided areas, groups, devices, and entities.
   ##################
-  area: "{{ area|default(\"invalid\")|lower }}"
-  group: "{{ group|default(\"invalid\")|lower }}"
-  device: "{{ device|default(\"invalid\")|lower }}"
-  entity: "{{ entity|default(\"invalid\")|lower }}"
+#  area: "{{ area|default(\"invalid\")|lower }}"
+#  group: "{{ group|default(\"invalid\")|lower }}"
+#  device: "{{ device|default(\"invalid\")|lower }}"
+#  entity: "{{ entity|default(\"invalid\")|lower }}"
 
-#  area: "{{ input_area|default(\"invalid\")|lower }}"
-#  group: "{{ input_group|default(\"invalid\")|lower }}"
-#  device: "{{ input_device|default(\"invalid\")|lower }}"
-#  entity: "{{ input_entity|default(\"invalid\")|lower }}"
+  area: "{{ input_area|default(\"invalid\")|lower }}"
+  group: "{{ input_group|default(\"invalid\")|lower }}"
+  device: "{{ input_device|default(\"invalid\")|lower }}"
+  entity: "{{ input_entity|default(\"invalid\")|lower }}"
 
   entities_from_area: >-
     {% set area_array = namespace(area_list=[]) %}
@@ -886,23 +886,23 @@ sequence:
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
-      color: "{{ color|default(\"no change\")|lower }}"
-      duration: "{{ duration|default(\"invalid\")|lower }}"
-      brightness: "{{ brightness|default(\"11\")|int }}"
-      effect: "{{ effect|default(\"off\")|lower }}"
-      LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
-      LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
-      LEDbrightness: "{{ LEDbrightness|default(\"11\")|int }}"
-      LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|int }}"
+#      color: "{{ color|default(\"no change\")|lower }}"
+#      duration: "{{ duration|default(\"invalid\")|lower }}"
+#      brightness: "{{ brightness|default(\"11\")|int }}"
+#      effect: "{{ effect|default(\"off\")|lower }}"
+#      LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
+#      LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
+#      LEDbrightness: "{{ LEDbrightness|default(\"11\")|int }}"
+#      LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|int }}"
 
-#      color: "{{ input_color|default(\"no change\")|lower }}"
-#      duration: "{{ input_duration|default(\"invalid\")|lower }}"
-#      brightness: "{{ input_brightness|default(\"11\")|int }}"
-#      effect: "{{ input_effect|default(\"off\")|lower }}"
-#      LEDcolor: "{{ input_LEDcolor|default(\"no change\")|lower }}"
-#      LEDcolor_off: "{{ input_LEDcolor_off|default(\"no change\")|lower }}"
-#      LEDbrightness: "{{ input_LEDbrightness|default(\"11\")|int }}"
-#      LEDbrightness_off: "{{ input_LEDbrightness_off|default(\"11\")|int }}"
+      color: "{{ input_color|default(\"no change\")|lower }}"
+      duration: "{{ input_duration|default(\"invalid\")|lower }}"
+      brightness: "{{ input_brightness|default(\"11\")|int }}"
+      effect: "{{ input_effect|default(\"off\")|lower }}"
+      LEDcolor: "{{ input_LEDcolor|default(\"no change\")|lower }}"
+      LEDcolor_off: "{{ input_LEDcolor_off|default(\"no change\")|lower }}"
+      LEDbrightness: "{{ input_LEDbrightness|default(\"11\")|int }}"
+      LEDbrightness_off: "{{ input_LEDbrightness_off|default(\"11\")|int }}"
 
   ##################
   # Group entities by device type so the right integration and parameters can be used

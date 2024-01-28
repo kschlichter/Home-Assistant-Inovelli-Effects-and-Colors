@@ -17,41 +17,47 @@
   * Zigbee:
     * [VZM31-SN Blue Series 2-in-1 Dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
     * [VZM35-SN Blue Series 3-Speed Fan Switch](https://inovelli.com/products/blue-series-fan-switch-zigbee-3-0)
-  
-  
-  **Features**
-  This script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series.  Devices of different types can be called simultaneously.  It will accept entities of Inovelli devices, the device itself in the form of the device ID, groups of entities, or areas and find all Inovelli devices in that area.
 
-  The  LED indicator can be set alongside an effect in a single call so that an indicator color change doesn't clear the effect (this does restart the duration timer, however). For example, setting "chase" for 1 second with a red indicator LED is a nice notification that something changed without being overly obnoxious and distracting (like setting "fast blink" with an infinite duration).  The effect wears off after one second, but the indicator stays red afterwards.
+  This is a complete rewrite of the work done by BrianHanifin on post: https://community.home-assistant.io/t/inovelli-z-wave-red-series-notification-led/165483
+
+
+## Features
   
-  Effects that have been set to "forever" can be cleared by just passing the entity, device, or area the entity belongs to.  There's no need to remember the effect, color, and brightness parameter or set them to 0.  It's easier to remember when you get to my age, and less to type.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters since (most of the time) clearing the effect will have no visible result on the physical device.
-   
-  **Required for setting the LED indicator**
+  This script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series.  Devices of different types can be called simultaneously.  **It will accept entities of Inovelli devices, the device itself in the form of the device ID, groups of entities, or areas and find all Inovelli devices in that area.**
 
-    - LEDcolor: (int or string) Sets color of LED status and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
-    - LEDbrightness: (whole integer 1 – 10) Sets the brightness of the LED status when on.
-    - LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the LED status when off.
+  The  LED indicator can be set alongside an effect in a single call so that an indicator color change doesn't clear the effect (this does restart the duration timer in some versions of Inovelli's firmware, however). For example, setting "chase" for 1 second with a red indicator LED is a nice notification that something changed without being overly obnoxious and distracting (like setting "fast blink" with an infinite duration).  The effect wears off after one second, but the indicator stays red afterwards.
+  
+  Effects that have been set to "forever" can be cleared by just passing the entity, device, group, or area.  There's no need to remember the effect, color, and brightness parameter or set them to 0 in a template.  It's easier to remember when you get to my age, and less to type.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters since (most of the time) clearing the effect will have no visible result on the physical device.
 
-  **Required for setting LED effects**
+
+## Blueprint
+  
+  The blueprint can be imported, saved as a script, and used in the same way as the script below.  Alternatively, use the UI to set static parameters and simply call it with a single line, like: `service: script.inovelli_led_night_leds`
+
+  
+## Setting the LED indicator
+
+  These parameters are all optional and can be configured together or individually (to change the brightness at sunrise but not the color, for example).
+  
+    - LEDcolor: (int or string) Sets color of status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
+    - LEDbrightness: (whole integer 1 – 10) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
+    - LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the status LED when off, for devices that support this feature.
+    - LEDcolor_off: (int or string) Sets color of status LED when off, for devices that support this feature.
+        Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the Black 500 and Red 500 Series devices do not.
+
+
+## Required for setting LED effects
+
+  All four parameters must be passed in order to cange the effect.
   
     - duration: (string) Either "Off", or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
-    - effect: (string) One of: "Off", "Solid", "Chase" (switches don't support chase and will fast blink instead), "Fast Blink", "Slow Blink", "Blink", or "Pulse".
+    - effect: (string) Where older devices don't support a new effect, that effect has been mapped to something that is supported.
     - brightness: (integer 1 – 10) Sets the brightness of the LED's effect
-    - color: (int or string) Sets color of LED effect and must be one of: Off, Red, Orange, Yellow, Green, Cyan, Teal, Blue, Purple, Light Pink, Pink, White
+    - color: (int or string) Sets color of LED effect and must be one of: "Off", Red, Orange, Lemon, Yellow, Lime, Green, Cyan, Teal, Blue, Purple, Magenta, Light Pink, Pink, Hot Pink, White
 
 
 ## Notification effect examples:
   Area and group values can be IDs or names, mixed as a proper list or a string of comma-separated values.  Entities must use the entity name, and devices must use the device ID.
-
-   **String of comma-separated values**
-   
-    service: script.inovelli_led
-    data:
-      area: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c' 
-      duration: Forever
-      effect: CHASE
-      brightness: 8
-      color: Teal
 
   **'area: all' will find any compatible Inovelli devices in Home Assistant 2023.04 or newer.**
   
@@ -63,6 +69,16 @@
       brightness: 8
       color: 'light pink'
 
+   **String of comma-separated values (improper list format still works)**
+   
+    service: script.inovelli_led
+    data:
+      area: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c' 
+      duration: Forever
+      effect: CHASE
+      brightness: 8
+      color: Teal
+
   **Proper list format**
   
     service: script.inovelli_led
@@ -73,40 +89,8 @@
       effect: pulse
       brightness: 8
       color: red
-      
-## Clearing an effect
-
-  ** Mix and match areas, groups, devices, and entities **
-  
-    service: script.inovelli_led
-    data:
-      area: 'Family Room'
-      entity: fan.front_porch
-  
-## LED color example:
-
-    service: script.inovelli_led
-    data:
-      device:
-        - 531d79e9270d72d9cab44a4f295967d4
-        - ef82d0eb91499feadf45e257c0e5eda1
-      LEDcolor: blue
-      LEDbrightness: 7
-      LEDbrightness_off: 3
-
-    service: script.inovelli_led
-    data:
-      group: group.outside_front_lights
-      LEDcolor: Green  
-      
-## LEDbrightness_off example: (maybe part of a nighttime routine?)
-
-    service: script.inovelli_led
-    data:
-      entity: light.office
-      LEDbrightness_off: 2
             
-## Effect to signal LED indicator transition
+  **Effect to signal LED transition to new color**
   
     service: script.inovelli_led
     data:
@@ -118,6 +102,42 @@
       effect: Chase
       color: green
       brightness: 7
+      
+  **Clearing an effect**
+
+  Mix and match areas, groups, devices, and entities
+  
+    service: script.inovelli_led
+    data:
+      area: 'Family Room'
+      entity: fan.front_porch
+  
+## LED color examples:
+
+  **Full LED configuration, using device ID**
+
+    service: script.inovelli_led
+    data:
+      device:
+        - 531d79e9270d72d9cab44a4f295967d4
+        - ef82d0eb91499feadf45e257c0e5eda1
+      LEDcolor: blue
+      LEDbrightness: 7
+      LEDbrightness_off: 3
+
+  **Set by group domain**
+
+    service: script.inovelli_led
+    data:
+      group: group.outside_front_lights
+      LEDcolor: Green  
+      
+ **LEDbrightness_off example: (maybe part of a nighttime routine?)**
+
+    service: script.inovelli_led
+    data:
+      entity: light.office
+      LEDbrightness_off: 2
 
 ## Automation to listen for a config button press and set everything in the area to "pulse"
   
@@ -166,9 +186,6 @@
             sequence:
                 - service: script.inovelli_led
                 data:
-                  area: >
-                    {% set area = namespace(id=[]) %} 
-		    {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
-		    {{ area.id|lower }}
+                  area: '{{ area_id(trigger.event.data.device_id) | string }}'
         default: []
     mode: single
