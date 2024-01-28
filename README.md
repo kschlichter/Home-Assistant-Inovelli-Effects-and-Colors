@@ -5,6 +5,7 @@
   [Z-Wave JS UI](https://hub.docker.com/r/zwavejs/zwave-js-ui) Container
   
   [Home Assistant Forum Post](https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-dimmers-switches-and-combo-fan-lights-by-area-device-or-entity/421862)
+  [Blueprint Exchange Post](https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-black-red-and-blue-devices-by-area-group-device-id-or-entity/681056)
 
   Supported Inovelli devices:
   * Z-Wave:
@@ -34,7 +35,9 @@
   
   The blueprint can be imported, saved as a script, and used in the same way as the script below.  Alternatively, use the UI to set static parameters and simply call it with a single line, like: `service: script.inovelli_led_night_leds`
 
-  
+<a href="https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fkschlichter%2FHome-Assistant-Inovelli-Effects-and-Colors%2Fblob%2Fmaster%2Fblueprints%2Fscript%2Fkschlichter%2Finovelli_led_blueprint.yaml" target="_blank" rel="noreferrer noopener"><img src="https://my.home-assistant.io/badges/blueprint_import.svg" alt="Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled." /></a>
+
+
 ## Setting the LED indicator
 
   These parameters are all optional and can be configured together or individually (to change the brightness at sunrise but not the color, for example).
