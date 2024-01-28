@@ -24,10 +24,9 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Switch input and fields
-#   Add two spaces to lines between area: and variables 57,329s
-#   Comment out example: for blueprint
-#   Switch input_* and script variables in both locations
+#   Add two spaces to lines between area: and variables: 56,334s
+#   Comment out example:
+#   Switch input_* and script variables in all three locations
 ############
 
 mode: parallel
@@ -43,17 +42,16 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 #    through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series can be used together,
 #    and can be called by area, group, device, and entity.
 #  homeassistant:
-#    min_version: 2023.04
+#    min_version: 2023.04.0
+#  input:
 
 alias: Inovelli LED Settings and Effects
 description: >-
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" series switches, dimmers, and fan controllers
     through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series can be used together,
     and can be called by area, group, device, and entity.
-
-
-#  input:
 fields:
+
 
   area:
     name: Area
