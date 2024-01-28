@@ -36,7 +36,7 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 #blueprint:
 #  name: Inovelli LED Settings and Effects Blueprint
 #  domain: script
-##  source_url:
+#  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
 #  description: >-
 #    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" series switches, dimmers, and fan controllers
 #    through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series can be used together,
