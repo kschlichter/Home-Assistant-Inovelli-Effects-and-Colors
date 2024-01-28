@@ -5,17 +5,16 @@
 #
 # Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
 #
-# Required for setting the LED indicator
+# Setting the LED indicator
 #   LEDcolor: (int or string) Sets color of status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
 #   LEDbrightness: (whole integer 1 – 10) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
 #   LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the status LED when off, for devices that support this feature.
-# Optional
 #   LEDcolor_off: (int or string) Sets color of status LED when off, for devices that support this feature.
 #     Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the Black 500 and Red 500 Series devices do not.
 #
 # Required for setting LED effects
 #   duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
-#   effect: (string): Where older devices don't support a new effect, that effect has been mapped to something else.
+#   effect: (string) Where older devices don't support a new effect, that effect has been mapped to something that is supported.
 #   brightness: (integer 1 – 10) Sets the brightness of the LED's effect
 #   color: (string) Sets color of LED effect.
 #
@@ -38,11 +37,13 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 #blueprint:
 #  name: Inovelli LED Settings and Effects Blueprint
 #  domain: script
-##  source_url: 
+##  source_url:
 #  description: >-
 #    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" series switches, dimmers, and fan controllers
 #    through the Zwave JS and Zigbee2MQTT integrations.  Devices from all series can be used together,
 #    and can be called by area, group, device, and entity.
+#  homeassistant:
+#    min_version: 2023.04
 
 alias: Inovelli LED Settings and Effects
 description: >-
@@ -152,12 +153,15 @@ fields:
           - "Off"
           - Red
           - Orange
+          - Lemon
           - Yellow
+          - Lime
           - Green
           - Cyan
           - Teal
           - Blue
           - Purple
+          - Magenta
           - Light Pink
           - Pink
           - Hot Pink
@@ -175,12 +179,15 @@ fields:
           - "Off"
           - Red
           - Orange
+          - Lemon
           - Yellow
+          - Lime
           - Green
           - Cyan
           - Teal
           - Blue
           - Purple
+          - Magenta
           - Light Pink
           - Pink
           - Hot Pink
@@ -343,7 +350,7 @@ variables:
 #  input_LEDcolor_off: !input LEDcolor_off
 #  input_LEDbrightness: !input LEDbrightness
 #  input_LEDbrightness_off: !input LEDbrightness_off
-  
+
 
   ##################
   # Look-up tables for easy reference and future maintenance.
