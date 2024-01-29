@@ -38,6 +38,32 @@
 <a href="https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fkschlichter%2FHome-Assistant-Inovelli-Effects-and-Colors%2Fblob%2Fmaster%2Fblueprints%2Fscript%2Fkschlichter%2Finovelli_led_blueprint.yaml" target="_blank" rel="noreferrer noopener"><img src="https://my.home-assistant.io/badges/blueprint_import.svg" alt="Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled." /></a>
 
 
+## Installation Instructions
+
+The easiest way to install is via blueprint.  If you'd rather use the script, I recommend adding a directory called `scripts` and [including it in your configuration.yaml file](https://www.home-assistant.io/docs/configuration/splitting_configuration/).
+```
+script: !include scripts.yaml
+script folder: !include_dir_named scripts
+```
+As a quick start you can follow these steps but you'll have to copy / paste updates manually.
+
+* In Home Assistant:
+  * Click on “Settings” in the left-hand navigation pane.
+  * “Automations & Scenes”
+  * “Scripts” near the top in a horizontal menu / tab.
+  * Blue, “+ Add Script” button in the lower-right.
+  * “Create new script”
+  * In the upper-right click the vertical ellipsis (three dot) menu and then “edit in Yaml”.
+  * Delete the pre-populated lines.
+* Open a new tab
+* In Github (https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/master/inovelli_led.yaml)
+  * Since this hasn’t been merged into master yet, in the left-hand nav pane, under files, there’s a drop-down that says “master”. Change that to 800 series effects.
+  * On the right side, click the “copy raw file” in between the “raw” and “download” buttons.
+* In Home Assistant:
+  * Paste the contents into the Yaml editor.
+  * In the vertical ellipsis select “Edit in Visual Editor”
+  * Click the blue, “Save Script” button in the lower right.
+
 ## Setting the LED indicator
 
   These parameters are all optional and can be configured together or individually (to change the brightness at sunrise but not the color, for example).
