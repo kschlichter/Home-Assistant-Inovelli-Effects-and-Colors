@@ -2,10 +2,9 @@
   
   [Inovelli Calculations](https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing)
   
-  [Z-Wave JS UI](https://hub.docker.com/r/zwavejs/zwave-js-ui) Container
   
-  [Home Assistant Forum Post](https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-dimmers-switches-and-combo-fan-lights-by-area-device-or-entity/421862)
-  [Blueprint Exchange Post](https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-black-red-and-blue-devices-by-area-group-device-id-or-entity/681056)
+  [Blueprint Exchange post](https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-black-red-and-blue-devices-by-area-group-device-id-or-entity/681056) / [Older Home Assistant forum post with more history](https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-dimmers-switches-and-combo-fan-lights-by-area-device-or-entity/421862)
+
 
   Supported Inovelli devices:
   * Z-Wave:
