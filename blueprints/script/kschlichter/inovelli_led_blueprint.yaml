@@ -7,15 +7,15 @@
 #
 # Setting the LED indicator
 #   LEDcolor: (int or string) Sets color of status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
-#   LEDbrightness: (whole integer 1 – 10) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
-#   LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the status LED when off, for devices that support this feature.
+#   LEDbrightness: (float 1 – 10) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
+#   LEDbrightness_off: (float 1 – 10) Sets the brightness of the status LED when off, for devices that support this feature.
 #   LEDcolor_off: (int or string) Sets color of status LED when off, for devices that support this feature.
 #     Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the Black 500 and Red 500 Series devices do not.
 #
 # Required for setting LED effects
 #   duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
 #   effect: (string) Where older devices don't support a new effect, that effect has been mapped to something that is supported.
-#   brightness: (integer 1 – 10) Sets the brightness of the LED's effect
+#   brightness: (float 1 – 10) Sets the brightness of the LED's effect
 #   color: (string) Sets color of LED effect.
 #
 # Effects not working?
