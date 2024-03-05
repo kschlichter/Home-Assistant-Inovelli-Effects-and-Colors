@@ -201,7 +201,7 @@ blueprint:
         number:
           min: 0
           max: 10
-          step: 1
+          step: 0.1
           mode: slider
   
     LEDbrightness_off:
@@ -214,7 +214,7 @@ blueprint:
         number:
           min: 0
           max: 10
-          step: 1
+          step: 0.1
           mode: slider
   
     duration:
@@ -304,7 +304,7 @@ blueprint:
         number:
           min: 0
           max: 10
-          step: 1
+          step: 0.1
           mode: slider
   
     color:
@@ -888,21 +888,21 @@ sequence:
   - variables:
 #      color: "{{ color|default(\"no change\")|lower }}"
 #      duration: "{{ duration|default(\"invalid\")|lower }}"
-#      brightness: "{{ brightness|default(\"11\")|int }}"
+#      brightness: "{{ brightness|default(\"11\")|float }}"
 #      effect: "{{ effect|default(\"off\")|lower }}"
 #      LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
 #      LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
-#      LEDbrightness: "{{ LEDbrightness|default(\"11\")|int }}"
-#      LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|int }}"
+#      LEDbrightness: "{{ LEDbrightness|default(\"11\")|float }}"
+#      LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|float }}"
 
       color: "{{ input_color|default(\"no change\")|lower }}"
       duration: "{{ input_duration|default(\"invalid\")|lower }}"
-      brightness: "{{ input_brightness|default(\"11\")|int }}"
+      brightness: "{{ input_brightness|default(\"11\")|float }}"
       effect: "{{ input_effect|default(\"off\")|lower }}"
       LEDcolor: "{{ input_LEDcolor|default(\"no change\")|lower }}"
       LEDcolor_off: "{{ input_LEDcolor_off|default(\"no change\")|lower }}"
-      LEDbrightness: "{{ input_LEDbrightness|default(\"11\")|int }}"
-      LEDbrightness_off: "{{ input_LEDbrightness_off|default(\"11\")|int }}"
+      LEDbrightness: "{{ input_LEDbrightness|default(\"11\")|float }}"
+      LEDbrightness_off: "{{ input_LEDbrightness_off|default(\"11\")|float }}"
 
   ##################
   # Group entities by device type so the right integration and parameters can be used
