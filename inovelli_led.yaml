@@ -926,7 +926,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' %}
+              {% if  is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -937,7 +937,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'LZW31' in device_attr(ent,'model') and ent.split('.')[0] == 'light' %}
+              {% if  is_device_attr(ent,'model','LZW31') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
