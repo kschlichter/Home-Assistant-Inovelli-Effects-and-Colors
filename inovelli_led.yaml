@@ -24,7 +24,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between area: and variables: 56,334s
+#   Add two spaces to lines between area: and variables: 56,341s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 ############
