@@ -25,7 +25,7 @@
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
 #   Add two spaces to lines between area: and variables: 56,341s
-#   Comment out example:
+#   Comment out #example:
 #   Switch input_* and script variables in all three locations
 ############
 
@@ -894,14 +894,14 @@ sequence:
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
-#      color: "{{ color|default(\"no change\")|lower }}"
-#      duration: "{{ duration|default(\"invalid\")|lower }}"
-#      brightness: "{{ brightness|default(\"11\")|float }}"
-#      effect: "{{ effect|default(\"off\")|lower }}"
-#      LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
-#      LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
-#      LEDbrightness: "{{ LEDbrightness|default(\"11\")|float }}"
-#      LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|float }}"
+      #color: "{{ color|default(\"no change\")|lower }}"
+      #duration: "{{ duration|default(\"invalid\")|lower }}"
+      #brightness: "{{ brightness|default(\"11\")|float }}"
+      #effect: "{{ effect|default(\"off\")|lower }}"
+      #LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
+      #LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
+      #LEDbrightness: "{{ LEDbrightness|default(\"11\")|float }}"
+      #LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|float }}"
 
       color: "{{ input_color|default(\"no change\")|lower }}"
       duration: "{{ input_duration|default(\"invalid\")|lower }}"
@@ -1106,7 +1106,12 @@ sequence:
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: "{% set effect_param = repeat.item.device_type + '_ledbrightness' %} {{ \"off\" if parameters[effect_param] == 0 else parameters[effect_param] }} "
-                            value: "{{ LEDbrightness }} "
+                            value: >-
+                              {% if 'LZW' in repeat.item.device_type %}
+                                {{ LEDbrightness | round(0) | int  }} 
+                              {% else %}
+                                {{ (LEDbrightness * 10) | int }}
+                              {% endif %}
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
@@ -1137,7 +1142,12 @@ sequence:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >-
                               {% set effect_param = repeat.item.device_type + '_ledbrightness_off' %} {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
-                            value: "{{ LEDbrightness_off }} "
+                            value: >-
+                              {% if 'LZW' in repeat.item.device_type %}
+                                {{ LEDbrightness_off | round(0) | int  }}
+                              {% else %}
+                                {{ (LEDbrightness_off * 10) | int }}
+                              {% endif %}
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
@@ -1174,13 +1184,13 @@ sequence:
                               {{ parameters[bulk_param] }}
                             value: >-
                               {% if repeat.item.device_type == "LZW30SN" %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW30SN_effects[effect] * 16777216) }}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW30SN_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "LZW31SN" %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW31SN_effects[effect] * 16777216) }}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW31SN_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "LZW36_light" %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW36_light_effects[effect] * 16777216) }}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_light_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "LZW36_fan" %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "VZW31SN" %}
                                 {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}
                               {% endif %}
