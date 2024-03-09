@@ -24,7 +24,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between area: and variables: 56,334s
+#   Add two spaces to lines between area: and variables: 56,341s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 ############
@@ -68,7 +68,7 @@ blueprint:
               model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN
             - integration: mqtt
               manufacturer: Inovelli
-              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN)
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN), 2-in-1 switch + dimmer (VZM31-SN), Fan Controller (VZM35-SN) ### Inovelli modified the model with Zigbee2mqtt 1.36
   
     group:
       name: Group
@@ -116,10 +116,16 @@ blueprint:
               model: VZW31-SN
             - integration: mqtt
               manufacturer: Inovelli
-              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+              model: 2-in-1 switch + dimmer (VZM31-SN) ### Zigbee 1.36 and above
             - integration: mqtt
               manufacturer: Inovelli
-              model: Inovelli Fan Controller (VZM35-SN)
+              model: Fan Controller (VZM35-SN) ### Zigbee 1.36 and above
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN) ### Zigbee 1.35 and below
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli Fan Controller (VZM35-SN) ### Zigbee 1.35 and below
   
     entity:
       name: Entity
@@ -332,7 +338,7 @@ blueprint:
             - Pink
             - Hot Pink
             - White
-
+  
 
 variables:
   input_area: !input area
@@ -668,8 +674,10 @@ variables:
     - VZW31-SN # Red 800 series dimmer
 
   zigbee_models: # BLUE
-    - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer
-    - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan
+    - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer Zigbee2MQTT 1.35 and below
+    - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan Zigbee2MQTT 1.35 and below
+    - 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer Zigbee2MQTT 1.36 and above
+    - Fan Controller (VZM35-SN)         # Blue Series fan Zigbee2MQTT 1.36 and above
 
   ##################
   # Allowed domains to limit which types of entities are processed
@@ -750,10 +758,10 @@ variables:
   ##################
   # Clean up inputs; filter for supported entities from provided areas, groups, devices, and entities.
   ##################
-#  area: "{{ area|default(\"invalid\")|lower }}"
-#  group: "{{ group|default(\"invalid\")|lower }}"
-#  device: "{{ device|default(\"invalid\")|lower }}"
-#  entity: "{{ entity|default(\"invalid\")|lower }}"
+  #area: "{{ area|default(\"invalid\")|lower }}"
+  #group: "{{ group|default(\"invalid\")|lower }}"
+  #device: "{{ device|default(\"invalid\")|lower }}"
+  #entity: "{{ entity|default(\"invalid\")|lower }}"
 
   area: "{{ input_area|default(\"invalid\")|lower }}"
   group: "{{ input_group|default(\"invalid\")|lower }}"
@@ -886,14 +894,14 @@ sequence:
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
-#      color: "{{ color|default(\"no change\")|lower }}"
-#      duration: "{{ duration|default(\"invalid\")|lower }}"
-#      brightness: "{{ brightness|default(\"11\")|int }}"
-#      effect: "{{ effect|default(\"off\")|lower }}"
-#      LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
-#      LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
-#      LEDbrightness: "{{ LEDbrightness|default(\"11\")|int }}"
-#      LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|int }}"
+      #color: "{{ color|default(\"no change\")|lower }}"
+      #duration: "{{ duration|default(\"invalid\")|lower }}"
+      #brightness: "{{ brightness|default(\"11\")|int }}"
+      #effect: "{{ effect|default(\"off\")|lower }}"
+      #LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
+      #LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
+      #LEDbrightness: "{{ LEDbrightness|default(\"11\")|int }}"
+      #LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|int }}"
 
       color: "{{ input_color|default(\"no change\")|lower }}"
       duration: "{{ input_duration|default(\"invalid\")|lower }}"
@@ -918,7 +926,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' %}
+              {% if  is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -929,7 +937,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','LZW31') and ent.split('.')[0] == 'light' %}
+              {% if  is_device_attr(ent,'model','LZW31') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -940,7 +948,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','LZW30-SN') and ent.split('.')[0] == 'switch' %}
+              {% if 'LZW30-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'switch' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -951,7 +959,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','LZW31-SN') and ent.split('.')[0] == 'light' %}
+              {% if 'LZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -962,7 +970,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'light' %}
+              {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -973,7 +981,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','LZW36') and ent.split('.')[0] == 'fan' %}
+              {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -984,7 +992,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','VZW31-SN') and ent.split('.')[0] == 'light' %}
+              {% if 'VZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -998,7 +1006,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','Inovelli 2-in-1 switch + dimmer (VZM31-SN)') and ent.split('.')[0] == 'light' %}
+              {% if 'VZM31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -1009,7 +1017,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if is_device_attr(ent,'model','Inovelli Fan Controller (VZM35-SN)') and ent.split('.')[0] == 'fan' %}
+              {% if 'VZM35-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
