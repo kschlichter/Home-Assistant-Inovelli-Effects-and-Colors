@@ -7,15 +7,15 @@
 #
 # Setting the LED indicator
 #   LEDcolor: (int or string) Sets color of status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
-#   LEDbrightness: (whole integer 1 – 10) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
-#   LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the status LED when off, for devices that support this feature.
+#   LEDbrightness: (float 1 – 10) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
+#   LEDbrightness_off: (float 1 – 10) Sets the brightness of the status LED when off, for devices that support this feature.
 #   LEDcolor_off: (int or string) Sets color of status LED when off, for devices that support this feature.
 #     Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the Black 500 and Red 500 Series devices do not.
 #
 # Required for setting LED effects
 #   duration: (string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
 #   effect: (string) Where older devices don't support a new effect, that effect has been mapped to something that is supported.
-#   brightness: (integer 1 – 10) Sets the brightness of the LED's effect
+#   brightness: (float 1 – 10) Sets the brightness of the LED's effect
 #   color: (string) Sets color of LED effect.
 #
 # Effects not working?
@@ -25,7 +25,7 @@
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
 #   Add two spaces to lines between area: and variables: 56,341s
-#   Comment out example:
+#   Comment out #example:
 #   Switch input_* and script variables in all three locations
 ############
 
@@ -207,7 +207,7 @@ blueprint:
         number:
           min: 0
           max: 10
-          step: 1
+          step: 0.1
           mode: slider
   
     LEDbrightness_off:
@@ -220,7 +220,7 @@ blueprint:
         number:
           min: 0
           max: 10
-          step: 1
+          step: 0.1
           mode: slider
   
     duration:
@@ -310,7 +310,7 @@ blueprint:
         number:
           min: 0
           max: 10
-          step: 1
+          step: 0.1
           mode: slider
   
     color:
@@ -896,21 +896,21 @@ sequence:
   - variables:
       #color: "{{ color|default(\"no change\")|lower }}"
       #duration: "{{ duration|default(\"invalid\")|lower }}"
-      #brightness: "{{ brightness|default(\"11\")|int }}"
+      #brightness: "{{ brightness|default(\"11\")|float }}"
       #effect: "{{ effect|default(\"off\")|lower }}"
       #LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
       #LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
-      #LEDbrightness: "{{ LEDbrightness|default(\"11\")|int }}"
-      #LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|int }}"
+      #LEDbrightness: "{{ LEDbrightness|default(\"11\")|float }}"
+      #LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|float }}"
 
       color: "{{ input_color|default(\"no change\")|lower }}"
       duration: "{{ input_duration|default(\"invalid\")|lower }}"
-      brightness: "{{ input_brightness|default(\"11\")|int }}"
+      brightness: "{{ input_brightness|default(\"11\")|float }}"
       effect: "{{ input_effect|default(\"off\")|lower }}"
       LEDcolor: "{{ input_LEDcolor|default(\"no change\")|lower }}"
       LEDcolor_off: "{{ input_LEDcolor_off|default(\"no change\")|lower }}"
-      LEDbrightness: "{{ input_LEDbrightness|default(\"11\")|int }}"
-      LEDbrightness_off: "{{ input_LEDbrightness_off|default(\"11\")|int }}"
+      LEDbrightness: "{{ input_LEDbrightness|default(\"11\")|float }}"
+      LEDbrightness_off: "{{ input_LEDbrightness_off|default(\"11\")|float }}"
 
   ##################
   # Group entities by device type so the right integration and parameters can be used
@@ -1106,7 +1106,12 @@ sequence:
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: "{% set effect_param = repeat.item.device_type + '_ledbrightness' %} {{ \"off\" if parameters[effect_param] == 0 else parameters[effect_param] }} "
-                            value: "{{ LEDbrightness }} "
+                            value: >-
+                              {% if 'LZW' in repeat.item.device_type %}
+                                {{ LEDbrightness | round(0) | int  }} 
+                              {% else %}
+                                {{ (LEDbrightness * 10) | int }}
+                              {% endif %}
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
@@ -1137,7 +1142,12 @@ sequence:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >-
                               {% set effect_param = repeat.item.device_type + '_ledbrightness_off' %} {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
-                            value: "{{ LEDbrightness_off }} "
+                            value: >-
+                              {% if 'LZW' in repeat.item.device_type %}
+                                {{ LEDbrightness_off | round(0) | int  }}
+                              {% else %}
+                                {{ (LEDbrightness_off * 10) | int }}
+                              {% endif %}
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
@@ -1174,13 +1184,13 @@ sequence:
                               {{ parameters[bulk_param] }}
                             value: >-
                               {% if repeat.item.device_type == "LZW30SN" %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW30SN_effects[effect] * 16777216) }}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW30SN_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "LZW31SN" %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW31SN_effects[effect] * 16777216) }}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW31SN_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "LZW36_light" %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW36_light_effects[effect] * 16777216) }}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_light_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "LZW36_fan" %}
-                                {{ color_set[color] + (brightness * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "VZW31SN" %}
                                 {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}
                               {% endif %}
