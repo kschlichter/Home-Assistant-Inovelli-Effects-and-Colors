@@ -14,7 +14,7 @@
     * [LZW31-SN Red 500 Series Dimmer](https://help.inovelli.com/en/articles/8319390-red-series-dimmer-switch-manual)
     * [LZW36 Red 500 Series Fan / Light Combo](https://help.inovelli.com/en/articles/8483467-red-series-fan-light-switch-manual)
     * [VZW31-SN Red 800 Series 2-in-1 Dimmer](https://inovelli.com/products/z-wave-800-red-series-smart-2-1-on-off-dimmer-switch)
-  * Zigbee:
+  * Zigbee2MQTT or ZHA:
     * [VZM31-SN Blue Series 2-in-1 Dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
     * [VZM35-SN Blue Series 3-Speed Fan Switch](https://inovelli.com/products/blue-series-fan-switch-zigbee-3-0)
 
@@ -23,7 +23,7 @@
 
 ## Features
   
-  This blueprint and script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series. Devices of different types can be called simultaneously. **It will accept entities, the device ID, groups, areas, or** `area: all` **and find all Inovelli devices in the house.** This blueprint and script can set everything at once—even if the devices are different series and being called from different combinations of sources (e.g. 2 areas, and 3 entities).
+  This blueprint and script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series. Devices of different types can be called simultaneously. **It will accept entities, the device ID, groups, areas, or** `area: all` **and find all Inovelli devices in the house.** This blueprint and script can set everything at once—even if the devices are different series, different sources (e.g. 2 areas, and 3 entities), and different integrations (Z-Wave JS and Zigbee2MQTT, or ZWave JS and ZHA) all at once.
 
   The  LED indicator can be set alongside an effect in a single call so that an indicator color change doesn't clear the effect (this does restart the duration timer in some versions of Inovelli's firmware, however). For example, setting "chase" for 1 second with a red indicator LED is a nice notification that something changed without being overly obnoxious and distracting (like setting "fast blink" with an infinite duration).  The effect wears off after one second, but the indicator stays red afterwards.
   
@@ -68,10 +68,11 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
   These parameters are all optional and can be configured together or individually (to change the brightness at sunrise but not the color, for example).
   
     - LEDcolor: (int or string) Sets color of status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
-    - LEDbrightness: (whole integer 1 – 10) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
-    - LEDbrightness_off: (whole integer 1 – 10) Sets the brightness of the status LED when off, for devices that support this feature.
     - LEDcolor_off: (int or string) Sets color of status LED when off, for devices that support this feature.
-        Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the Black 500 and Red 500 Series devices do not.
+        Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the Black 500 and Red 500 Series devices do not and will ignore the variable.
+    - LEDbrightness: (float 0.0 – 10.0) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
+        LEDbrightness is multiplied by 10 or rounded off for each device, depending on whether they support 0 – 100 or 0 – 10 brightness levels.  This was done for backwards compatibility with old automations.
+    - LEDbrightness_off: (float 0.0 – 10.0; see note above) Sets the brightness of the status LED when off, for devices that support this feature.
 
 
 ## Required for setting LED effects
@@ -94,7 +95,7 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
       area: all
       duration: Forever
       effect: 'Fast Blink'
-      brightness: 8
+      brightness: 8.7
       color: 'light pink'
 
    **String of comma-separated values (improper list format still works)**
@@ -124,8 +125,8 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
     data:
       entity: light.office
       LEDcolor: green
-      LEDbrightness: 7
-      LEDbrightness_off: 3
+      LEDbrightness: 7.5
+      LEDbrightness_off: 2.3
       duration: 1 second
       effect: Chase
       color: green
@@ -150,8 +151,9 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
         - 531d79e9270d72d9cab44a4f295967d4
         - ef82d0eb91499feadf45e257c0e5eda1
       LEDcolor: blue
+      LEDcolor_off: red
       LEDbrightness: 7
-      LEDbrightness_off: 3
+      LEDbrightness_off: 2.5
 
   **Set by group domain**
 
@@ -160,11 +162,12 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
       group: group.outside_front_lights
       LEDcolor: Green  
       
- **LEDbrightness_off example: (maybe part of a nighttime routine?)**
+ **LEDcolor_off and LEDbrightness_off example: (maybe part of a nighttime routine?)**
 
     service: script.inovelli_led
     data:
       entity: light.office
+      LEDcolor_off: RED
       LEDbrightness_off: 2
 
 ## Automation to listen for a config button press and set everything in the area to "pulse"
