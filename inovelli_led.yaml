@@ -198,6 +198,9 @@ fields:
           - Pink
           - Hot Pink
           - White
+          - All Clear
+          - All Unicorn
+          - All USA
 
   LEDcolor_off:
     name: LED Color When Off (non-effect)
@@ -224,6 +227,9 @@ fields:
           - Pink
           - Hot Pink
           - White
+          - All Clear
+          - All Unicorn
+          - All USA
 
   LEDbrightness:
     name: LED Brightness When On (non-effect)
@@ -366,6 +372,9 @@ fields:
           - Pink
           - Hot Pink
           - White
+          - All Clear
+          - All Unicorn
+          - All USA
 
 
 variables:
@@ -404,6 +413,9 @@ variables:
     pink: 234
     hot pink: 234
     white: 255
+    "all clear": {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
+    "all unicorn": {'led 1':234,'led 2':234,'led 3':170,'led 4':170,'led 5':170,'led 6':85,'led 7':85,'all':0}
+    "all usa": {'led 1':170,'led 2':170,'led 3':255,'led 4':255,'led 5':0,'led 6':0,'led 7':0,'all':255}
 
   duration_values:
     "off": 0
@@ -1184,50 +1196,81 @@ sequence:
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
-                              - variables:
-                                  entity: "{{ repeat.item }}" 
-                              - repeat:
-                                  for_each:
-                                    - "led 1"
-                                    - "led 2"
-                                    - "led 3"
-                                    - "led 4"
-                                    - "led 5"
-                                    - "led 6"
-                                    - "led 7"
-                                    - "all"
-                                  sequence:  
-                                    - service: zha.set_zigbee_cluster_attribute
-                                      data:
-                                        ieee: "{{ (device_attr( entity, 'identifiers') | list).0.1 }}"
-                                        endpoint_id: 1
-                                        cluster_id: 64561
-                                        cluster_type: in
-                                        attribute: >-
-                                          {% if repeat.item == 'all' %}
-                                            {{ 0x0060 |int }}
-                                          {% elif repeat.item == 'led 1' %}
-                                            {{ 0x003d |int }}
-                                          {% elif repeat.item == 'led 2' %}
-                                            {{ 0x0042 |int }}
-                                          {% elif repeat.item == 'led 3' %}
-                                            {{ 0x0047 |int }}
-                                          {% elif repeat.item == 'led 4' %}
-                                            {{ 0x004c |int }}
-                                          {% elif repeat.item == 'led 5' %}
-                                            {{ 0x0051 |int }}
-                                          {% elif repeat.item == 'led 6' %}
-                                            {{ 0x0056 |int }}
-                                          {% elif repeat.item == 'led 7' %}
-                                            {{ 0x005b |int }}
-                                          {% endif %}
-                                        value: >-
-                                          {% if LEDnumber == repeat.item and 'led' in LEDnumber and LEDcolor_off == 'off' %}
-                                            255
-                                          {% elif LEDnumber == repeat.item %}
-                                            {{ color_set[LEDcolor_off] }}
-                                          {% endif %}
-                                        manufacturer: 4655
+                              - choose:
+                                  - conditions: "{{ 'all' in LEDcolor_off and LEDnumber == 'all' }}"
+                                    sequence:
+                                      - variables:
+                                          entity: "{{ repeat.item }}" 
+                                      - repeat:
+                                          for_each:
+                                            - "led 1"
+                                            - "led 2"
+                                            - "led 3"
+                                            - "led 4"
+                                            - "led 5"
+                                            - "led 6"
+                                            - "led 7"
+                                            - "all"
+                                          sequence:  
+                                            - service: zha.set_zigbee_cluster_attribute
+                                              data:
+                                                ieee: "{{ (device_attr( entity, 'identifiers') | list).0.1 }}"
+                                                endpoint_id: 1
+                                                cluster_id: 64561
+                                                cluster_type: in
+                                                attribute: >-
+                                                  {% if repeat.item == 'all' %}
+                                                    {{ 0x0060 |int }}
+                                                  {% elif repeat.item == 'led 1' %}
+                                                    {{ 0x003d |int }}
+                                                  {% elif repeat.item == 'led 2' %}
+                                                    {{ 0x0042 |int }}
+                                                  {% elif repeat.item == 'led 3' %}
+                                                    {{ 0x0047 |int }}
+                                                  {% elif repeat.item == 'led 4' %}
+                                                    {{ 0x004c |int }}
+                                                  {% elif repeat.item == 'led 5' %}
+                                                    {{ 0x0051 |int }}
+                                                  {% elif repeat.item == 'led 6' %}
+                                                    {{ 0x0056 |int }}
+                                                  {% elif repeat.item == 'led 7' %}
+                                                    {{ 0x005b |int }}
+                                                  {% endif %}
+                                                value: "{{ color_set[LEDcolor_off][repeat.item] }}"
+                                                manufacturer: 4655
+                                  - conditions: "{{ 'all' not in LEDcolor_off }}"
+                                    sequence: 
+                                      - service: zha.set_zigbee_cluster_attribute
+                                        data:
+                                          ieee: "{{ (device_attr( repeat.item, 'identifiers') | list).0.1 }}"
+                                          endpoint_id: 1
+                                          cluster_id: 64561
+                                          cluster_type: in
+                                          attribute: >-
+                                            {% if LEDnumber == 'all' %}
+                                              {{ 0x0060 |int }}
+                                            {% elif LEDnumber == 'led 1' %}
+                                              {{ 0x003d |int }}
+                                            {% elif LEDnumber == 'led 2' %}
+                                              {{ 0x0042 |int }}
+                                            {% elif LEDnumber == 'led 3' %}
+                                              {{ 0x0047 |int }}
+                                            {% elif LEDnumber == 'led 4' %}
+                                              {{ 0x004c |int }}
+                                            {% elif LEDnumber == 'led 5' %}
+                                              {{ 0x0051 |int }}
+                                            {% elif LEDnumber == 'led 6' %}
+                                              {{ 0x0056 |int }}
+                                            {% elif LEDnumber == 'led 7' %}
+                                              {{ 0x005b |int }}
+                                            {% endif %}
+                                          value: >-
+                                            {% if 'led' in LEDnumber and LEDcolor_off == 'off' %}
+                                              255
+                                            {% else %}
+                                              {{ color_set[LEDcolor_off] }}
+                                            {% endif %}
+                                          manufacturer: 4655
 
 
         ##################
