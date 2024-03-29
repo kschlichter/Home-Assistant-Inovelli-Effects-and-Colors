@@ -26,9 +26,10 @@
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 #
-# ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417/3
+# ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417
 # ZHA quirks: https://github.com/zigpy/zha-device-handlers/blob/dev/zhaquirks/inovelli/__init__.py#L199
 # Z-Wave Config DB: https://devices.zwave-js.io/?jumpTo=0x031e:0x0001:0x0001:0.0
+# Inovelli Toolbox: https://inovelliusa.github.io/inovelli-switch-toolbox/
 ############
 
 mode: parallel
@@ -925,6 +926,7 @@ sequence:
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
+      LEDnumber: "{{ LEDnumber|default(\"all\")|lower }}"
       color: "{{ color|default(\"no change\")|lower }}"
       duration: "{{ duration|default(\"invalid\")|lower }}"
       brightness: "{{ brightness|default(\"11\")|float }}"
@@ -934,6 +936,7 @@ sequence:
       LEDbrightness: "{{ LEDbrightness|default(\"11\")|float }}"
       LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|float }}"
 
+      #LEDnumber: "{{ input_LEDnumber|default(\"all\")|lower }}"
       #color: "{{ input_color|default(\"no change\")|lower }}"
       #duration: "{{ input_duration|default(\"invalid\")|lower }}"
       #brightness: "{{ input_brightness|default(\"11\")|float }}"
@@ -1092,10 +1095,9 @@ sequence:
         - choose:
             - conditions: "{{ LEDcolor != \"no change\" }}"
               sequence:
-                - choose:
+                - choose: # Zwave JS
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
                       sequence:
-                        # Zwave JS
                         - service: zwave_js.set_config_parameter
                           data:
                             entity_id: "{{ repeat.item.entities }}"
@@ -1103,10 +1105,9 @@ sequence:
                               {% set effect_param = repeat.item.device_type + '_ledcolor' %}
                               {{ parameters[effect_param] }}
                             value: "{{ color_set[LEDcolor] }} "
-                - choose:
+                - choose: # Zigbee2mqtt
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
-                        # Zigbee2mqtt
                         - repeat:
                             for_each: "{{ repeat.item.entities }} "
                             sequence:
@@ -1116,10 +1117,9 @@ sequence:
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     { "ledColorWhenOn": {{ color_set[LEDcolor] }} }
-                - choose:
+                - choose: #ZHA
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
-                        # ZHA
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
@@ -1129,7 +1129,24 @@ sequence:
                                   endpoint_id: 1
                                   cluster_id: 64561
                                   cluster_type: in
-                                  attribute: 0x005f
+                                  attribute: >-
+                                    {% if LEDnumber == 'all' %}
+                                      {{ 0x005f |int }}
+                                    {% elif LEDnumber == 'led 1' %}
+                                      {{ 0x003c |int }}
+                                    {% elif LEDnumber == 'led 2' %}
+                                      {{ 0x0041 |int }}
+                                    {% elif LEDnumber == 'led 3' %}
+                                      {{ 0x0046 |int }}
+                                    {% elif LEDnumber == 'led 4' %}
+                                      {{ 0x004b |int }}
+                                    {% elif LEDnumber == 'led 5' %}
+                                      {{ 0x0050 |int }}
+                                    {% elif LEDnumber == 'led 6' %}
+                                      {{ 0x0055 |int }}
+                                    {% elif LEDnumber == 'led 7' %}
+                                      {{ 0x005a |int }}
+                                    {% endif %}
                                   value: "{{ color_set[LEDcolor] }}"
                                   manufacturer: 4655
                                     
@@ -1139,10 +1156,9 @@ sequence:
         - choose:
             - conditions: "{{ LEDcolor_off != \"no change\" }}"
               sequence:
-                - choose:
+                - choose: # Zwave JS
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type == 'VZW31SN' }}"
                       sequence:
-                        # Zwave JS
                         - service: zwave_js.set_config_parameter
                           data:
                             entity_id: "{{ repeat.item.entities }}"
@@ -1150,10 +1166,9 @@ sequence:
                               {% set effect_param = repeat.item.device_type + '_ledcolor_off' %}
                               {{ parameters[effect_param] }}
                             value: "{{ color_set[LEDcolor_off] }} "
-                - choose:
+                - choose: # Zigbee2mqtt
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
-                        # Zigbee2mqtt
                         - repeat:
                             for_each: "{{ repeat.item.entities }} "
                             sequence:
@@ -1163,23 +1178,56 @@ sequence:
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     { "ledColorWhenOff": {{ color_set[LEDcolor_off] }} }
-                - choose:
+                - choose: # ZHA
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
-                        # ZHA
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
-                              - service: zha.set_zigbee_cluster_attribute
-                                data:
-                                  ieee: "{{ (device_attr(repeat.item, 'identifiers') | list).0.1 }}"
-                                  endpoint_id: 1
-                                  cluster_id: 64561
-                                  cluster_type: in
-                                  attribute: 0x0060
-                                  value: "{{ color_set[LEDcolor_off] }}"
-                                  manufacturer: 4655
-                                    
+                              - variables:
+                                  entity: "{{ repeat.item }}" 
+                              - repeat:
+                                  for_each:
+                                    - "led 1"
+                                    - "led 2"
+                                    - "led 3"
+                                    - "led 4"
+                                    - "led 5"
+                                    - "led 6"
+                                    - "led 7"
+                                    - "all"
+                                  sequence:  
+                                    - service: zha.set_zigbee_cluster_attribute
+                                      data:
+                                        ieee: "{{ (device_attr( entity, 'identifiers') | list).0.1 }}"
+                                        endpoint_id: 1
+                                        cluster_id: 64561
+                                        cluster_type: in
+                                        attribute: >-
+                                          {% if repeat.item == 'all' %}
+                                            {{ 0x0060 |int }}
+                                          {% elif repeat.item == 'led 1' %}
+                                            {{ 0x003d |int }}
+                                          {% elif repeat.item == 'led 2' %}
+                                            {{ 0x0042 |int }}
+                                          {% elif repeat.item == 'led 3' %}
+                                            {{ 0x0047 |int }}
+                                          {% elif repeat.item == 'led 4' %}
+                                            {{ 0x004c |int }}
+                                          {% elif repeat.item == 'led 5' %}
+                                            {{ 0x0051 |int }}
+                                          {% elif repeat.item == 'led 6' %}
+                                            {{ 0x0056 |int }}
+                                          {% elif repeat.item == 'led 7' %}
+                                            {{ 0x005b |int }}
+                                          {% endif %}
+                                        value: >-
+                                          {% if LEDnumber == repeat.item and 'led' in LEDnumber and LEDcolor_off == 'off' %}
+                                            255
+                                          {% elif LEDnumber == repeat.item %}
+                                            {{ color_set[LEDcolor_off] }}
+                                          {% endif %}
+                                        manufacturer: 4655
 
 
         ##################
@@ -1188,10 +1236,9 @@ sequence:
         - choose:
             - conditions: "{{ LEDbrightness is defined and LEDbrightness != 11 }} "
               sequence:
-                - choose:
+                - choose: # Zwave JS
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
                       sequence:
-                        # Zwave JS
                         - service: zwave_js.set_config_parameter
                           data:
                             entity_id: "{{ repeat.item.entities }}"
@@ -1202,10 +1249,9 @@ sequence:
                               {% else %}
                                 {{ (LEDbrightness * 10) | int }}
                               {% endif %}
-                - choose:
+                - choose: # Zigbee2mqtt
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
-                        # Zigbee2mqtt
                         - repeat:
                             for_each: |
                               {{ repeat.item.entities }}
@@ -1216,10 +1262,9 @@ sequence:
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     { "ledIntensityWhenOn": {{ (LEDbrightness * 256 / 10) }} }
-                - choose:
+                - choose: #ZHA
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
-                        # ZHA
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
@@ -1229,7 +1274,24 @@ sequence:
                                   endpoint_id: 1
                                   cluster_id: 64561
                                   cluster_type: in
-                                  attribute: 0x0061
+                                  attribute: >-
+                                    {% if LEDnumber == 'all' %}
+                                      {{ 0x0061 |int }}
+                                    {% elif LEDnumber == 'led 1' %}
+                                      {{ 0x003e |int }}
+                                    {% elif LEDnumber == 'led 2' %}
+                                      {{ 0x0043 |int }}
+                                    {% elif LEDnumber == 'led 3' %}
+                                      {{ 0x0048 |int }}
+                                    {% elif LEDnumber == 'led 4' %}
+                                      {{ 0x004d |int }}
+                                    {% elif LEDnumber == 'led 5' %}
+                                      {{ 0x0052 |int }}
+                                    {% elif LEDnumber == 'led 6' %}
+                                      {{ 0x0057 |int }}
+                                    {% elif LEDnumber == 'led 7' %}
+                                      {{ 0x005c |int }}
+                                    {% endif %}
                                   value: "{{ (LEDbrightness * 10) | int }}"
                                   manufacturer: 4655
                                     
@@ -1240,10 +1302,9 @@ sequence:
         - choose:
             - conditions: "{{ LEDbrightness_off is defined and LEDbrightness_off != 11 }} "
               sequence:
-                - choose:
+                - choose: # Zwave JS
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
                       sequence:
-                        # Zwave JS
                         - service: zwave_js.set_config_parameter
                           data:
                             entity_id: "{{ repeat.item.entities }}"
@@ -1255,10 +1316,9 @@ sequence:
                               {% else %}
                                 {{ (LEDbrightness_off * 10) | int }}
                               {% endif %}
-                - choose:
+                - choose: # Zigbee2mqtt
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
-                        # Zigbee2mqtt
                         - repeat:
                             for_each: "{{ repeat.item.entities }} "
                             sequence:
@@ -1268,10 +1328,9 @@ sequence:
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     { "ledIntensityWhenOff": {{ (LEDbrightness_off * 256 / 10) }} }
-                - choose:
+                - choose: # ZHA
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
-                        # ZHA
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
@@ -1281,7 +1340,24 @@ sequence:
                                   endpoint_id: 1
                                   cluster_id: 64561
                                   cluster_type: in
-                                  attribute: 0x0062
+                                  attribute: >-
+                                    {% if LEDnumber == 'all' %}
+                                      {{ 0x0062 |int }}
+                                    {% elif LEDnumber == 'led 1' %}
+                                      {{ 0x003f |int }}
+                                    {% elif LEDnumber == 'led 2' %}
+                                      {{ 0x0044 |int }}
+                                    {% elif LEDnumber == 'led 3' %}
+                                      {{ 0x0049 |int }}
+                                    {% elif LEDnumber == 'led 4' %}
+                                      {{ 0x004e |int }}
+                                    {% elif LEDnumber == 'led 5' %}
+                                      {{ 0x0053 |int }}
+                                    {% elif LEDnumber == 'led 6' %}
+                                      {{ 0x0058 |int }}
+                                    {% elif LEDnumber == 'led 7' %}
+                                      {{ 0x005d |int }}
+                                    {% endif %}
                                   value: "{{ (LEDbrightness_off * 10) | int }}"
                                   manufacturer: 4655
 
@@ -1295,10 +1371,9 @@ sequence:
                 {{ effect != "off" and  color != "no change" and  duration != "invalid" and brightness != 11 and
                    repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
               sequence:
-                - choose:
+                - choose: # Zwave JS
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
                       sequence:
-                        # Zwave JS
                         - service: zwave_js.bulk_set_partial_config_parameters
                           data:
                             entity_id: "{{ repeat.item.entities }}"
@@ -1317,10 +1392,9 @@ sequence:
                               {% elif repeat.item.device_type == "VZW31SN" %}
                                 {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}
                               {% endif %}
-                - choose:
+                - choose: # Zigbee2mqtt
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
-                        # Zigbee2mqtt
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
@@ -1330,10 +1404,9 @@ sequence:
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effect | replace(' ', '_') }}","level":"{{ (brightness * 256 / 10) }}"}}
-                - choose:
+                - choose: # ZHA
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
-                        # ZHA
                         - repeat:
                             for_each: "{{ repeat.item.entities }} "
                             sequence:
@@ -1356,10 +1429,9 @@ sequence:
             # This way, "forever" effects can be set, then easily cleared.
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
             ##################
-            - choose:
+            - choose: # Zwave JS
                 - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}"
                   sequence:
-                    # Zwave JS
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
@@ -1374,10 +1446,9 @@ sequence:
                           {% set effect_param = repeat.item.device_type + '_effect_duration' %}
                           {{ parameters[effect_param] }}
                         value: 1
-            - choose:
+            - choose: # Zigbee2mqtt
                 - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                   sequence:
-                    # Zigbee2mqtt
                     - repeat:
                         for_each: "{{ repeat.item.entities }} "
                         sequence:
@@ -1386,10 +1457,9 @@ sequence:
                               topic: >-
                                 zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                               payload: "{\"led_effect\":{\"duration\":\"1\",\"effect\":\"clear\"}}"
-            - choose:
+            - choose: # ZHA
                 - conditions: "{{ repeat.item.call_type == 'zha' }}"
                   sequence:
-                    # ZHA
                     - repeat:
                         for_each: "{{ repeat.item.entities }} "
                         sequence:
