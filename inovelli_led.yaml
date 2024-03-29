@@ -153,6 +153,25 @@ fields:
               - switch
             #model: LZW36 # Device model should really be an option for entities.
 
+  LEDnumber:
+    name: LED Number
+    description: >-
+      Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
+    #required: false
+    example: All
+    default: 'all'
+    selector:
+      select:
+        options:
+          - All
+          - LED 1
+          - LED 2
+          - LED 3
+          - LED 4
+          - LED 5
+          - LED 6
+          - LED 7
+
   LEDcolor:
     name: LED Color When On (non-effect)
     description: Sets the color of the LED status, which indicates brightness levels.
