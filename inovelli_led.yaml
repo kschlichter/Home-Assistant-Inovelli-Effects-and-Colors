@@ -4,6 +4,7 @@
 # Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
 #
 # Setting the LED indicator
+#   LEDnumber: (LED 1 .. LED 7 or All) Set to `all` to configure the whole LED bar (default if the parameter is left out) or configure a single LED.
 #   LEDcolor: (int or string) Sets color of status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
 #   LEDbrightness: (float 1 – 10) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
 #   LEDbrightness_off: (float 1 – 10) Sets the brightness of the status LED when off, for devices that support this feature.
@@ -1607,10 +1608,9 @@ sequence:
                                   endpoint_id: 1
                                   cluster_id: 64561
                                   cluster_type: in
-                                  command: "{{ iif(LEDnumber == 'all',1,3) }}"
+                                  command: "{{ iif('all' in LEDnumber,1,3) }}"
                                   command_type: server
-                                  params: {"led_number":"{{ iif(LEDnumber == 'all',-1,LEDnumber.split(' ')[1]|int) }}","led_color":"{{ color_set[color] }}","led_duration":"{{ duration_values[duration] }}","led_effect":"{{ VZM31SN_effects[effect] }}","led_level":"{{ (brightness * 10 | round(0)| int) }}"}
-                                  #params: {"led_number":"-1","led_color":"{{ color_set[color] }}","led_duration":"{{ duration_values[duration] }}","led_effect":"{{ VZM31SN_effects[effect] }}","led_level":"{{ (brightness * 10 | round(0)| int) }}"}
+                                  params: {"led_number":"{{ iif('all' in LEDnumber,-1,LEDnumber.split(' ')[1]|default(-1)) }}","led_color":"{{ color_set[color] }}","led_duration":"{{ duration_values[duration] }}","led_effect":"{{ VZM31SN_effects[effect] }}","led_level":"{{ (brightness * 10 | round(0)| int) }}"}
                                   manufacturer: 4655
                                     
           default:
