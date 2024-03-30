@@ -67,9 +67,12 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
 
   These parameters are all optional and can be configured together or individually (to change the brightness at sunrise but not the color, for example).
   
+    - LEDnumber: (LED 1 .. LED 7 or All) Set to `all` to configure the whole LED bar (default if the parameter is left out) or configure a single LED.
     - LEDcolor: (int or string) Sets color of status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
+        If a "color set" is used like "all unicorn", LEDnumber cannot be set to "LED {n}"; "all" LEDs must be configured or none will be.
     - LEDcolor_off: (int or string) Sets color of status LED when off, for devices that support this feature.
         Note that the Blue 2-in-1 switch/dimmer and Red 2-in-1 switch/dimmer support separate colors for on and off while the Black 500 and Red 500 Series devices do not and will ignore the variable.
+	If a "color set" is used like "all unicorn", LEDnumber cannot be set to "LED {n}"; "all" LEDs must be configured or none will be.
     - LEDbrightness: (float 0.0 – 10.0) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
         LEDbrightness is multiplied by 10 or rounded off for each device, depending on whether they support 0 – 100 or 0 – 10 brightness levels.  This was done for backwards compatibility with old automations.
     - LEDbrightness_off: (float 0.0 – 10.0; see note above) Sets the brightness of the status LED when off, for devices that support this feature.
@@ -83,6 +86,7 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
     - effect: (string) Where older devices don't support a new effect, that effect has been mapped to something that is supported.
     - brightness: (integer 1 – 10) Sets the brightness of the LED's effect
     - color: (int or string) Sets color of LED effect and must be one of: "Off", Red, Orange, Lemon, Yellow, Lime, Green, Cyan, Teal, Blue, Purple, Magenta, Light Pink, Pink, Hot Pink, White
+        Color sets like "all usa" cannot be used with effects.  I can't think of a way to get all 7 LEDs synchronized for effects like "pulse" or "chase".
 
 
 ## Notification effect examples:
@@ -119,16 +123,17 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
       brightness: 8
       color: red
             
-  **Effect to signal LED transition to new color**
+  **Single LED (7, at the top) effect to signal LED transition to new color**
   
     service: script.inovelli_led
     data:
       entity: light.office
       LEDcolor: green
+      LEDnumber: led 7
       LEDbrightness: 7.5
       LEDbrightness_off: 2.3
       duration: 1 second
-      effect: Chase
+      effect: Solid
       color: green
       brightness: 7
       
@@ -169,6 +174,73 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
       entity: light.office
       LEDcolor_off: RED
       LEDbrightness_off: 2
+
+ **Configuring an LED color set (color sets start with 'all' and must be set with all LEDs)**
+
+    service: script.inovelli_led
+    data:
+      device:
+        - 88f56168bdb28f3ac764fc3d7e3d407b
+      LEDnumber: All
+      LEDcolor: All Unicorn
+      LEDcolor_off: All USA
+      LEDbrightness: 8.6
+      LEDbrightness_off: 0.4
+
+ **Configuring an LED color for one LED**
+
+    service: script.inovelli_led
+    data:
+      entity: light.office
+      LEDnumber: led 4
+      LEDcolor: red
+
+
+
+
+
+
+
+
+
+
+
+ **Configuring an LED color set (color sets start with 'all' and must be set with all LEDs)**
+ all of the LED’s (all 7 of them?) to be Blue and on at all times. I would then like LED’s 1, 2 & 3 to turn red and stay red whenever the “Garage Under Cab Lights” light switch is activated, and for them to return to their previous state (blue) when the “Garage Under Cab Lights” are turned off.
+https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-black-red-and-blue-devices-by-area-group-device-id-or-entity/681056/31?u=kschlichter
+
+
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+set an example automation here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Automation to listen for a config button press and set everything in the area to "pulse"
   
