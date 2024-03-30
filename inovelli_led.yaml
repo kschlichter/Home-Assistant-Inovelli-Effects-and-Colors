@@ -747,59 +747,59 @@ variables:
   # There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
   ##################
   parameters:
-    LZW30_effect_bulk: "null"
-    LZW30_effect_color: "null"
-    LZW30_effect_brightness: "null"
-    LZW30_effect_duration: "null"
-    LZW30_effect_effect: "null"
-    LZW30_ledcolor: "LED Indicator Color"
-    LZW30_ledbrightness: "LED Indicator Intensity (When on)"
-    LZW30_ledbrightness_off: "LED Indicator Intensity (When Off)"
+    LZW30_all_effect_bulk: "null"
+    LZW30_all_effect_color: "null"
+    LZW30_all_effect_brightness: "null"
+    LZW30_all_effect_duration: "null"
+    LZW30_all_effect_effect: "null"
+    LZW30_all_ledcolor: "LED Indicator Color"
+    LZW30_all_ledbrightness: "LED Indicator Intensity (When on)"
+    LZW30_all_ledbrightness_off: "LED Indicator Intensity (When Off)"
 
-    LZW31_effect_bulk: "null"
-    LZW31_effect_color: "null"
-    LZW31_effect_brightness: "null"
-    LZW31_effect_duration: "null"
-    LZW31_effect_effect: "null"
-    LZW31_ledcolor: "LED Indicator Color"
-    LZW31_ledbrightness: "LED Indicator Intensity"
-    LZW31_ledbrightness_off: "LED Indicator Intensity (When Off)"
+    LZW31_all_effect_bulk: "null"
+    LZW31_all_effect_color: "null"
+    LZW31_all_effect_brightness: "null"
+    LZW31_all_effect_duration: "null"
+    LZW31_all_effect_effect: "null"
+    LZW31_all_ledcolor: "LED Indicator Color"
+    LZW31_all_ledbrightness: "LED Indicator Intensity"
+    LZW31_all_ledbrightness_off: "LED Indicator Intensity (When Off)"
 
-    LZW31SN_effect_bulk: 16
-    LZW31SN_effect_color: "LED Indicator: Effect Color"
-    LZW31SN_effect_brightness: "LED Indicator: Effect Brightness"
-    LZW31SN_effect_duration: "LED Indicator: Effect Duration"
-    LZW31SN_effect_effect: "LED Indicator: Effect Type"
-    LZW31SN_ledcolor: "LED Indicator: Color"
-    LZW31SN_ledbrightness: "LED Indicator: Brightness When On"
-    LZW31SN_ledbrightness_off: "LED Indicator: Brightness When Off"
+    LZW31SN_all_effect_bulk: 16
+    LZW31SN_all_effect_color: "LED Indicator: Effect Color"
+    LZW31SN_all_effect_brightness: "LED Indicator: Effect Brightness"
+    LZW31SN_all_effect_duration: "LED Indicator: Effect Duration"
+    LZW31SN_all_effect_effect: "LED Indicator: Effect Type"
+    LZW31SN_all_ledcolor: "LED Indicator: Color"
+    LZW31SN_all_ledbrightness: "LED Indicator: Brightness When On"
+    LZW31SN_all_ledbrightness_off: "LED Indicator: Brightness When Off"
 
-    LZW30SN_effect_bulk: 8
-    LZW30SN_effect_color: LED Effect Color
-    LZW30SN_effect_brightness: LED Effect Brightness
-    LZW30SN_effect_duration: LED Effect Duration
-    LZW30SN_effect_effect: LED Effect Type
-    LZW30SN_ledcolor: LED Indicator Color
-    LZW30SN_ledbrightness: LED Indicator Brightness
-    LZW30SN_ledbrightness_off: LED Indicator Brightness When Off
+    LZW30SN_all_effect_bulk: 8
+    LZW30SN_all_effect_color: LED Effect Color
+    LZW30SN_all_effect_brightness: LED Effect Brightness
+    LZW30SN_all_effect_duration: LED Effect Duration
+    LZW30SN_all_effect_effect: LED Effect Type
+    LZW30SN_all_ledcolor: LED Indicator Color
+    LZW30SN_all_ledbrightness: LED Indicator Brightness
+    LZW30SN_all_ledbrightness_off: LED Indicator Brightness When Off
 
-    LZW36_light_effect_bulk: 24
-    LZW36_light_effect_color: Light LED Effect Color
-    LZW36_light_effect_brightness: Light LED Effect Brightness
-    LZW36_light_effect_duration: Light LED Effect Duration
-    LZW36_light_effect_effect: Light LED Effect Type
-    LZW36_light_ledcolor: Light LED Indicator Color
-    LZW36_light_ledbrightness: Light LED Strip Brightness
-    LZW36_light_ledbrightness_off: Light LED Strip Brightness When Off
+    LZW36_light_all_effect_bulk: 24
+    LZW36_light_all_effect_color: Light LED Effect Color
+    LZW36_light_all_effect_brightness: Light LED Effect Brightness
+    LZW36_light_all_effect_duration: Light LED Effect Duration
+    LZW36_light_all_effect_effect: Light LED Effect Type
+    LZW36_light_all_ledcolor: Light LED Indicator Color
+    LZW36_light_all_ledbrightness: Light LED Strip Brightness
+    LZW36_light_all_ledbrightness_off: Light LED Strip Brightness When Off
 
-    LZW36_fan_effect_bulk: 25
-    LZW36_fan_effect_color: Fan LED Effect Color
-    LZW36_fan_effect_brightness: Fan LED Effect Brightness
-    LZW36_fan_effect_duration: Fan LED Effect Duration
-    LZW36_fan_effect_effect: Fan LED Effect Type
-    LZW36_fan_ledcolor: Fan LED Indicator Color
-    LZW36_fan_ledbrightness: Fan LED Strip Brightness
-    LZW36_fan_ledbrightness_off: Fan LED Strip Brightness When Off
+    LZW36_fan_all_effect_bulk: 25
+    LZW36_fan_all_effect_color: Fan LED Effect Color
+    LZW36_fan_all_effect_brightness: Fan LED Effect Brightness
+    LZW36_fan_all_effect_duration: Fan LED Effect Duration
+    LZW36_fan_all_effect_effect: Fan LED Effect Type
+    LZW36_fan_all_ledcolor: Fan LED Indicator Color
+    LZW36_fan_all_ledbrightness: Fan LED Strip Brightness
+    LZW36_fan_all_ledbrightness_off: Fan LED Strip Brightness When Off
 
     VZW31SN_effect_bulk: 99
     VZW31SN_effect_color: All LED Strip Effect - Color
@@ -1126,7 +1126,7 @@ sequence:
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >
-                              {% set effect_param = repeat.item.device_type + '_ledcolor' %}
+                              {% set effect_param = repeat.item.device_type + '_all' + '_ledcolor' %}
                               {{ parameters[effect_param] }}
                             value: "{{ color_set[LEDcolor] }} "
                 - choose: # Zigbee2mqtt
@@ -1240,7 +1240,7 @@ sequence:
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >
-                              {% set effect_param = repeat.item.device_type + '_ledcolor_off' %}
+                              {% set effect_param = repeat.item.device_type + '_all' + '_ledcolor_off' %}
                               {{ parameters[effect_param] }}
                             value: "{{ color_set[LEDcolor_off] }} "
                 - choose: # Zigbee2mqtt
@@ -1353,7 +1353,7 @@ sequence:
                         - service: zwave_js.set_config_parameter
                           data:
                             entity_id: "{{ repeat.item.entities }}"
-                            parameter: "{% set effect_param = repeat.item.device_type + '_ledbrightness' %} {{ \"off\" if parameters[effect_param] == 0 else parameters[effect_param] }} "
+                            parameter: "{% set effect_param = repeat.item.device_type + '_all' + '_ledbrightness' %} {{ \"off\" if parameters[effect_param] == 0 else parameters[effect_param] }} "
                             value: >-
                               {% if 'LZW' in repeat.item.device_type %}
                                 {{ LEDbrightness | round(0) | int  }} 
@@ -1466,7 +1466,7 @@ sequence:
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >-
-                              {% set effect_param = repeat.item.device_type + '_ledbrightness_off' %} {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
+                              {% set effect_param = repeat.item.device_type + '_all' + '_ledbrightness_off' %} {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
                             value: >-
                               {% if 'LZW' in repeat.item.device_type %}
                                 {{ LEDbrightness_off | round(0) | int  }}
@@ -1574,14 +1574,17 @@ sequence:
                 {{ effect != "off" and  color != "no change" and  duration != "invalid" and brightness != 11 and
                    repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
               sequence:
-                - choose: # Zwave JS
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
+
+                ### Zwave JS
+                ### Red 500 Series ###
+                - choose: 
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber }}"
                       sequence:
                         - service: zwave_js.bulk_set_partial_config_parameters
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >-
-                              {% set bulk_param = repeat.item.device_type + '_effect_bulk' %}
+                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber + '_effect_bulk' %}
                               {{ parameters[bulk_param] }}
                             value: >-
                               {% if repeat.item.device_type == "LZW30SN" %}
@@ -1592,10 +1595,22 @@ sequence:
                                 {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_light_effects[effect] * 16777216) }}
                               {% elif repeat.item.device_type == "LZW36_fan" %}
                                 {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
-                              {% elif repeat.item.device_type == "VZW31SN" %}
-                                {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}
                               {% endif %}
-                - choose: # Zigbee2mqtt
+
+                ### Red 800 Series ###
+                - choose: 
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type }}"
+                      sequence:
+                        - service: zwave_js.bulk_set_partial_config_parameters
+                          data:
+                            entity_id: "{{ repeat.item.entities }}"
+                            parameter: >-
+                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber + '_effect_bulk' %}
+                              {{ parameters[bulk_param] }}
+                            value: "{{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}"
+
+                ### Zigbee2mqtt
+                - choose:
                     - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
                         - repeat:
@@ -1607,7 +1622,9 @@ sequence:
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effect | replace(' ', '_') }}","level":"{{ (brightness * 256 / 10) }}"}}
-                - choose: # ZHA
+
+                ### ZHA
+                - choose: 
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
                         - repeat:
@@ -1633,24 +1650,48 @@ sequence:
             # This way, "forever" effects can be set, then easily cleared.
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
             ##################
-            - choose: # Zwave JS
+
+            ### Zwave JS
+            - choose: 
+
+                ### Red 500 Series ###
                 - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}"
                   sequence:
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_effect_effect' %}
+                          {% set effect_param = repeat.item.device_type + '_all' + '_effect_effect' %}
                           {{ parameters[effect_param] }}
                         value: 0
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_effect_duration' %}
+                          {% set effect_param = repeat.item.device_type + '_all' + '_effect_duration' %}
                           {{ parameters[effect_param] }}
                         value: 1
-            - choose: # Zigbee2mqtt
+
+                ### Red 800 Series ###
+                - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}"
+                  sequence:
+                    - service: zwave_js.set_config_parameter
+                      data:
+                        entity_id: "{{ repeat.item.entities }}"
+                        parameter: >-
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_effect' %}
+                          {{ parameters[effect_param] }}
+                        value: 0
+                    - service: zwave_js.set_config_parameter
+                      data:
+                        entity_id: "{{ repeat.item.entities }}"
+                        parameter: >-
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_duration' %}
+                          {{ parameters[effect_param] }}
+                        value: 1
+
+            ### Zigbee2mqtt
+            - choose: 
                 - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                   sequence:
                     - repeat:
@@ -1661,7 +1702,9 @@ sequence:
                               topic: >-
                                 zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                               payload: "{\"led_effect\":{\"duration\":\"1\",\"effect\":\"clear\"}}"
-            - choose: # ZHA
+
+            ### ZHA
+            - choose: 
                 - conditions: "{{ repeat.item.call_type == 'zha' }}"
                   sequence:
                     - repeat:
