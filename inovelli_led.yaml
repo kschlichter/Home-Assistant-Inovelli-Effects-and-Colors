@@ -1509,9 +1509,10 @@ sequence:
                                   endpoint_id: 1
                                   cluster_id: 64561
                                   cluster_type: in
-                                  command: 1
+                                  command: "{{ iif(LEDnumber == 'all',1,3) }}"
                                   command_type: server
-                                  params: {"led_number":"-1","led_color":"{{ color_set[color] }}","led_duration":"{{ duration_values[duration] }}","led_effect":"{{ VZM31SN_effects[effect] }}","led_level":"{{ (brightness * 10 | round(0)| int) }}"}
+                                  params: {"led_number":"{{ iif(LEDnumber == 'all',-1,LEDnumber.split(' ')[1]|int) }}","led_color":"{{ color_set[color] }}","led_duration":"{{ duration_values[duration] }}","led_effect":"{{ VZM31SN_effects[effect] }}","led_level":"{{ (brightness * 10 | round(0)| int) }}"}
+                                  #params: {"led_number":"-1","led_color":"{{ color_set[color] }}","led_duration":"{{ duration_values[duration] }}","led_effect":"{{ VZM31SN_effects[effect] }}","led_level":"{{ (brightness * 10 | round(0)| int) }}"}
                                   manufacturer: 4655
                                     
           default:
