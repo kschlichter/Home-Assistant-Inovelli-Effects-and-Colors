@@ -13,7 +13,7 @@
 #       If a "color set" is used like "all unicorn", LEDnumber cannot be set to "LED {n}"; "all" LEDs must be configured or none will be.
 #   - LEDbrightness: (float 0.0 – 10.0) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
 #       LEDbrightness is multiplied by 10 or rounded off for each device, depending on whether they support 0 – 100 or 0 – 10 brightness levels.  This was done for backwards compatibility with old automations.
-#   - LEDbrightness_off: (Red 800 and Blue Series only; float 0.0 – 10.0; see note above) Sets the brightness of the status LED when off, for devices that support this feature.
+#   - LEDbrightness_off: (float 0.0 – 10.0) (see note above) Sets the brightness of the status LED when off.
 #
 # Setting LED effects
 #   duration: (required; string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
@@ -253,7 +253,7 @@ fields:
         mode: slider
 
   LEDbrightness_off:
-    name: LED Brightness When Off (non-effect). Red 800 and Blue Series only.
+    name: LED Brightness When Off (non-effect).
     description: Sets the brightness of the LED status when off. 0 means off.
     #required: false
     example: "2"
@@ -1738,6 +1738,13 @@ sequence:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
                           {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_effect' %}
+                          {{ parameters[effect_param] }}
+                        value: 0
+                    - service: zwave_js.set_config_parameter
+                      data:
+                        entity_id: "{{ repeat.item.entities }}"
+                        parameter: >-
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_duration' %}
                           {{ parameters[effect_param] }}
                         value: 0
 
