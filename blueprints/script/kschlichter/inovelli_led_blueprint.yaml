@@ -1366,7 +1366,7 @@ sequence:
                             data:
                               topic: >-
                                 zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
-                              payload: "{\"led_effect\":{\"duration\":\"1\",\"effect\":\"clear\"}}"
+                              payload: "{\"led_effect\":{\"duration\":\"1\",\"effect\":\"clear_effect\"}}"
             - choose:
                 - conditions: "{{ repeat.item.call_type == 'zha' }}"
                   sequence:
