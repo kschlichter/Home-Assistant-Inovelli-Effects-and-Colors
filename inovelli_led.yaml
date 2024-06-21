@@ -165,7 +165,7 @@ fields:
   LEDnumber:
     name: LED Number
     description: >-
-      Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom. Blue Series only.
+      Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom. Blue Series devices only.
     #required: false
     example: All
     default: 'all'
@@ -317,11 +317,12 @@ fields:
     description: Type of effect
     #required: false
     example: Pulse
-    default: 'off'
+    default: 'Clear Effect'
     selector:
       select:
         options:
           - "off"
+          - Clear Effect
           - Aurora
           - Blink Fast
           - Blink Medium
@@ -482,6 +483,7 @@ variables:
   ### Black 500 Series Dimmer ###
   LZW30_effects:
     "off": 0
+    clear effect: 0
     aurora: 0
     blink: 0
     blink fast: 0
@@ -509,6 +511,7 @@ variables:
   ### Black 500 Series Dimmer ###
   LZW31_effects:
     "off": 0
+    clear effect: 0
     aurora: 0
     blink: 0
     blink fast: 0
@@ -536,6 +539,7 @@ variables:
   ### Red 500 Series Switch ###
   LZW30SN_effects:
     "off": 0
+    clear effect: 0
     aurora: 4
     blink: 3
     blink fast: 2
@@ -563,6 +567,7 @@ variables:
   ### Red 500 Series Dimmer ###
   LZW31SN_effects:
     "off": 0
+    clear effect: 0
     aurora: 4
     blink: 4
     blink fast: 3
@@ -590,6 +595,7 @@ variables:
   ### Red 500 Series Fan Light Combo ###
   LZW36_light_effects:
     "off": 0
+    clear effect: 0
     aurora: 4
     blink: 4
     blink fast: 3
@@ -616,6 +622,7 @@ variables:
 
   LZW36_fan_effects:
     "off": 0
+    clear effect: 0
     aurora: 4
     blink: 4
     blink fast: 3
@@ -643,6 +650,7 @@ variables:
   ### Red 800 Series Dimmer ###
   VZW31SN_effects:
     "off": 0
+    clear effect: 0
     aurora: 8
     blink: 15
     blink fast: 2
@@ -669,57 +677,60 @@ variables:
 
   ### Blue Series Dimmer ###
   VZM31SN_effects:
-    "off": 0
-    aurora: 8
-    blink: 15
-    blink fast: 2
-    blink medium: 15
-    blink slow: 3
-    chase: 5
-    chase fast: 17
-    chase medium: 5
-    chase slow: 16
-    fall fast: 11
-    fall medium: 10
-    fall slow: 9
-    open close: 6
-    pulse: 4
-    rise fast: 14
-    rise medium: 13
-    rise slow: 12
-    siren fast: 18
-    siren slow: 19
-    small to big: 7
-    solid: 1
-    fast blink: 2
-    slow blink: 3
+    "off": "off"
+    clear effect: clear_effect
+    aurora: aurora
+    blink: blink
+    blink fast: fast_blink
+    blink medium: medium_blink
+    blink slow: slow_blink
+    chase: chase
+    chase fast: fast_chase
+    chase medium: chase
+    chase slow: slow_chase
+    fall fast: fast_falling
+    fall medium: medium_falling
+    fall slow: slow_falling
+    open close: open_close
+    pulse: pulse
+    rise fast: fast_rising
+    rise medium: medium_rising
+    rise slow: slow_rising
+    siren fast: fast_siren
+    siren slow: slow_siren
+    small to big: small_to_big
+    solid: solid
+    fast blink: fast_blink
+    slow blink: slow_blink
 
   ### Blue Series Fan ###
   VZM35SN_effects:
-    "off": 0
-    aurora: 8
-    blink: 15
-    blink fast: 2
-    blink medium: 15
-    blink slow: 3
-    chase: 5
-    chase fast: 17
-    chase medium: 5
-    chase slow: 16
-    fall fast: 11
-    fall medium: 10
-    fall slow: 9
-    open close: 6
-    pulse: 4
-    rise fast: 14
-    rise medium: 13
-    rise slow: 12
-    siren fast: 18
-    siren slow: 19
-    small to big: 7
-    solid: 1
-    fast blink: 2
-    slow blink: 3
+    "off": "off"
+    clear effect: clear_effect
+    aurora: aurora
+    blink: blink
+    blink fast: fast_blink
+    blink medium: medium_blink
+    blink slow: slow_blink
+    chase: chase
+    chase fast: fast_chase
+    chase medium: chase
+    chase slow: slow_chase
+    fall fast: fast_falling
+    fall medium: medium_falling
+    fall slow: slow_falling
+    open close: open_close
+    pulse: pulse
+    rise fast: fast_rising
+    rise medium: medium_rising
+    rise slow: slow_rising
+    siren fast: fast_siren
+    siren slow: slow_siren
+    small to big: small_to_big
+    solid: solid
+    fast blink: fast_blink
+    slow blink: slow_blink
+
 
   ##################
   # Store model names for reference and validation checks if necessary
@@ -1001,7 +1012,7 @@ sequence:
       color: "{{ color|default(\"no change\")|lower }}"
       duration: "{{ duration|default(\"invalid\")|lower }}"
       brightness: "{{ brightness|default(\"11\")|float }}"
-      effect: "{{ effect|default(\"off\")|lower }}"
+      effect: "{{ effect|default(\"clear effect\")|lower }}"
       LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
       LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
       LEDbrightness: "{{ LEDbrightness|default(\"11\")|float }}"
@@ -1011,7 +1022,7 @@ sequence:
       #color: "{{ input_color|default(\"no change\")|lower }}"
       #duration: "{{ input_duration|default(\"invalid\")|lower }}"
       #brightness: "{{ input_brightness|default(\"11\")|float }}"
-      #effect: "{{ input_effect|default(\"off\")|lower }}"
+      #effect: "{{ input_effect|default(\"clear effect\")|lower }}"
       #LEDcolor: "{{ input_LEDcolor|default(\"no change\")|lower }}"
       #LEDcolor_off: "{{ input_LEDcolor_off|default(\"no change\")|lower }}"
       #LEDbrightness: "{{ input_LEDbrightness|default(\"11\")|float }}"
@@ -1108,6 +1119,7 @@ sequence:
         ##################
         - device_type: VZM31SN
           call_type: z2m
+          effects: "{{ VZM31SN_effects[effect] }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1246,7 +1258,7 @@ sequence:
                                                 value: "{{ color_set[LEDcolor][repeat.item] }}"
                                                 manufacturer: 4655
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ 'all' not in LEDcolor }}"
+                                  - conditions: "{{ 'all' not in LEDcolor and LEDcolor != 'no change' }}"
                                     sequence: 
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
@@ -1418,7 +1430,9 @@ sequence:
                         - service: zwave_js.set_config_parameter
                           data:
                             entity_id: "{{ repeat.item.entities }}"
-                            parameter: "{% set effect_param = repeat.item.device_type + '_all' + '_ledbrightness' %} {{ \"off\" if parameters[effect_param] == 0 else parameters[effect_param] }} "
+                            parameter: >-
+                              {% set effect_param = repeat.item.device_type + '_all' + '_ledbrightness' %} 
+                              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
                             value: >-
                               {% if 'LZW' in repeat.item.device_type %}
                                 {{ LEDbrightness | round(0) | int  }} 
@@ -1439,7 +1453,7 @@ sequence:
                                   topic: >-
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
-                                    { "ledIntensityWhenOn": {{ (LEDbrightness * 256 / 10) }} }
+                                    { "ledIntensityWhenOn": {{ (LEDbrightness * 10) }} }
 
                 ### ZHA ###
                 - choose: 
@@ -1559,7 +1573,7 @@ sequence:
                                   topic: >-
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
-                                    { "ledIntensityWhenOff": {{ (LEDbrightness_off * 256 / 10) }} }
+                                    { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) }} }
 
                 ### ZHA ###
                 - choose: 
@@ -1648,7 +1662,7 @@ sequence:
         ##################
         - choose:
             - conditions: >-
-                {{ effect != "off" and  color != "no change" and  duration != "invalid" and brightness != 11 and
+                {{ effect != "off" and effect != "clear effect" and  color != "no change" and  duration != "invalid" and brightness != 11 and
                    repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
               sequence:
 
@@ -1690,6 +1704,8 @@ sequence:
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'z2m' and 'all' not in LEDcolor }}"
                       sequence:
+                        - variables:
+                            effects: "{{ repeat.item.effects }}"
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
@@ -1698,7 +1714,7 @@ sequence:
                                   topic: >-
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
-                                    {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effect | replace(' ', '_') }}","level":"{{ (brightness * 256 / 10) }}"}}
+                                    {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 256 / 10) | int }}" }}
 
                 ### ZHA ###
                 - choose: 
@@ -1763,6 +1779,8 @@ sequence:
             - choose: 
                 - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                   sequence:
+                    - variables:
+                        effects: "{{ repeat.item.effects }}"
                     - repeat:
                         for_each: "{{ repeat.item.entities }} "
                         sequence:
@@ -1770,7 +1788,7 @@ sequence:
                             data:
                               topic: >-
                                 zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
-                              payload: "{\"led_effect\":{\"duration\":\"1\",\"effect\":\"clear\"}}"
+                              payload: "{\"led_effect\":{\"duration\":\"0\",\"effect\":\"clear_effect\" }}"
 
             ### ZHA ###
             - choose: 
