@@ -321,7 +321,7 @@ fields:
     selector:
       select:
         options:
-          - "off"
+          - "Off"
           - Clear Effect
           - Aurora
           - Blink Fast
@@ -1662,7 +1662,7 @@ sequence:
         ##################
         - choose:
             - conditions: >-
-                {{ effect != "off" and effect != "clear effect" and  color != "no change" and  duration != "invalid" and brightness != 11 and
+                {{ effect != "off" and effect != "clear effect" and color != "no change" and  duration != "invalid" and brightness != 11 and
                    repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
               sequence:
 
@@ -1780,6 +1780,7 @@ sequence:
                 - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                   sequence:
                     - variables:
+                        durations: "{{ duration_values[duration]|string }}"
                         effects: "{{ repeat.item.effects }}"
                     - repeat:
                         for_each: "{{ repeat.item.entities }} "
@@ -1788,7 +1789,8 @@ sequence:
                             data:
                               topic: >-
                                 zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
-                              payload: "{\"led_effect\":{\"duration\":\"0\",\"effect\":\"clear_effect\" }}"
+                              payload: >-
+                                {"led_effect":{"duration":"{{durations}}","effect":"{{effects}}" }}
 
             ### ZHA ###
             - choose: 
