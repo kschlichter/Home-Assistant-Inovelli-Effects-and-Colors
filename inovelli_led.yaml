@@ -1105,6 +1105,7 @@ sequence:
 
         - device_type: VZW31SN
           call_type: zwave_js
+          effects: "{{ VZW31SN_effects[effect] }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1119,7 +1120,7 @@ sequence:
         ##################
         - device_type: VZM31SN
           call_type: z2m
-          effects: "{{ VZM31SN_effects[effect] }}"
+          effects: "{{ VZM31SN_effects[effect] }}" ### So we can pass the device-specific effect into the repeat loop ###
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1131,6 +1132,7 @@ sequence:
 
         - device_type: VZM35SN
           call_type: z2m
+          effects: "{{ VZM35SN_effects[effect] }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1145,6 +1147,7 @@ sequence:
         ##################
         - device_type: VZM31SN
           call_type: zha
+          effects: "{{ VZM31SN_effects[effect] }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1156,6 +1159,7 @@ sequence:
 
         - device_type: VZM35SN
           call_type: zha
+          effects: "{{ VZM35SN_effects[effect] }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1720,6 +1724,8 @@ sequence:
                 - choose: 
                     - conditions: "{{ repeat.item.call_type == 'zha' and 'all' not in LEDcolor }}"
                       sequence:
+                        - variables:
+                            effects: "{{ repeat.item.effects }}"
                         - repeat:
                             for_each: "{{ repeat.item.entities }} "
                             sequence:
@@ -1731,7 +1737,7 @@ sequence:
                                   cluster_type: in
                                   command: "{{ iif('all' in LEDnumber,1,3) }}"
                                   command_type: server
-                                  params: {"led_number":"{{ led_map[LEDnumber]|int }}","led_color":"{{ color_set[color] }}","led_duration":"{{ duration_values[duration] }}","led_effect":"{{ VZM31SN_effects[effect] }}","led_level":"{{ (brightness * 10 | round(0)| int) }}"}
+                                  params: {"led_number":"{{ led_map[LEDnumber]|int }}","led_color":"{{ color_set[color] }}","led_duration":"{{ duration_values[duration] }}","led_effect":"{{ effects }}","led_level":"{{ (brightness * 10 | int) }}"}
                                   manufacturer: 4655
                                     
           default:
@@ -1767,20 +1773,28 @@ sequence:
                 ### Red 800 Series ###
                 - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type }}"
                   sequence:
+                    - variables:
+                        effects: "{{ repeat.item.effects }}"
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
                           {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_effect' %}
                           {{ parameters[effect_param] }}
-                        value: 255
+                        value: "{{ effects }}"
+                    - service: zwave_js.set_config_parameter
+                      data:
+                        entity_id: "{{ repeat.item.entities }}"
+                        parameter: >-
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_duration' %}
+                          {{ parameters[effect_param] }}
+                        value: "{{ duration_values[duration] }}"
 
             ### Zigbee2mqtt ###
             - choose: 
                 - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                   sequence:
                     - variables:
-                        durations: "{{ duration_values[duration]|string }}"
                         effects: "{{ repeat.item.effects }}"
                     - repeat:
                         for_each: "{{ repeat.item.entities }} "
@@ -1790,12 +1804,14 @@ sequence:
                               topic: >-
                                 zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                               payload: >-
-                                {"led_effect":{"duration":"{{durations}}","effect":"{{effects}}" }}
+                                {"led_effect":{"duration":"{{duration_values[duration]}}","effect":"{{effects}}" }}
 
             ### ZHA ###
             - choose: 
                 - conditions: "{{ repeat.item.call_type == 'zha' }}"
                   sequence:
+                    - variables:
+                        effects: "{{ repeat.item.effects }}"
                     - repeat:
                         for_each: "{{ repeat.item.entities }} "
                         sequence:
@@ -1807,5 +1823,5 @@ sequence:
                               cluster_type: in
                               command: 1
                               command_type: server
-                              params: {'led_number': -1, 'led_effect': 255, 'led_color': 0, 'led_level': 0, 'led_duration': 0}
+                              params: {'led_number': -1, 'led_effect': '{{effects}}', 'led_color': 0, 'led_level': 0, 'led_duration': '{{duration_values[duration]}}' }
                               manufacturer: 4655
