@@ -165,7 +165,7 @@ fields:
   LEDnumber:
     name: LED Number
     description: >-
-      Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom. Blue Series devices only.
+      Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
     #required: false
     example: All
     default: 'all'
@@ -426,7 +426,7 @@ variables:
     "all unicorn": {'led 1':234,'led 2':234,'led 3':170,'led 4':170,'led 5':170,'led 6':85,'led 7':85,'all':0}
     "all usa": {'led 1':170,'led 2':170,'led 3':255,'led 4':255,'led 5':0,'led 6':0,'led 7':0,'all':255}
 
-  ### Blue Series Quirks says 1 – 7 but it seems to be 0 – 6 ###
+  ### Blue Series ZHA Quirks says 1 – 7 but it seems to be 0 – 6 ###
   led_map:
     all: -1
     led 1: 0
@@ -1205,12 +1205,70 @@ sequence:
                         - repeat:
                             for_each: "{{ repeat.item.entities }} "
                             sequence:
-                              - service: mqtt.publish
-                                data:
-                                  topic: >-
-                                    zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
-                                  payload: >-
-                                    { "ledColorWhenOn": {{ color_set[LEDcolor] }} }
+                              - choose:
+                                  ### Configuring a color set for all LEDs ###
+                                  - conditions: "{{ 'all' in LEDcolor and LEDnumber == 'all' }}"
+                                    sequence:
+                                      - variables:
+                                          entity: "{{ repeat.item }}"
+                                      - repeat:
+                                          for_each:
+                                            - "led 1"
+                                            - "led 2"
+                                            - "led 3"
+                                            - "led 4"
+                                            - "led 5"
+                                            - "led 6"
+                                            - "led 7"
+                                            - "all"
+                                          sequence:
+                                            - service: mqtt.publish
+                                              data:
+                                                topic: >-
+                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                payload: >-
+                                                  {% if repeat.item == 'all' %}
+                                                    { "ledColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 1' %}
+                                                    { "defaultLed1ColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 2' %}
+                                                    { "defaultLed2ColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 3' %}
+                                                    { "defaultLed3ColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 4' %}
+                                                    { "defaultLed4ColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 5' %}
+                                                    { "defaultLed5ColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 6' %}
+                                                    { "defaultLed6ColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 7' %}
+                                                    { "defaultLed7ColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
+                                                  {% endif %}
+                                  ### Configuring just one LED or the full bar ###
+                                  - conditions: "{{ 'all' not in LEDcolor and LEDcolor != 'no change' }}"
+                                    sequence:
+                                      - service: mqtt.publish
+                                        data:
+                                          topic: >-
+                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                          payload: >-
+                                            {% if LEDnumber == 'all' %}
+                                              { "ledColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 1' %}
+                                              { "defaultLed1ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 2' %}
+                                              { "defaultLed2ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 3' %}
+                                              { "defaultLed3ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 4' %}
+                                              { "defaultLed4ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 5' %}
+                                              { "defaultLed5ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 6' %}
+                                              { "defaultLed6ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 7' %}
+                                              { "defaultLed7ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                            {% endif %}
 
                 ### ZHA ###
                 - choose:
@@ -1326,12 +1384,70 @@ sequence:
                         - repeat:
                             for_each: "{{ repeat.item.entities }} "
                             sequence:
-                              - service: mqtt.publish
-                                data:
-                                  topic: >-
-                                    zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
-                                  payload: >-
-                                    { "ledColorWhenOff": {{ color_set[LEDcolor_off] }} }
+                              - choose:
+                                  ### Configuring a color set for all LEDs ###
+                                  - conditions: "{{ 'all' in LEDcolor_off and LEDnumber == 'all' }}"
+                                    sequence:
+                                      - variables:
+                                          entity: "{{ repeat.item }}"
+                                      - repeat:
+                                          for_each:
+                                            - "led 1"
+                                            - "led 2"
+                                            - "led 3"
+                                            - "led 4"
+                                            - "led 5"
+                                            - "led 6"
+                                            - "led 7"
+                                            - "all"
+                                          sequence:
+                                            - service: mqtt.publish
+                                              data:
+                                                topic: >-
+                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                payload: >-
+                                                  {% if repeat.item == 'all' %}
+                                                    { "ledColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 1' %}
+                                                    { "defaultLed1ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 2' %}
+                                                    { "defaultLed2ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 3' %}
+                                                    { "defaultLed3ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 4' %}
+                                                    { "defaultLed4ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 5' %}
+                                                    { "defaultLed5ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 6' %}
+                                                    { "defaultLed6ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 7' %}
+                                                    { "defaultLed7ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% endif %}
+                                  ### Configuring just one LED or the full bar ###
+                                  - conditions: "{{ 'all' not in LEDcolor_off and LEDcolor_off != 'no change' }}"
+                                    sequence:
+                                      - service: mqtt.publish
+                                        data:
+                                          topic: >-
+                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                          payload: >-
+                                            {% if LEDnumber == 'all' %}
+                                              { "ledColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 1' %}
+                                              { "defaultLed1ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 2' %}
+                                              { "defaultLed2ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 3' %}
+                                              { "defaultLed3ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 4' %}
+                                              { "defaultLed4ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 5' %}
+                                              { "defaultLed5ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 6' %}
+                                              { "defaultLed6ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 7' %}
+                                              { "defaultLed7ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% endif %}
 
                 ### ZHA ###
                 - choose:
@@ -1384,7 +1500,7 @@ sequence:
                                                 value: "{{ color_set[LEDcolor_off][repeat.item] }}"
                                                 manufacturer: 4655
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ 'all' not in LEDcolor_off }}"
+                                  - conditions: "{{ 'all' not in LEDcolor_off and LEDcolor_off != 'no change' }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
@@ -1453,12 +1569,70 @@ sequence:
                             for_each: |
                               {{ repeat.item.entities }}
                             sequence:
-                              - service: mqtt.publish
-                                data:
-                                  topic: >-
-                                    zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
-                                  payload: >-
-                                    { "ledIntensityWhenOn": {{ (LEDbrightness * 10) }} }
+                              - choose:
+                                  ### Configuring intensity for all LEDs ###
+                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' }}"
+                                    sequence:
+                                      - variables:
+                                          entity: "{{ repeat.item }}"
+                                      - repeat:
+                                          for_each:
+                                            - "led 1"
+                                            - "led 2"
+                                            - "led 3"
+                                            - "led 4"
+                                            - "led 5"
+                                            - "led 6"
+                                            - "led 7"
+                                            - "all"
+                                          sequence:
+                                            - service: mqtt.publish
+                                              data:
+                                                topic: >-
+                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                payload: >-
+                                                  {% if repeat.item == 'all' %}
+                                                    { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                                  {% elif repeat.item == 'led 1' %}
+                                                    { "defaultLed1IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                                  {% elif repeat.item == 'led 2' %}
+                                                    { "defaultLed2IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                                  {% elif repeat.item == 'led 3' %}
+                                                    { "defaultLed3IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                                  {% elif repeat.item == 'led 4' %}
+                                                    { "defaultLed4IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                                  {% elif repeat.item == 'led 5' %}
+                                                    { "defaultLed5IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                                  {% elif repeat.item == 'led 6' %}
+                                                    { "defaultLed6IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                                  {% elif repeat.item == 'led 7' %}
+                                                    { "defaultLed7IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                                  {% endif %}
+                                  ### Configuring just one LED or the full bar ###
+                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' }}"
+                                    sequence:
+                                      - service: mqtt.publish
+                                        data:
+                                          topic: >-
+                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                          payload: >-
+                                            {% if LEDnumber == 'all' %}
+                                              { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                            {% elif LEDnumber == 'led 1' %}
+                                              { "defaultLed1IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                            {% elif LEDnumber == 'led 2' %}
+                                              { "defaultLed2IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                            {% elif LEDnumber == 'led 3' %}
+                                              { "defaultLed3IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                            {% elif LEDnumber == 'led 4' %}
+                                              { "defaultLed4IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                            {% elif LEDnumber == 'led 5' %}
+                                              { "defaultLed5IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                            {% elif LEDnumber == 'led 6' %}
+                                              { "defaultLed6IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                            {% elif LEDnumber == 'led 7' %}
+                                              { "defaultLed7IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                            {% endif %}
 
                 ### ZHA ###
                 - choose:
@@ -1469,7 +1643,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
-                                  - conditions: "{{ 'all' in LEDcolor and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -1511,7 +1685,7 @@ sequence:
                                                 value: "{{ (LEDbrightness * 10) | int }}"
                                                 manufacturer: 4655
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ 'all' not in LEDcolor }}"
+                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
@@ -1573,12 +1747,70 @@ sequence:
                         - repeat:
                             for_each: "{{ repeat.item.entities }} "
                             sequence:
-                              - service: mqtt.publish
-                                data:
-                                  topic: >-
-                                    zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
-                                  payload: >-
-                                    { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) }} }
+                              - choose:
+                                  ### Configuring intensity for all LEDs ###
+                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' }}"
+                                    sequence:
+                                      - variables:
+                                          entity: "{{ repeat.item }}"
+                                      - repeat:
+                                          for_each:
+                                            - "led 1"
+                                            - "led 2"
+                                            - "led 3"
+                                            - "led 4"
+                                            - "led 5"
+                                            - "led 6"
+                                            - "led 7"
+                                            - "all"
+                                          sequence:
+                                            - service: mqtt.publish
+                                              data:
+                                                topic: >-
+                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                payload: >-
+                                                  {% if repeat.item == 'all' %}
+                                                    { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                                  {% elif repeat.item == 'led 1' %}
+                                                    { "defaultLed1IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                                  {% elif repeat.item == 'led 2' %}
+                                                    { "defaultLed2IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                                  {% elif repeat.item == 'led 3' %}
+                                                    { "defaultLed3IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                                  {% elif repeat.item == 'led 4' %}
+                                                    { "defaultLed4IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                                  {% elif repeat.item == 'led 5' %}
+                                                    { "defaultLed5IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                                  {% elif repeat.item == 'led 6' %}
+                                                    { "defaultLed6IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                                  {% elif repeat.item == 'led 7' %}
+                                                    { "defaultLed7IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                                  {% endif %}
+                                  ### Configuring just one LED or the full bar ###
+                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' }}"
+                                    sequence:
+                                      - service: mqtt.publish
+                                        data:
+                                          topic: >-
+                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                          payload: >-
+                                            {% if LEDnumber == 'all' %}
+                                              { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                            {% elif LEDnumber == 'led 1' %}
+                                              { "defaultLed1IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                            {% elif LEDnumber == 'led 2' %}
+                                              { "defaultLed2IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                            {% elif LEDnumber == 'led 3' %}
+                                              { "defaultLed3IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                            {% elif LEDnumber == 'led 4' %}
+                                              { "defaultLed4IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                            {% elif LEDnumber == 'led 5' %}
+                                              { "defaultLed5IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                            {% elif LEDnumber == 'led 6' %}
+                                              { "defaultLed6IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                            {% elif LEDnumber == 'led 7' %}
+                                              { "defaultLed7IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                            {% endif %}
 
                 ### ZHA ###
                 - choose:
@@ -1589,7 +1821,7 @@ sequence:
                             sequence:
                               - choose:
                                     ### Configuring a color set for all LEDs ###
-                                  - conditions: "{{ 'all' in LEDcolor and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -1631,7 +1863,7 @@ sequence:
                                                 value: "{{ (LEDbrightness_off * 10) | int }}"
                                                 manufacturer: 4655
                                     ### Configuring just one Color ###
-                                  - conditions: "{{ 'all' not in LEDcolor }}"
+                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
