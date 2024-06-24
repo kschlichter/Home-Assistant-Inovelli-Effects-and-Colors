@@ -33,6 +33,7 @@
 #   Add two spaces to lines between area: and variables: 58,348s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
+#   Uncomment collapsed: 
 #
 # ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417
 # ZHA quirks: https://github.com/zigpy/zha-device-handlers/blob/dev/zhaquirks/inovelli/__init__.py#L199
@@ -51,7 +52,7 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 #  description: >-
 #    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
 #    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
-#    and can be called by area, group, device, and entity.
+#    and can be called by floor, area, group, device, and entity.
 #  homeassistant:
 #    min_version: 2023.04.0
 #  input:
@@ -60,13 +61,35 @@ alias: Inovelli LED Settings and Effects
 description: >-
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
     through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
-    and can be called by area, group, device, and entity.
+    and can be called by floor, area, group, device, and entity.
 fields:
 
 
+  floor:
+    name: Floor
+    description: Floor IDs containing areas with Inovelli devices.  
+    #collapsed: false
+    #required: false
+    example: 'downstairs,upstairs, outside'
+    default: 'invalid'
+    selector:
+      floor:
+        multiple: true
+        device:
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN
+          - integration: zha
+            manufacturer: Inovelli
+            model: VZM31-SN, VZM35-SN
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN), 2-in-1 switch + dimmer (VZM31-SN), Fan Controller (VZM35-SN) ### Inovelli modified the model with Zigbee2mqtt 1.36
+
   area:
     name: Area
-    description: Area names or IDs containing Inovelli devices.  Mix and match types as you like.
+    description: Area names or IDs containing Inovelli devices.
+    #collapsed: false
     #required: false
     example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
     default: 'invalid'
@@ -77,6 +100,9 @@ fields:
           - integration: zwave_js
             manufacturer: Inovelli
             model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN
+          - integration: zha
+            manufacturer: Inovelli
+            model: VZM31-SN, VZM35-SN
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN), 2-in-1 switch + dimmer (VZM31-SN), Fan Controller (VZM35-SN) ### Inovelli modified the model with Zigbee2mqtt 1.36
@@ -84,6 +110,7 @@ fields:
   group:
     name: Group
     description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
+    #collapsed: false
     #required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
     default: 'invalid'
@@ -100,6 +127,7 @@ fields:
   device:
     name: Device
     description: Device IDs of Inovelli devices.  Mix and match types as you like.
+    #collapsed: false
     #required: false
     example: '0249abdc634c12cbf6cdc06d7a507495'
     default: 'invalid'
@@ -149,6 +177,7 @@ fields:
     description: >-
       The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
       a comma separated list of Inovelli devices.  Mix and match types as you like.
+    #collapsed: false
     #required: false
     example: light.office, fan.guest_room
     default: 'invalid'
@@ -166,6 +195,7 @@ fields:
     name: LED Number
     description: >-
       Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
+    #collapsed: true
     #required: false
     example: All
     default: 'all'
@@ -184,6 +214,7 @@ fields:
   LEDcolor:
     name: LED Color When On (non-effect)
     description: Sets the color of the LED status, which indicates brightness levels.
+    #collapsed: true
     #required: false
     example: Blue
     default: 'no change'
@@ -213,6 +244,7 @@ fields:
   LEDcolor_off:
     name: LED Color When Off (non-effect). Red 800 and Blue Series only.
     description: Sets the color of the LED status, which indicates brightness levels.
+    #collapsed: true
     #required: false
     example: Blue
     default: 'no change'
@@ -242,6 +274,7 @@ fields:
   LEDbrightness:
     name: LED Brightness When On (non-effect)
     description: Sets the brightness of the LED status when on. 0 means off.
+    #collapsed: true
     #required: false
     example: "6"
     default: '11'
@@ -255,6 +288,7 @@ fields:
   LEDbrightness_off:
     name: LED Brightness When Off (non-effect).
     description: Sets the brightness of the LED status when off. 0 means off.
+    #collapsed: true
     #required: false
     example: "2"
     default: '11'
@@ -268,6 +302,7 @@ fields:
   duration:
     name: Duration of Effect
     description: How long the effect will last.
+    #collapsed: true
     #required: false
     example: "Off"
     default: 'invalid'
@@ -315,6 +350,7 @@ fields:
   effect:
     name: Effect
     description: Type of effect
+    #collapsed: true
     #required: false
     example: Pulse
     default: 'Clear Effect'
@@ -346,6 +382,7 @@ fields:
   brightness:
     name: Effect Brightness
     description: Sets the brightness of the LED's effect.  0 means off.
+    #collapsed: true
     #required: false
     example: "8"
     default: '11'
@@ -359,6 +396,7 @@ fields:
   color:
     name: Effect Color
     description: Color of LED effect
+    #collapsed: true
     #required: false
     example: Red
     default: 'no change'
@@ -387,6 +425,7 @@ fields:
 
 
 variables:
+  #input_floor: !input floor
   #input_area: !input area
   #input_group: !input group
   #input_device: !input device
@@ -866,22 +905,54 @@ variables:
     VZW31SN_7_effect_duration: LED7 Strip Effect - Duration
     VZW31SN_7_effect_effect: LED7 Strip Effect - Effect
 
-  ##################
-  # Clean up inputs; filter for supported entities from provided areas, groups, devices, and entities.
-  ##################
 
   ##################
-  # Clean up inputs; filter for supported entities from provided areas, groups, devices, and entities.
+  # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
+  floor: "{{ floor|default(\"invalid\")|lower }}"
   area: "{{ area|default(\"invalid\")|lower }}"
   group: "{{ group|default(\"invalid\")|lower }}"
   device: "{{ device|default(\"invalid\")|lower }}"
   entity: "{{ entity|default(\"invalid\")|lower }}"
 
+  #floor: "{{ input_floor|default(\"invalid\")|lower }}"
   #area: "{{ input_area|default(\"invalid\")|lower }}"
   #group: "{{ input_group|default(\"invalid\")|lower }}"
   #device: "{{ input_device|default(\"invalid\")|lower }}"
   #entity: "{{ input_entity|default(\"invalid\")|lower }}"
+
+  entities_from_floor: >-
+    {% set floor_array = namespace(floor_list=[]) %}
+    {% set entities = namespace(entities=[]) %}
+    {% if floor != 'invalid' %}
+      {% if floor == 'all' %}
+        {% set floor_array.floor_list = floors() %}
+
+      {# Converting to a list #}
+      {% elif ',' in floor %}
+        {% set floornum = floor.split( ',' ) | count %}
+        {% for i in range(0,floornum) %}
+          {% set floor_array.floor_list = floor_array.floor_list + [floor.split( ',' )[i]|string|trim ] %}
+        {% endfor %}
+      {% elif floor[0]|count == 1 %}
+        {# if the first item in the list has only a single character, it isn't a valid list #}
+        {% set floor_array.floor_list = floor_array.floor_list + [floor|string|trim] %}
+      {% else %}
+        {% set floor_array.floor_list = floor %}
+      {% endif %}
+
+      {# Detecting entities #}
+      {% for floor in floor_array.floor_list %}
+        {% for area in floor_areas(floor) %}
+          {% for ent in area_entities(area) %}
+            {% if ent.split('.')[0] in allowed_domains %}
+              {% set entities.entities = entities.entities + [ent|string|trim] %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+    {{ entities.entities|lower }}
 
   entities_from_area: >-
     {% set area_array = namespace(area_list=[]) %}
@@ -1000,7 +1071,7 @@ variables:
     {{ entities.entities|lower }}
 
   all_selected_entities: >-
-    {{ entities_from_area + entities_from_group + entities_from_device + entities_from_entity }}
+    {{ entities_from_floor + entities_from_area + entities_from_group + entities_from_device + entities_from_entity }}
 
 sequence:
 
