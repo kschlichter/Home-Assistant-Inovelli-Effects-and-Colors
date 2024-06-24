@@ -23,11 +23,11 @@
 
 ## Features
   
-  This blueprint and script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series. Devices of different types can be called simultaneously. **It will accept entities, the device ID, groups, areas, or** `area: all` **and find all Inovelli devices in the house.** This blueprint and script can set everything at once—even if the devices are different series, different sources (e.g. 2 areas, and 3 entities), and different integrations (Z-Wave JS and Zigbee2MQTT, or ZWave JS and ZHA) all at once.
+  This blueprint and script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series. Devices of different types can be called simultaneously. **It will accept entities, the device ID, groups, floors,** `floor: 'all'`, **areas, or** `area: 'all'` **and find all Inovelli devices in the house.** This blueprint and script can set everything at once—even if the devices are different series, different sources (e.g. 2 areas, and 3 entities), and different integrations (Z-Wave JS and Zigbee2MQTT, or ZWave JS and ZHA) all at once.
 
   The  LED indicator can be set alongside an effect in a single call so that an indicator color change doesn't clear the effect (this does restart the duration timer in some versions of Inovelli's firmware, however). For example, setting "chase" for 1 second with a red indicator LED is a nice notification that something changed without being overly obnoxious and distracting (like setting "fast blink" with an infinite duration).  The effect wears off after one second, but the indicator stays red afterwards.
   
-  Effects that have been set to "forever" can be cleared by just passing the entity, device, group, or area.  There's no need to remember the effect, color, and brightness parameter or set them to 0 in a template.  It's easier to remember when you get to my age, and less to type.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters since (most of the time) clearing the effect will have no visible result on the physical device.
+  Effects that have been set to "forever" can be cleared by just passing the entity, device, group, area, or floor.  There's no need to remember the effect, color, and brightness parameter or set them to 0 in a template.  It's easier to remember when you get to my age, and less to type.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters since (most of the time) clearing the effect will have no visible result on the physical device.
 
 
 ## Blueprint
@@ -107,8 +107,8 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
   
     service: script.inovelli_led
     data:
-      area: all
-      duration: Forever
+      area: 'all'
+      duration: 'Forever'
       effect: 'Fast Blink'
       brightness: 8.7
       color: 'light pink'
@@ -118,10 +118,10 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
     service: script.inovelli_led
     data:
       area: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c' 
-      duration: Forever
-      effect: CHASE
+      duration: 'Forever'
+      effect: 'CHASE'
       brightness: 8
-      color: Teal
+      color: 'Teal'
 
   **Proper list format**
   
@@ -130,23 +130,23 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
       group:
         - group.lights_and_switches
         - 0249abdc634c12cbf6cdc06d7a507495
-      duration: 2 minutes
-      effect: pulse
+      duration: '2 minutes'
+      effect: 'pulse'
       brightness: 8
-      color: red
+      color: 'red'
             
   **Single LED (7, at the top) effect to signal LED transition to new color**
   
     service: script.inovelli_led
     data:
-      entity: light.office
-      LEDcolor: green
-      LEDnumber: led 7
+      entity: 'light.office'
+      LEDcolor: 'green'
+      LEDnumber: 'led 7'
       LEDbrightness: 7.5
       LEDbrightness_off: 2.3
-      duration: 1 second
-      effect: Solid
-      color: green
+      duration: '1 second'
+      effect: 'Solid'
+      color: 'green'
       brightness: 7
       
   **Clearing an effect**
@@ -155,8 +155,8 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
   
     service: script.inovelli_led
     data:
-      area: 'Family Room'
-      entity: fan.front_porch
+      floor: 'upstairs'
+      entity: 'fan.front_porch'
   
 ## LED color examples:
 
@@ -167,25 +167,25 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
       device:
         - 531d79e9270d72d9cab44a4f295967d4
         - ef82d0eb91499feadf45e257c0e5eda1
-      LEDcolor: blue
-      LEDcolor_off: hOt PiNk
+      LEDcolor: 'blue'
+      LEDcolor_off: 'hOt PiNk'
       LEDbrightness: 7
       LEDbrightness_off: 2.5
-      LEDnumber: all
+      LEDnumber: 'all'
 
   **Set by group domain**
 
     service: script.inovelli_led
     data:
-      group: group.outside_front_lights
-      LEDcolor: Green  
+      group: 'group.outside_front_lights'
+      LEDcolor: 'Green'
       
  **LEDcolor_off and LEDbrightness_off example: (maybe part of a nighttime routine?)**
 
     service: script.inovelli_led
     data:
-      entity: light.office
-      LEDcolor_off: RED
+      entity: 'light.office'
+      LEDcolor_off: 'RED'
       LEDbrightness_off: 2
 
  **Configuring an LED color set (color sets start with 'all' and must be set with all LEDs)**
@@ -194,27 +194,28 @@ As a quick start you can follow these steps but you'll have to copy / paste upda
     data:
       device:
         - 88f56168bdb28f3ac764fc3d7e3d407b
-      LEDnumber: All
-      LEDcolor: All Unicorn
-      LEDcolor_off: All USA
+      LEDnumber: 'All'
+      LEDcolor: 'All Unicorn'
+      LEDcolor_off: 'All USA'
       LEDbrightness: 8.6
       LEDbrightness_off: 0.4
-
+      
  **Configuring an LED color for one LED**
 
     service: script.inovelli_led
     data:
-      entity: light.office
-      LEDnumber: led 4
-      LEDcolor: red
+      entity: 'light.office'
+      LEDnumber: 'led 4'
+      LEDcolor: 'red'
 
 **Clearing all individual LED color settings in the house**
 
     service: script.inovelli_led
     data:
-      area: all
-      LEDnumber: all
-      LEDcolor: all clear
+      area: 'all'
+      LEDnumber: 'all'
+      LEDcolor: 'all clear'
+      LEDcolor_off: 'all clear'
 
 
 
