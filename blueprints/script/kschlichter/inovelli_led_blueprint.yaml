@@ -30,10 +30,9 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between floor: and variables: 69,428s
+#   Add two spaces to lines between floor: and variables: 68,410s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
-#   Uncomment collapsed: 
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
 # ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417
@@ -69,7 +68,6 @@ blueprint:
     floor:
       name: Floor
       description: Floor IDs containing areas with Inovelli devices.  
-      collapsed: false
       #required: false
       #example: 'downstairs,upstairs, outside'
       default: 'invalid'
@@ -90,7 +88,6 @@ blueprint:
     area:
       name: Area
       description: Area names or IDs containing Inovelli devices.
-      collapsed: false
       #required: false
       #example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
       default: 'invalid'
@@ -111,7 +108,6 @@ blueprint:
     group:
       name: Group
       description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
-      collapsed: false
       #required: false
       #example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
       default: 'invalid'
@@ -128,7 +124,6 @@ blueprint:
     device:
       name: Device
       description: Device IDs of Inovelli devices.  Mix and match types as you like.
-      collapsed: false
       #required: false
       #example: '0249abdc634c12cbf6cdc06d7a507495'
       default: 'invalid'
@@ -178,7 +173,6 @@ blueprint:
       description: >-
         The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
         a comma separated list of Inovelli devices.  Mix and match types as you like.
-      collapsed: false
       #required: false
       #example: light.office, fan.guest_room
       default: 'invalid'
@@ -196,7 +190,6 @@ blueprint:
       name: LED Number
       description: >-
         Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
-      collapsed: true
       #required: false
       #example: All
       default: 'all'
@@ -215,7 +208,6 @@ blueprint:
     LEDcolor:
       name: LED Color When On (non-effect)
       description: Sets the color of the LED status, which indicates brightness levels.
-      collapsed: true
       #required: false
       #example: Blue
       default: 'no change'
@@ -245,7 +237,6 @@ blueprint:
     LEDcolor_off:
       name: LED Color When Off (non-effect). Red 800 and Blue Series only.
       description: Sets the color of the LED status, which indicates brightness levels.
-      collapsed: true
       #required: false
       #example: Blue
       default: 'no change'
@@ -275,7 +266,6 @@ blueprint:
     LEDbrightness:
       name: LED Brightness When On (non-effect)
       description: Sets the brightness of the LED status when on. 0 means off.
-      collapsed: true
       #required: false
       #example: "6"
       default: '11'
@@ -289,7 +279,6 @@ blueprint:
     LEDbrightness_off:
       name: LED Brightness When Off (non-effect).
       description: Sets the brightness of the LED status when off. 0 means off.
-      collapsed: true
       #required: false
       #example: "2"
       default: '11'
@@ -303,7 +292,6 @@ blueprint:
     duration:
       name: Duration of Effect
       description: How long the effect will last.
-      collapsed: true
       #required: false
       #example: "Off"
       default: 'invalid'
@@ -351,7 +339,6 @@ blueprint:
     effect:
       name: Effect
       description: Type of effect
-      collapsed: true
       #required: false
       #example: Pulse
       default: 'Clear Effect'
@@ -383,7 +370,6 @@ blueprint:
     brightness:
       name: Effect Brightness
       description: Sets the brightness of the LED's effect.  0 means off.
-      collapsed: true
       #required: false
       #example: "8"
       default: '11'
@@ -397,7 +383,6 @@ blueprint:
     color:
       name: Effect Color
       description: Color of LED effect
-      collapsed: true
       #required: false
       #example: Red
       default: 'no change'
@@ -423,9 +408,9 @@ blueprint:
             - All Clear
             - All Unicorn
             - All USA
-  
-  
-  variables:
+
+
+variables:
   input_floor: !input floor
   input_area: !input area
   input_group: !input group
