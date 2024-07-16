@@ -2108,7 +2108,7 @@ sequence:
                         parameter: >-
                           {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_effect' %}
                           {{ parameters[effect_param] }}
-                        value: 0
+                        value: 255
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
