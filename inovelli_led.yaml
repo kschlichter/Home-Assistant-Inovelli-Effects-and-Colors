@@ -565,7 +565,7 @@ variables:
   ### Red 500 Series Switch ###
   LZW30SN_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 4
     blink: 3
     blink fast: 2
@@ -593,7 +593,7 @@ variables:
   ### Red 500 Series Dimmer ###
   LZW31SN_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 4
     blink: 4
     blink fast: 3
@@ -621,7 +621,7 @@ variables:
   ### Red 500 Series Fan Light Combo ###
   LZW36_light_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 4
     blink: 4
     blink fast: 3
@@ -648,7 +648,7 @@ variables:
 
   LZW36_fan_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 4
     blink: 4
     blink fast: 3
