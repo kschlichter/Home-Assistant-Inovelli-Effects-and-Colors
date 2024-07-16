@@ -30,7 +30,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between floor: and variables: 69,410s
+#   Add two spaces to lines between floor: and variables: 68,410s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 #
@@ -702,7 +702,34 @@ variables:
     slow blink: 3
 
   ### Blue Series Dimmer ###
-  VZM31SN_effects:
+  VZM31SN_ZHA_effects:
+    "off": 0
+    "clear effect": 0
+    aurora: 8
+    blink: 15
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase: 5
+    chase fast: 17
+    chase medium: 5
+    chase slow: 16
+    fall fast: 11
+    fall medium: 10
+    fall slow: 9
+    open close: 6
+    pulse: 4
+    rise fast: 14
+    rise medium: 13
+    rise slow: 12
+    siren fast: 18
+    siren slow: 19
+    small to big: 7
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+  VZM31SN_Z2M_effects:
     "off": "off"
     clear effect: clear_effect
     aurora: aurora
@@ -730,7 +757,34 @@ variables:
     slow blink: slow_blink
 
   ### Blue Series Fan ###
-  VZM35SN_effects:
+  VZM35SN_ZHA_effects:
+    "off": 0
+    "clear effect": 0
+    aurora: 8
+    blink: 15
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase: 5
+    chase fast: 17
+    chase medium: 5
+    chase slow: 16
+    fall fast: 11
+    fall medium: 10
+    fall slow: 9
+    open close: 6
+    pulse: 4
+    rise fast: 14
+    rise medium: 13
+    rise slow: 12
+    siren fast: 18
+    siren slow: 19
+    small to big: 7
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+  VZM35SN_Z2M_effects:
     "off": "off"
     clear effect: clear_effect
     aurora: aurora
@@ -756,6 +810,7 @@ variables:
     solid: solid
     fast blink: fast_blink
     slow blink: slow_blink
+
 
 
   ##################
@@ -1163,7 +1218,7 @@ sequence:
 
         - device_type: VZW31SN
           call_type: zwave_js
-          effects: "{{ iif(duration != 0,VZW31SN_effects[effect],'clear_effect') }}" ### So we can pass the device-specific effect into the repeat loop ###
+          effects: "{{ iif(duration != 0,VZW31SN_effects[effect],0) }}" ### So we can pass the device-specific effect into the repeat loop ###
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1178,7 +1233,7 @@ sequence:
         ##################
         - device_type: VZM31SN
           call_type: z2m
-          effects: "{{ iif(duration != 0,VZM31SN_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(duration != 0,VZM31SN_Z2M_effects[effect],'clear_effect') }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1190,7 +1245,7 @@ sequence:
 
         - device_type: VZM35SN
           call_type: z2m
-          effects: "{{ iif(duration != 0,VZM35SN_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(duration != 0,VZM35SN_Z2M_effects[effect],'clear_effect') }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1205,7 +1260,7 @@ sequence:
         ##################
         - device_type: VZM31SN
           call_type: zha
-          effects: "{{ iif(duration != 0,VZM31SN_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(duration != 0,VZM31SN_ZHA_effects[effect],0) }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1217,7 +1272,7 @@ sequence:
 
         - device_type: VZM35SN
           call_type: zha
-          effects: "{{ iif(duration != 0,VZM35SN_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(duration != 0,VZM35SN_ZHA_effects[effect],0) }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1963,7 +2018,9 @@ sequence:
                 ### Zwave JS
                 ### Red 500 Series ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber and 'all' not in LEDcolor}}"
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' not in repeat.item.device_type and 
+                                      repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 
+                                      'all' in LEDnumber and 'all' not in LEDcolor }}"
                       sequence:
                         - service: zwave_js.bulk_set_partial_config_parameters
                           data:
