@@ -45,24 +45,24 @@ mode: parallel
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches and you're calling the script per entity for some goofy reason.
 
 
-blueprint:
-  name: Inovelli LED Settings and Effects Blueprint
-  domain: script
-  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
-  description: >-
-    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
-    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
-    and can be called by floor, area, group, device, and entity.
-  homeassistant:
-    min_version: 2023.04.0
-  input:
-
-#alias: Inovelli LED Settings and Effects
-#description: >-
+#blueprint:
+#  name: Inovelli LED Settings and Effects Blueprint
+#  domain: script
+#  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
+#  description: >-
 #    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
 #    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
 #    and can be called by floor, area, group, device, and entity.
-#fields:
+#  homeassistant:
+#    min_version: 2023.04.0
+#  input:
+
+alias: Inovelli LED Settings and Effects
+description: >-
+    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
+    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
+    and can be called by floor, area, group, device, and entity.
+fields:
 
 
     floor:
@@ -565,7 +565,7 @@ variables:
   ### Red 500 Series Switch ###
   LZW30SN_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 4
     blink: 3
     blink fast: 2
@@ -593,7 +593,7 @@ variables:
   ### Red 500 Series Dimmer ###
   LZW31SN_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 4
     blink: 4
     blink fast: 3
@@ -621,7 +621,7 @@ variables:
   ### Red 500 Series Fan Light Combo ###
   LZW36_light_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 4
     blink: 4
     blink fast: 3
@@ -648,7 +648,7 @@ variables:
 
   LZW36_fan_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 4
     blink: 4
     blink fast: 3
@@ -676,7 +676,7 @@ variables:
   ### Red 800 Series Dimmer ###
   VZW31SN_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -702,7 +702,34 @@ variables:
     slow blink: 3
 
   ### Blue Series Dimmer ###
-  VZM31SN_effects:
+  VZM31SN_ZHA_effects:
+    "off": 0
+    "clear effect": 255
+    aurora: 8
+    blink: 15
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase: 5
+    chase fast: 17
+    chase medium: 5
+    chase slow: 16
+    fall fast: 11
+    fall medium: 10
+    fall slow: 9
+    open close: 6
+    pulse: 4
+    rise fast: 14
+    rise medium: 13
+    rise slow: 12
+    siren fast: 18
+    siren slow: 19
+    small to big: 7
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+  VZM31SN_Z2M_effects:
     "off": "off"
     clear effect: clear_effect
     aurora: aurora
@@ -730,7 +757,34 @@ variables:
     slow blink: slow_blink
 
   ### Blue Series Fan ###
-  VZM35SN_effects:
+  VZM35SN_ZHA_effects:
+    "off": 0
+    "clear effect": 255
+    aurora: 8
+    blink: 15
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase: 5
+    chase fast: 17
+    chase medium: 5
+    chase slow: 16
+    fall fast: 11
+    fall medium: 10
+    fall slow: 9
+    open close: 6
+    pulse: 4
+    rise fast: 14
+    rise medium: 13
+    rise slow: 12
+    siren fast: 18
+    siren slow: 19
+    small to big: 7
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+  VZM35SN_Z2M_effects:
     "off": "off"
     clear effect: clear_effect
     aurora: aurora
@@ -756,6 +810,7 @@ variables:
     solid: solid
     fast blink: fast_blink
     slow blink: slow_blink
+
 
 
   ##################
@@ -1163,7 +1218,7 @@ sequence:
 
         - device_type: VZW31SN
           call_type: zwave_js
-          effects: "{{ iif(duration != 0,VZW31SN_effects[effect],'clear_effect') }}" ### So we can pass the device-specific effect into the repeat loop ###
+          effects: "{{ iif(duration != 0,VZW31SN_effects[effect],0) }}" ### So we can pass the device-specific effect into the repeat loop ###
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1178,7 +1233,7 @@ sequence:
         ##################
         - device_type: VZM31SN
           call_type: z2m
-          effects: "{{ iif(duration != 0,VZM31SN_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(duration != 0,VZM31SN_Z2M_effects[effect],'clear_effect') }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1190,7 +1245,7 @@ sequence:
 
         - device_type: VZM35SN
           call_type: z2m
-          effects: "{{ iif(duration != 0,VZM35SN_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(duration != 0,VZM35SN_Z2M_effects[effect],'clear_effect') }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1205,7 +1260,7 @@ sequence:
         ##################
         - device_type: VZM31SN
           call_type: zha
-          effects: "{{ iif(duration != 0,VZM31SN_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(duration != 0,VZM31SN_ZHA_effects[effect],0) }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1217,7 +1272,7 @@ sequence:
 
         - device_type: VZM35SN
           call_type: zha
-          effects: "{{ iif(duration != 0,VZM35SN_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(duration != 0,VZM35SN_ZHA_effects[effect],0) }}"
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1963,7 +2018,9 @@ sequence:
                 ### Zwave JS
                 ### Red 500 Series ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber and 'all' not in LEDcolor}}"
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' not in repeat.item.device_type and 
+                                      repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 
+                                      'all' in LEDnumber and 'all' not in LEDcolor }}"
                       sequence:
                         - service: zwave_js.bulk_set_partial_config_parameters
                           data:
@@ -2033,10 +2090,10 @@ sequence:
           default:
             ##################
             # Default will be to clear the effect and set the duration to 1 second.
-            # Setting only the effect to "off" turned the LED off on LZW36 fan / light combos for the duration (which could be "forever").
-            #    This way it turns off for 1 sec before it returns to its default state, but until the min value for effect changes to 0 in the DB, that's the best I can do.
             # This way, "forever" effects can be set, then easily cleared.
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
+            # Setting only the effect to "off" turned the LED off on LZW36 fan / light combos for the duration (which could be "forever").
+            #    This way it turns off for 1 sec before it returns to its default state, but until the min value for effect changes to 0 in the DB, that's the best I can do.
             ##################
 
             ### Zwave JS ###
@@ -2051,7 +2108,7 @@ sequence:
                         parameter: >-
                           {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_effect' %}
                           {{ parameters[effect_param] }}
-                        value: 0
+                        value: 255
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
