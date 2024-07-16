@@ -676,7 +676,7 @@ variables:
   ### Red 800 Series Dimmer ###
   VZW31SN_effects:
     "off": 0
-    clear effect: 0
+    clear effect: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -704,7 +704,7 @@ variables:
   ### Blue Series Dimmer ###
   VZM31SN_ZHA_effects:
     "off": 0
-    "clear effect": 0
+    "clear effect": 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -759,7 +759,7 @@ variables:
   ### Blue Series Fan ###
   VZM35SN_ZHA_effects:
     "off": 0
-    "clear effect": 0
+    "clear effect": 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -2090,10 +2090,10 @@ sequence:
           default:
             ##################
             # Default will be to clear the effect and set the duration to 1 second.
-            # Setting only the effect to "off" turned the LED off on LZW36 fan / light combos for the duration (which could be "forever").
-            #    This way it turns off for 1 sec before it returns to its default state, but until the min value for effect changes to 0 in the DB, that's the best I can do.
             # This way, "forever" effects can be set, then easily cleared.
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
+            # Setting only the effect to "off" turned the LED off on LZW36 fan / light combos for the duration (which could be "forever").
+            #    This way it turns off for 1 sec before it returns to its default state, but until the min value for effect changes to 0 in the DB, that's the best I can do.
             ##################
 
             ### Zwave JS ###
