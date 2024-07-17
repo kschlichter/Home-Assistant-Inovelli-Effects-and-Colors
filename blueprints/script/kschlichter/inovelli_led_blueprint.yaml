@@ -45,26 +45,26 @@ mode: parallel
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches and you're calling the script per entity for some goofy reason.
 
 
-#blueprint:
-#  name: Inovelli LED Settings and Effects Blueprint
-#  domain: script
-#  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
-#  description: >-
-#    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
-#    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
-#    and can be called by floor, area, group, device, and entity.
-#  homeassistant:
-#    min_version: 2023.04.0
-#  input:
-
-alias: Inovelli LED Settings and Effects
-description: >-
-    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
-    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
-    and can be called by floor, area, group, device, and entity.
-fields:
-
-
+  blueprint:
+    name: Inovelli LED Settings and Effects Blueprint
+    domain: script
+    source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
+    description: >-
+      Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
+      through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
+      and can be called by floor, area, group, device, and entity.
+    homeassistant:
+      min_version: 2023.04.0
+    input:
+  
+  #alias: Inovelli LED Settings and Effects
+  #description: >-
+  #    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
+  #    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
+  #    and can be called by floor, area, group, device, and entity.
+  #fields:
+  
+  
     floor:
       name: Floor
       description: Floor IDs containing areas with Inovelli devices.  
