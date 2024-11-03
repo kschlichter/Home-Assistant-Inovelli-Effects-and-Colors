@@ -77,13 +77,40 @@ fields:
         device:
           - integration: zwave_js
             manufacturer: Inovelli
-            model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN
+            model: LZW30
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW31
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW30-SN
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW31-SN
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW36
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: VZW31-SN
           - integration: zha
             manufacturer: Inovelli
-            model: VZM31-SN, VZM35-SN
+            model: VZM31-SN
+          - integration: zha
+            manufacturer: Inovelli
+            model: VZM35-SN
           - integration: mqtt
             manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN), 2-in-1 switch + dimmer (VZM31-SN), Fan Controller (VZM35-SN) ### Inovelli modified the model with Zigbee2mqtt 1.36
+            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: Inovelli Fan Controller (VZM35-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: 2-in-1 switch + dimmer (VZM31-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: Fan Controller (VZM35-SN) ### Inovelli modified the model with Zigbee2mqtt 1.36
 
   area:
     name: Area
@@ -97,13 +124,40 @@ fields:
         device:
           - integration: zwave_js
             manufacturer: Inovelli
-            model: LZW30, LZW31, LZW30-SN, LZW31-SN, LZW36, VZW31-SN
+            model: LZW30
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW31
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW30-SN
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW31-SN
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW36
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: VZW31-SN
           - integration: zha
             manufacturer: Inovelli
-            model: VZM31-SN, VZM35-SN
+            model: VZM31-SN
+          - integration: zha
+            manufacturer: Inovelli
+            model: VZM35-SN
           - integration: mqtt
             manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN), Inovelli Fan Controller (VZM35-SN), 2-in-1 switch + dimmer (VZM31-SN), Fan Controller (VZM35-SN) ### Inovelli modified the model with Zigbee2mqtt 1.36
+            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: Inovelli Fan Controller (VZM35-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: 2-in-1 switch + dimmer (VZM31-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: Fan Controller (VZM35-SN) ### Inovelli modified the model with Zigbee2mqtt 1.36
 
   group:
     name: Group
@@ -565,7 +619,7 @@ variables:
   ### Red 500 Series Switch ###
   LZW30SN_effects:
     "off": 0
-    clear effect: 255
+    clear effect: 0
     aurora: 4
     blink: 3
     blink fast: 2
@@ -2108,7 +2162,12 @@ sequence:
                         parameter: >-
                           {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_effect' %}
                           {{ parameters[effect_param] }}
-                        value: 255
+                        value: >-
+                          {% if repeat.item.device_type == "LZW30SN" %}
+                            0
+                          {% else %}
+                            255
+                          {% endif %}
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
