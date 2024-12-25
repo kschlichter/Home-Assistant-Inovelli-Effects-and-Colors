@@ -30,7 +30,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between floor: and variables: 68,410s
+#   Add two spaces to lines between floor: and variables: 68,464s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 #
@@ -41,7 +41,7 @@
 # Inovelli Toolbox: https://inovelliusa.github.io/inovelli-switch-toolbox/
 ############
 
-mode: parallel
+mode: queued
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches and you're calling the script per entity for some goofy reason.
 
 
@@ -1291,7 +1291,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'VZM31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent not in integration_entities('zha') %}
+              {% if 'VZM31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('mqtt') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -1303,7 +1303,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'VZM35-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent not in integration_entities('zha') %}
+              {% if 'VZM35-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent in integration_entities('mqtt') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -1386,7 +1386,6 @@ sequence:
                                             - "led 5"
                                             - "led 6"
                                             - "led 7"
-                                            - "all"
                                           sequence:
                                             - service: mqtt.publish
                                               data:
@@ -1458,7 +1457,6 @@ sequence:
                                             - "led 5"
                                             - "led 6"
                                             - "led 7"
-                                            - "all"
                                           sequence:
                                             - service: zha.set_zigbee_cluster_attribute
                                               data:
@@ -1565,7 +1563,6 @@ sequence:
                                             - "led 5"
                                             - "led 6"
                                             - "led 7"
-                                            - "all"
                                           sequence:
                                             - service: mqtt.publish
                                               data:
@@ -1637,7 +1634,6 @@ sequence:
                                             - "led 5"
                                             - "led 6"
                                             - "led 7"
-                                            - "all"
                                           sequence:
                                             - service: zha.set_zigbee_cluster_attribute
                                               data:
@@ -1737,7 +1733,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring intensity for all LEDs ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and 'all' in LEDcolor }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -1750,7 +1746,6 @@ sequence:
                                             - "led 5"
                                             - "led 6"
                                             - "led 7"
-                                            - "all"
                                           sequence:
                                             - service: mqtt.publish
                                               data:
@@ -1775,7 +1770,7 @@ sequence:
                                                     { "defaultLed7IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
                                                   {% endif %}
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and 'all' not in LEDcolor }}"
                                     sequence:
                                       - service: mqtt.publish
                                         data:
@@ -1809,7 +1804,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and 'all' in LEDcolor }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -1822,7 +1817,6 @@ sequence:
                                             - "led 5"
                                             - "led 6"
                                             - "led 7"
-                                            - "all"
                                           sequence:
                                             - service: zha.set_zigbee_cluster_attribute
                                               data:
@@ -1851,7 +1845,7 @@ sequence:
                                                 value: "{{ (LEDbrightness * 10) | int }}"
                                                 manufacturer: 4655
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and not 'all' in LEDcolor }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
@@ -1915,7 +1909,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring intensity for all LEDs ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and 'all' in LEDcolor }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -1928,7 +1922,6 @@ sequence:
                                             - "led 5"
                                             - "led 6"
                                             - "led 7"
-                                            - "all"
                                           sequence:
                                             - service: mqtt.publish
                                               data:
@@ -1953,7 +1946,7 @@ sequence:
                                                     { "defaultLed7IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
                                                   {% endif %}
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and not 'all' in LEDcolor }}"
                                     sequence:
                                       - service: mqtt.publish
                                         data:
@@ -1987,7 +1980,7 @@ sequence:
                             sequence:
                               - choose:
                                     ### Configuring a color set for all LEDs ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and 'all' in LEDcolor }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -2000,7 +1993,6 @@ sequence:
                                             - "led 5"
                                             - "led 6"
                                             - "led 7"
-                                            - "all"
                                           sequence:
                                             - service: zha.set_zigbee_cluster_attribute
                                               data:
@@ -2029,7 +2021,7 @@ sequence:
                                                 value: "{{ (LEDbrightness_off * 10) | int }}"
                                                 manufacturer: 4655
                                     ### Configuring just one Color ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and not 'all' in LEDcolor }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
