@@ -1785,19 +1785,19 @@ sequence:
                                             {% if LEDnumber == 'all' %}
                                               { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
                                             {% elif LEDnumber == 'led 1' %}
-                                              { "defaultLed1IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                              { "defaultLed1IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
                                             {% elif LEDnumber == 'led 2' %}
-                                              { "defaultLed2IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                              { "defaultLed2IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
                                             {% elif LEDnumber == 'led 3' %}
-                                              { "defaultLed3IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                              { "defaultLed3IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
                                             {% elif LEDnumber == 'led 4' %}
-                                              { "defaultLed4IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                              { "defaultLed4IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
                                             {% elif LEDnumber == 'led 5' %}
-                                              { "defaultLed5IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                              { "defaultLed5IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
                                             {% elif LEDnumber == 'led 6' %}
-                                              { "defaultLed6IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                              { "defaultLed6IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
                                             {% elif LEDnumber == 'led 7' %}
-                                              { "defaultLed7IntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                              { "defaultLed7IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
                                             {% endif %}
 
                 ### ZHA ###
@@ -1809,7 +1809,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' and 'all' in LEDcolor }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -1848,7 +1848,7 @@ sequence:
                                                   {% elif repeat.item == 'led 7' %}
                                                     {{ 0x005c |int }}
                                                   {% endif %}
-                                                value: "{{ (LEDbrightness * 10) | int }}"
+                                                value: "{{ iif(LEDcolor == 'all clear' and 'led' in repeat.item,101,(LEDbrightness * 10)) | int }}"
                                                 manufacturer: 4655
                                   ### Configuring just one LED or the full bar ###
                                   - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' }}"
@@ -1877,7 +1877,7 @@ sequence:
                                             {% elif LEDnumber == 'led 7' %}
                                               {{ 0x005c |int }}
                                             {% endif %}
-                                          value: "{{ (LEDbrightness * 10) | int }}"
+                                          value: "{{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }}"
                                           manufacturer: 4655
 
 
@@ -1963,19 +1963,19 @@ sequence:
                                             {% if LEDnumber == 'all' %}
                                               { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
                                             {% elif LEDnumber == 'led 1' %}
-                                              { "defaultLed1IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                              { "defaultLed1IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
                                             {% elif LEDnumber == 'led 2' %}
-                                              { "defaultLed2IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                              { "defaultLed2IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
                                             {% elif LEDnumber == 'led 3' %}
-                                              { "defaultLed3IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                              { "defaultLed3IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
                                             {% elif LEDnumber == 'led 4' %}
-                                              { "defaultLed4IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                              { "defaultLed4IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
                                             {% elif LEDnumber == 'led 5' %}
-                                              { "defaultLed5IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                              { "defaultLed5IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
                                             {% elif LEDnumber == 'led 6' %}
-                                              { "defaultLed6IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                              { "defaultLed6IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
                                             {% elif LEDnumber == 'led 7' %}
-                                              { "defaultLed7IntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                              { "defaultLed7IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
                                             {% endif %}
 
                 ### ZHA ###
@@ -1987,7 +1987,7 @@ sequence:
                             sequence:
                               - choose:
                                     ### Configuring a color set for all LEDs ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -2026,7 +2026,7 @@ sequence:
                                                   {% elif repeat.item == 'led 7' %}
                                                     {{ 0x005d |int }}
                                                   {% endif %}
-                                                value: "{{ (LEDbrightness_off * 10) | int }}"
+                                                value: "{{ iif(LEDcolor_off == 'all clear' and 'led' in repeat.item,101,(LEDbrightness_off * 10)) | int }}"  
                                                 manufacturer: 4655
                                     ### Configuring just one Color ###
                                   - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' }}"
@@ -2055,7 +2055,7 @@ sequence:
                                             {% elif LEDnumber == 'led 7' %}
                                               {{ 0x005d |int }}
                                             {% endif %}
-                                          value: "{{ (LEDbrightness_off * 10) | int }}"
+                                          value: "{{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }}"
                                           manufacturer: 4655
 
 
