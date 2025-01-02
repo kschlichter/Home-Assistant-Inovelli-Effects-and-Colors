@@ -1737,7 +1737,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring intensity for all LEDs ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' and 'all' in LEDcolor }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -1775,7 +1775,7 @@ sequence:
                                                     { "defaultLed7IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
                                                   {% endif %}
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' or 'all' not in LEDcolor }}"
                                     sequence:
                                       - service: mqtt.publish
                                         data:
@@ -1851,7 +1851,7 @@ sequence:
                                                 value: "{{ iif(LEDcolor == 'all clear' and 'led' in repeat.item,101,(LEDbrightness * 10)) | int }}"
                                                 manufacturer: 4655
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' }}"
+                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' or 'all' not in LEDcolor }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
@@ -1915,7 +1915,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring intensity for all LEDs ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' }}"
+                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -1953,7 +1953,7 @@ sequence:
                                                     { "defaultLed7IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
                                                   {% endif %}
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' }}"
+                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' or 'all' not in LEDcolor_off }}"
                                     sequence:
                                       - service: mqtt.publish
                                         data:
@@ -2029,7 +2029,7 @@ sequence:
                                                 value: "{{ iif(LEDcolor_off == 'all clear' and 'led' in repeat.item,101,(LEDbrightness_off * 10)) | int }}"  
                                                 manufacturer: 4655
                                     ### Configuring just one Color ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' }}"
+                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' or 'all' not in LEDcolor_off }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
