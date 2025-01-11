@@ -30,7 +30,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between floor: and variables: 68,483s
+#   Add two spaces to lines between floor: and variables: 68,484s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 #
@@ -101,22 +101,22 @@ blueprint:
               model: VZM35-SN
             - integration: mqtt
               manufacturer: Inovelli
-              model: 2-in-1 switch + dimmer ### Inovelli's model, starting with Zigbee2mqtt 2.0.0
+              model: 2-in-1 switch + dimmer (VZM31-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: Fan controller ### Inovelli's model, starting with Zigbee2mqtt 2.0.0
+              model: Fan Controller (VZM35-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN) ### Inovelli's model, before Zigbee2mqtt 2.0.0
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: Inovelli Fan Controller (VZM35-SN) ### Inovelli's model, before Zigbee2mqtt 2.0.0
+              model: Inovelli Fan Controller (VZM35-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: 2-in-1 switch + dimmer (VZM31-SN) ### Inovelli's model, before Zigbee2mqtt 1.36
+              model: 2-in-1 switch + dimmer
             - integration: mqtt
               manufacturer: Inovelli
-              model: Fan Controller (VZM35-SN) ### Inovelli's model, before Zigbee2mqtt 1.36
+              model: Fan controller
   
     area:
       name: Area
@@ -154,22 +154,23 @@ blueprint:
               model: VZM35-SN
             - integration: mqtt
               manufacturer: Inovelli
-              model: 2-in-1 switch + dimmer ### Inovelli's model, starting with Zigbee2mqtt 2.0.0
+              model: 2-in-1 switch + dimmer (VZM31-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: Fan controller ### Inovelli's model, starting with Zigbee2mqtt 2.0.0
+              model: Fan Controller (VZM35-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN) ### Inovelli's model, before Zigbee2mqtt 2.0.0
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: Inovelli Fan Controller (VZM35-SN) ### Inovelli's model, before Zigbee2mqtt 2.0.0
+              model: Inovelli Fan Controller (VZM35-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: 2-in-1 switch + dimmer (VZM31-SN) ### Inovelli's model, before Zigbee2mqtt 1.36
+              model: 2-in-1 switch + dimmer
             - integration: mqtt
               manufacturer: Inovelli
-              model: Fan Controller (VZM35-SN) ### Inovelli's model, before Zigbee2mqtt 1.36
+              model: Fan controller
+  
   
     group:
       name: Group
@@ -223,22 +224,22 @@ blueprint:
               model: VZM35-SN
             - integration: mqtt
               manufacturer: Inovelli
-              model: 2-in-1 switch + dimmer ### Inovelli's model, starting with Zigbee2mqtt 2.0.0
+              model: 2-in-1 switch + dimmer (VZM31-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: Fan controller ### Inovelli's model, starting with Zigbee2mqtt 2.0.0
+              model: Fan Controller (VZM35-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN) ### Inovelli's model, before Zigbee2mqtt 2.0.0
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: Inovelli Fan Controller (VZM35-SN) ### Inovelli's model, before Zigbee2mqtt 2.0.0
+              model: Inovelli Fan Controller (VZM35-SN)
             - integration: mqtt
               manufacturer: Inovelli
-              model: 2-in-1 switch + dimmer (VZM31-SN) ### Inovelli's model, before Zigbee2mqtt 1.36
+              model: 2-in-1 switch + dimmer
             - integration: mqtt
               manufacturer: Inovelli
-              model: Fan Controller (VZM35-SN) ### Inovelli's model, before Zigbee2mqtt 1.36
+              model: Fan controller
   
   
     entity:
@@ -367,7 +368,7 @@ blueprint:
       description: How long the effect will last.
       #required: false
       #example: "Off"
-      default: 'invalid'
+      default: '0'
       selector:
         select:
           options:
@@ -490,14 +491,15 @@ variables:
   input_device: !input device
   input_entity: !input entity
 
-  input_color: !input color
-  input_duration: !input duration
-  input_brightness: !input brightness
-  input_effect: !input effect
+  input_LEDnumber: !input LEDnumber
   input_LEDcolor: !input LEDcolor
   input_LEDcolor_off: !input LEDcolor_off
   input_LEDbrightness: !input LEDbrightness
   input_LEDbrightness_off: !input LEDbrightness_off
+  input_duration: !input duration
+  input_effect: !input effect
+  input_brightness: !input brightness
+  input_color: !input color
 
 
   ##################
@@ -892,16 +894,18 @@ variables:
   zwave_models:
     - LZW30    # Black 500 Series switch
     - LZW31    # Black 500 Series dimmer
-    - LZW31-SN # Red 500 Series dimmer
     - LZW30-SN # Red 500 Series switch
+    - LZW31-SN # Red 500 Series dimmer
     - LZW36    # Red 500 Series combo_light, combo_fan
     - VZW31-SN # Red 800 series dimmer
 
   zigbee2mqtt_models: # BLUE
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer Zigbee2MQTT 1.35 and below
-    - 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer Zigbee2MQTT 1.36 and above
     - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan Zigbee2MQTT 1.35 and below
-    - Fan Controller (VZM35-SN)         # Blue Series fan Zigbee2MQTT 1.36 and above
+    - 2-in-1 switch + dimmer (VZM31-SN)          # Blue Series dimmer Zigbee2MQTT 1.36 and above
+    - Fan Controller (VZM35-SN)                  # Blue Series fan Zigbee2MQTT 1.36 and above
+    - 2-in-1 switch + dimmer                     # Blue Series dimmer Zigbee2MQTT 2.0.0 and above
+    - Fan controller                             # Blue Series fan Zigbee2MQTT 2.0.0 and above
 
   zha_models: # BLUE
     - VZM31-SN # Blue Series dimmer
@@ -1195,24 +1199,25 @@ sequence:
   ##################
   - variables:
       #LEDnumber: "{{ LEDnumber|default(\"all\")|lower }}"
-      #color: "{{ color|default(\"no change\")|lower }}"
-      #duration: "{{ duration|default(\"0\")|lower }}"
-      #brightness: "{{ brightness|default(\"11\")|float }}"
-      #effect: "{{ effect|default(\"clear effect\")|lower }}"
       #LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
       #LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
       #LEDbrightness: "{{ LEDbrightness|default(\"11\")|float }}"
       #LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|float }}"
+      #duration: "{{ duration|default(\"0\")|lower }}"
+      #effect: "{{ effect|default(\"clear effect\")|lower }}"
+      #brightness: "{{ brightness|default(\"11\")|float }}"
+      #color: "{{ color|default(\"no change\")|lower }}"
 
       LEDnumber: "{{ input_LEDnumber|default(\"all\")|lower }}"
-      color: "{{ input_color|default(\"no change\")|lower }}"
-      duration: "{{ input_duration|default(\"0\")|lower }}"
-      brightness: "{{ input_brightness|default(\"11\")|float }}"
-      effect: "{{ input_effect|default(\"clear effect\")|lower }}"
       LEDcolor: "{{ input_LEDcolor|default(\"no change\")|lower }}"
       LEDcolor_off: "{{ input_LEDcolor_off|default(\"no change\")|lower }}"
       LEDbrightness: "{{ input_LEDbrightness|default(\"11\")|float }}"
       LEDbrightness_off: "{{ input_LEDbrightness_off|default(\"11\")|float }}"
+      duration: "{{ input_duration|default(\"0\")|lower }}"
+      effect: "{{ input_effect|default(\"clear effect\")|lower }}"
+      brightness: "{{ input_brightness|default(\"11\")|float }}"
+      color: "{{ input_color|default(\"no change\")|lower }}"
+
 
   ##################
   # Group entities by device type so the right integration and parameters can be used
