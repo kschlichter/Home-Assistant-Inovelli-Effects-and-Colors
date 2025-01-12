@@ -1445,19 +1445,19 @@ sequence:
                                             {% if LEDnumber == 'all' %}
                                               { "ledColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 1' %}
-                                              { "defaultLed1ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                              { "defaultLed1ColorWhenOn": {{ color_set[LEDcolor] if 'led' in LEDnumber and LEDcolor != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 2' %}
-                                              { "defaultLed2ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                              { "defaultLed2ColorWhenOn": {{ color_set[LEDcolor] if 'led' in LEDnumber and LEDcolor != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 3' %}
-                                              { "defaultLed3ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                              { "defaultLed3ColorWhenOn": {{ color_set[LEDcolor] if 'led' in LEDnumber and LEDcolor != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 4' %}
-                                              { "defaultLed4ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                              { "defaultLed4ColorWhenOn": {{ color_set[LEDcolor] if 'led' in LEDnumber and LEDcolor != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 5' %}
-                                              { "defaultLed5ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                              { "defaultLed5ColorWhenOn": {{ color_set[LEDcolor] if 'led' in LEDnumber and LEDcolor != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 6' %}
-                                              { "defaultLed6ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                              { "defaultLed6ColorWhenOn": {{ color_set[LEDcolor] if 'led' in LEDnumber and LEDcolor != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 7' %}
-                                              { "defaultLed7ColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
+                                              { "defaultLed7ColorWhenOn": {{ color_set[LEDcolor] if 'led' in LEDnumber and LEDcolor != 'off' else 255 }} }
                                             {% endif %}
 
                 ### ZHA ###
@@ -1624,19 +1624,19 @@ sequence:
                                             {% if LEDnumber == 'all' %}
                                               { "ledColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 1' %}
-                                              { "defaultLed1ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                              { "defaultLed1ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 2' %}
-                                              { "defaultLed2ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                              { "defaultLed2ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 3' %}
-                                              { "defaultLed3ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                              { "defaultLed3ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 4' %}
-                                              { "defaultLed4ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                              { "defaultLed4ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 5' %}
-                                              { "defaultLed5ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                              { "defaultLed5ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 6' %}
-                                              { "defaultLed6ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                              { "defaultLed6ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
                                             {% elif LEDnumber == 'led 7' %}
-                                              { "defaultLed7ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                              { "defaultLed7ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
                                             {% endif %}
 
                 ### ZHA ###
