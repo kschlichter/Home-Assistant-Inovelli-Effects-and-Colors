@@ -49,12 +49,13 @@ blueprint:
   name: Inovelli LED Settings and Effects Blueprint
   domain: script
   source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
+  author: "Kevin Schlichter"
   description: >-
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
     through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
     and can be called by floor, area, group, device, and entity.
   homeassistant:
-    min_version: 2023.04.0
+    min_version: 2024.06.0
   input:
 
 #alias: Inovelli LED Settings and Effects
@@ -70,7 +71,7 @@ blueprint:
       description: Labels on Inovelli devices and entities, or areas containing Inovelli devices.
       #required: false
       #example: 'christmas lights, bedrooms, fans'
-      default: 'invalid'
+      #default: 'invalid'
       selector:
         label:
           multiple: true
@@ -80,7 +81,7 @@ blueprint:
       description: Floor IDs containing areas with Inovelli devices.  
       #required: false
       #example: 'downstairs,upstairs, outside'
-      default: 'invalid'
+      #default: 'invalid'
       selector:
         floor:
           multiple: true
@@ -133,7 +134,7 @@ blueprint:
       description: Area names or IDs containing Inovelli devices.
       #required: false
       #example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
-      default: 'invalid'
+      #default: 'invalid'
       selector:
         area:
           multiple: true
@@ -187,7 +188,7 @@ blueprint:
       description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
       #required: false
       #example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
-      default: 'invalid'
+      #default: 'invalid'
       selector:
         entity:
           multiple: true
@@ -203,7 +204,7 @@ blueprint:
       description: Device IDs of Inovelli devices.  Mix and match types as you like.
       #required: false
       #example: '0249abdc634c12cbf6cdc06d7a507495'
-      default: 'invalid'
+      #default: 'invalid'
       selector:
         device:
           multiple: true
@@ -259,7 +260,7 @@ blueprint:
         a comma separated list of Inovelli devices.  Mix and match types as you like.
       #required: false
       #example: light.office, fan.guest_room
-      default: 'invalid'
+      #default: 'invalid'
       selector:
         entity:
           multiple: true
@@ -276,7 +277,7 @@ blueprint:
         Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
       #required: false
       #example: All
-      default: 'all'
+      #default: 'all'
       selector:
         select:
           options:
@@ -294,7 +295,7 @@ blueprint:
       description: Sets the color of the LED status, which indicates brightness levels.
       #required: false
       #example: Blue
-      default: 'no change'
+      #default: 'no change'
       selector:
         select:
           options:
@@ -323,7 +324,7 @@ blueprint:
       description: Sets the color of the LED status, which indicates brightness levels.
       #required: false
       #example: Blue
-      default: 'no change'
+      #default: 'no change'
       selector:
         select:
           options:
@@ -352,7 +353,7 @@ blueprint:
       description: Sets the brightness of the LED status when on. 0 means off.
       #required: false
       #example: "6"
-      default: '11'
+      #default: '11'
       selector:
         number:
           min: 0
@@ -365,7 +366,7 @@ blueprint:
       description: Sets the brightness of the LED status when off. 0 means off.
       #required: false
       #example: "2"
-      default: '11'
+      #default: '11'
       selector:
         number:
           min: 0
@@ -378,7 +379,7 @@ blueprint:
       description: How long the effect will last.
       #required: false
       #example: "Off"
-      default: '0'
+      #default: '0'
       selector:
         select:
           options:
@@ -425,7 +426,7 @@ blueprint:
       description: Type of effect
       #required: false
       #example: Pulse
-      default: 'Clear Effect'
+      #default: 'Clear Effect'
       selector:
         select:
           options:
@@ -456,7 +457,7 @@ blueprint:
       description: Sets the brightness of the LED's effect.  0 means off.
       #required: false
       #example: "8"
-      default: '11'
+      #default: '11'
       selector:
         number:
           min: 0
@@ -469,7 +470,7 @@ blueprint:
       description: Color of LED effect
       #required: false
       #example: Red
-      default: 'no change'
+      #default: 'no change'
       selector:
         select:
           options:
