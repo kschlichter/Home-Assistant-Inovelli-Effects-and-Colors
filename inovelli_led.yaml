@@ -30,7 +30,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between floor: and variables: 68,484s
+#   Add two spaces to lines between label: and variables: 67,494s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 #
@@ -49,12 +49,13 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 #  name: Inovelli LED Settings and Effects Blueprint
 #  domain: script
 #  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
+#  author: Kevin Schlichter
 #  description: >-
 #    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
 #    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
 #    and can be called by floor, area, group, device, and entity.
 #  homeassistant:
-#    min_version: 2023.04.0
+#    min_version: 2024.06.0
 #  input:
 
 alias: Inovelli LED Settings and Effects
@@ -65,12 +66,22 @@ description: >-
 fields:
 
 
+  label:
+    name: Label
+    description: Labels on Inovelli devices and entities, or areas containing Inovelli devices.
+    #required: false
+    example: 'christmas lights, bedrooms, fans'
+    #default: 'invalid'
+    selector:
+      label:
+        multiple: true
+
   floor:
     name: Floor
     description: Floor IDs containing areas with Inovelli devices.  
     #required: false
     example: 'downstairs,upstairs, outside'
-    default: 'invalid'
+    #default: 'invalid'
     selector:
       floor:
         multiple: true
@@ -123,7 +134,7 @@ fields:
     description: Area names or IDs containing Inovelli devices.
     #required: false
     example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
-    default: 'invalid'
+    #default: 'invalid'
     selector:
       area:
         multiple: true
@@ -177,7 +188,7 @@ fields:
     description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
     #required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
-    default: 'invalid'
+    #default: 'invalid'
     selector:
       entity:
         multiple: true
@@ -193,7 +204,7 @@ fields:
     description: Device IDs of Inovelli devices.  Mix and match types as you like.
     #required: false
     example: '0249abdc634c12cbf6cdc06d7a507495'
-    default: 'invalid'
+    #default: 'invalid'
     selector:
       device:
         multiple: true
@@ -249,7 +260,7 @@ fields:
       a comma separated list of Inovelli devices.  Mix and match types as you like.
     #required: false
     example: light.office, fan.guest_room
-    default: 'invalid'
+    #default: 'invalid'
     selector:
       entity:
         multiple: true
@@ -266,7 +277,7 @@ fields:
       Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
     #required: false
     example: All
-    default: 'all'
+    #default: 'all'
     selector:
       select:
         options:
@@ -284,7 +295,7 @@ fields:
     description: Sets the color of the LED status, which indicates brightness levels.
     #required: false
     example: Blue
-    default: 'no change'
+    #default: 'no change'
     selector:
       select:
         options:
@@ -313,7 +324,7 @@ fields:
     description: Sets the color of the LED status, which indicates brightness levels.
     #required: false
     example: Blue
-    default: 'no change'
+    #default: 'no change'
     selector:
       select:
         options:
@@ -342,7 +353,7 @@ fields:
     description: Sets the brightness of the LED status when on. 0 means off.
     #required: false
     example: "6"
-    default: '11'
+    #default: '11'
     selector:
       number:
         min: 0
@@ -355,7 +366,7 @@ fields:
     description: Sets the brightness of the LED status when off. 0 means off.
     #required: false
     example: "2"
-    default: '11'
+    #default: '11'
     selector:
       number:
         min: 0
@@ -368,7 +379,7 @@ fields:
     description: How long the effect will last.
     #required: false
     example: "Off"
-    default: '0'
+    #default: '0'
     selector:
       select:
         options:
@@ -415,7 +426,7 @@ fields:
     description: Type of effect
     #required: false
     example: Pulse
-    default: 'Clear Effect'
+    #default: 'Clear Effect'
     selector:
       select:
         options:
@@ -446,7 +457,7 @@ fields:
     description: Sets the brightness of the LED's effect.  0 means off.
     #required: false
     example: "8"
-    default: '11'
+    #default: '11'
     selector:
       number:
         min: 0
@@ -459,7 +470,7 @@ fields:
     description: Color of LED effect
     #required: false
     example: Red
-    default: 'no change'
+    #default: 'no change'
     selector:
       select:
         options:
@@ -485,6 +496,7 @@ fields:
 
 
 variables:
+  #input_label: !input label
   #input_floor: !input floor
   #input_area: !input area
   #input_group: !input group
@@ -1027,17 +1039,64 @@ variables:
   ##################
   # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
+  label: "{{ label|default(\"invalid\")|lower }}"
   floor: "{{ floor|default(\"invalid\")|lower }}"
   area: "{{ area|default(\"invalid\")|lower }}"
   group: "{{ group|default(\"invalid\")|lower }}"
   device: "{{ device|default(\"invalid\")|lower }}"
   entity: "{{ entity|default(\"invalid\")|lower }}"
 
+  #label: "{{ input_label|default(\"invalid\")|lower }}"
   #floor: "{{ input_floor|default(\"invalid\")|lower }}"
   #area: "{{ input_area|default(\"invalid\")|lower }}"
   #group: "{{ input_group|default(\"invalid\")|lower }}"
   #device: "{{ input_device|default(\"invalid\")|lower }}"
   #entity: "{{ input_entity|default(\"invalid\")|lower }}"
+
+  label_list: >-
+    {% set label_array = namespace(label_list=[]) %}
+    {# convert CSV to proper list #}
+    {% if label != 'invalid' %}
+      {% if ',' in label %}
+        {% set labelnum = label.split( ',' ) | count %}
+        {% for i in range(0,labelnum) %}
+          {% set label_array.label_list = label_array.label_list + [label.split( ',' )[i]|string|trim] %}
+        {% endfor %}
+      {% elif label[0]|count == 1 %}
+        {# if the first item in the list has only a single character, it isn't a valid list #}
+        {% set label_array.label_list = label_array.label_list + [label|string|trim] %}
+      {% else %}
+        {% set label_array.label_list = label %}
+      {% endif %}
+    {% endif %}
+    {{ label_array.label_list }}
+
+  areas_from_label: >-
+    {% set label_area_array = namespace(label_area_list=[]) %}
+    {% if label != 'invalid' %}
+      {% for each_label in label_list %}
+        {% set label_area_array.label_area_list = label_area_array.label_area_list + label_areas(each_label) %}
+      {% endfor %}    
+    {% endif %}
+    {{ label_area_array.label_area_list }}
+
+  devices_from_label: >-
+    {% set label_device_array = namespace(label_device_list=[]) %}
+    {% if label != 'invalid' %}
+      {% for each_label in label_list %}
+        {% set label_device_array.label_device_list = label_device_array.label_device_list + label_devices(each_label) %}
+      {% endfor %}
+    {% endif %}
+    {{ label_device_array.label_device_list }}
+
+  entities_from_label: >-
+    {% set label_entity_array = namespace(label_entity_list=[]) %}
+    {% if label != 'invalid' %}
+      {% for each_label in label_list %}
+        {% set label_entity_array.label_entity_list = label_entity_array.label_entity_list + label_entities(each_label) %}
+      {% endfor %}
+    {% endif %}
+    {{ label_entity_array.label_entity_list  }}
 
   entities_from_floor: >-
     {% set floor_array = namespace(floor_list=[]) %}
@@ -1075,6 +1134,9 @@ variables:
   entities_from_area: >-
     {% set area_array = namespace(area_list=[]) %}
     {% set entities = namespace(entities=[]) %}
+    {% if area == 'invalid' %}
+      {% set area = areas_from_label %}
+    {% endif %}
     {% if area != 'invalid' %}
       {# I'd like to handle 'all' as a list for templating simplicity #}
       {# changing this to 'all' in area would trigger an area named 'all upstairs' #}
@@ -1093,6 +1155,11 @@ variables:
       {% else %}
         {% set area_array.area_list = area %}
       {% endif %}
+      {% for each in areas_from_label %}
+        {% if each not in area_array.area_list %}
+          {% set area_array.area_list = area_array.area_list + [each|string|trim] %}
+        {% endif %}
+      {% endfor %}
 
       {# Detecting entities #}
       {% for area in area_array.area_list %}
@@ -1137,6 +1204,9 @@ variables:
   entities_from_device: >-
     {% set devices = namespace(devices=[]) %}
     {% set entities = namespace(entities=[]) %}
+    {% if device == 'invalid' %}
+      {% set device = devices_from_label %}
+    {% endif %}
     {% if device != 'invalid' %}
       {# Converting to a list #}
       {% if ',' in device %}
@@ -1150,6 +1220,12 @@ variables:
       {% else %}
         {% set devices.devices = device %}
       {% endif %}
+      {% for each in devices_from_label %}
+        {% if each not in devices.devices %}
+          {% set devices.devices = devices.devices + [each|string|trim] %}
+        {% endif %}
+      {% endfor %}
+
 
       {# Detecting entities #}
       {% for device in devices.devices %}
@@ -1165,6 +1241,9 @@ variables:
   entities_from_entity: >-
     {% set entities_array = namespace(entities=[]) %}
     {% set entities = namespace(entities=[]) %}
+    {% if entity == 'invalid' %}
+      {% set entity = entities_from_label %}
+    {% endif %}
     {% if entity != 'invalid' %}
       {# Converting to a list #}
       {% if ',' in entity %}
@@ -1178,6 +1257,11 @@ variables:
       {% else %}
         {% set entities_array.entities = entity %}
       {% endif %}
+      {% for each in entities_from_label %}
+        {% if each not in entities_array.entities %}
+          {% set entities_array.entities = entities_array.entities + [each|string|trim] %}
+        {% endif %}
+      {% endfor %}
 
       {# Detecting entities #}
       {% for ent in entities_array.entities %}
