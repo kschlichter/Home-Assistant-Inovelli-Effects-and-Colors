@@ -30,14 +30,24 @@
   Effects that have been set to "forever" can be cleared by just passing the entity, device, group, label, area, or floor.  There's no need to remember the effect, color, and brightness parameter or set them to 0 in a template.  It's easier to remember when you get to my age, and less to type.  Also, it's a fairly safe way to "fail" if we don't have all the right parameters, since (most of the time) clearing the effect will have no visible result on the physical device.
 
 
-## Blueprint
-  
-  After importing the blueprint, use the UI to set static parameters and simply call it in automations with a single line, like: `service: script.inovelli_led_night_leds`.
+## Blueprint Installation Instructions
+  After importing the blueprint:
+  * In Home Assistant:
+    * Click on "Settings" in the left-hand navigation pane.
+    * "Automations & Scenes"
+    * "Blueprints" near the top in a horizontal menu.
+    * "Inovelli LED Settings and Effects Blueprint" to open a new screen with the configuration options.
+    * Use the UI to set static parameters. 
+      * These cannot be changed dynamically in automations (at least I don't know how, so if you see a blueprint that does this, let me know and I'll learn something new)
+    * Click the blue "Save Script" button in the lower-right corner of the screen.
+    * Give your script a name (e.g. bedroom_night) and click "rename"
+    * Call it from an automation with `service: script.bedroom_night`
+    * Repeat the above steps for each version of the script you want to have.
 
 <a href="https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fkschlichter%2FHome-Assistant-Inovelli-Effects-and-Colors%2Fblob%2Fmaster%2Fblueprints%2Fscript%2Fkschlichter%2Finovelli_led_blueprint.yaml" target="_blank" rel="noreferrer noopener"><img src="https://my.home-assistant.io/badges/blueprint_import.svg" alt="Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled." /></a>
 
 
-## Installation Instructions
+## Script Installation Instructions
 
 The easiest way to install is via blueprint.  If you'd rather use the script, which can accept templeted inputs, I recommend adding a directory called `scripts` and [including it in your configuration.yaml file](https://www.home-assistant.io/docs/configuration/splitting_configuration/).
 ```
@@ -56,12 +66,12 @@ As a quick start you can follow these steps:
   * Delete the pre-populated lines.
 * Open a new tab
 * In Github (https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/master/inovelli_led.yaml)
-  * Since this hasn’t been merged into master yet, in the left-hand nav pane, under files, there’s a drop-down that says “master”. Change that to 800 series effects.
   * On the right side, click the “copy raw file” in between the “raw” and “download” buttons.
 * In Home Assistant:
-  * Paste the contents into the Yaml editor.
+  * Paste the contents into the yaml editor.
   * In the vertical ellipsis select “Edit in Visual Editor”
   * Click the blue, “Save Script” button in the lower right.
+  * Call it from automations by passing the parameters explained below.
 
 ## Setting the LED indicator
 
