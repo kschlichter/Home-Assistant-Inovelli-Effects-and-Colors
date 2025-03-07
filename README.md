@@ -56,7 +56,6 @@ As a quick start you can follow these steps:
   * Delete the pre-populated lines.
 * Open a new tab
 * In Github (https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/master/inovelli_led.yaml)
-  * Since this hasn’t been merged into master yet, in the left-hand nav pane, under files, there’s a drop-down that says “master”. Change that to 800 series effects.
   * On the right side, click the “copy raw file” in between the “raw” and “download” buttons.
 * In Home Assistant:
   * Paste the contents into the Yaml editor.
