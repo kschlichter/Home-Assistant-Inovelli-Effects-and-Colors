@@ -31,7 +31,7 @@
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
 #   Add two spaces to lines between label: and variables: 67,495s
-#   Comment out #example/g
+#   Comment out #example:
 #   Switch input_* and script variables in all three locations
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
@@ -70,7 +70,7 @@ blueprint:
       name: Label
       description: Labels on Inovelli devices and entities, or areas containing Inovelli devices.
       #required: false
-      #example/g 'christmas lights, bedrooms, fans'
+      #example: 'christmas lights, bedrooms, fans'
       #default: 'invalid'
       selector:
         label:
@@ -80,7 +80,7 @@ blueprint:
       name: Floor
       description: Floor IDs containing areas with Inovelli devices.  
       #required: false
-      #example/g 'downstairs,upstairs, outside'
+      #example: 'downstairs,upstairs, outside'
       #default: 'invalid'
       selector:
         floor:
@@ -133,7 +133,7 @@ blueprint:
       name: Area
       description: Area names or IDs containing Inovelli devices.
       #required: false
-      #example/g 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
+      #example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
       #default: 'invalid'
       selector:
         area:
@@ -187,7 +187,7 @@ blueprint:
       name: Group
       description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
       #required: false
-      #example/g 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
+      #example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
       #default: 'invalid'
       selector:
         entity:
@@ -203,7 +203,7 @@ blueprint:
       name: Device
       description: Device IDs of Inovelli devices.  Mix and match types as you like.
       #required: false
-      #example/g '0249abdc634c12cbf6cdc06d7a507495'
+      #example: '0249abdc634c12cbf6cdc06d7a507495'
       #default: 'invalid'
       selector:
         device:
@@ -259,7 +259,7 @@ blueprint:
         The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
         a comma separated list of Inovelli devices.  Mix and match types as you like.
       #required: false
-      #example/g light.office, fan.guest_room
+      #example: light.office, fan.guest_room
       #default: 'invalid'
       selector:
         entity:
@@ -276,7 +276,7 @@ blueprint:
       description: >-
         Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
       #required: false
-      #example/g All
+      #example: All
       #default: 'all'
       selector:
         select:
@@ -294,7 +294,7 @@ blueprint:
       name: LED Color When On (non-effect)
       description: Sets the color of the LED status, which indicates brightness levels.
       #required: false
-      #example/g Blue
+      #example: Blue
       #default: 'no change'
       selector:
         select:
@@ -323,7 +323,7 @@ blueprint:
       name: LED Color When Off (non-effect). Red 800 and Blue Series only.
       description: Sets the color of the LED status, which indicates brightness levels.
       #required: false
-      #example/g Blue
+      #example: Blue
       #default: 'no change'
       selector:
         select:
@@ -352,7 +352,7 @@ blueprint:
       name: LED Brightness When On (non-effect)
       description: Sets the brightness of the LED status when on. 0 means off.
       #required: false
-      #example/g "6"
+      #example: "6"
       #default: '11'
       selector:
         number:
@@ -365,7 +365,7 @@ blueprint:
       name: LED Brightness When Off (non-effect).
       description: Sets the brightness of the LED status when off. 0 means off.
       #required: false
-      #example/g "2"
+      #example: "2"
       #default: '11'
       selector:
         number:
@@ -378,7 +378,7 @@ blueprint:
       name: Duration of Effect
       description: How long the effect will last.
       #required: false
-      #example/g "Off"
+      #example: "Off"
       #default: '0'
       selector:
         select:
@@ -425,7 +425,7 @@ blueprint:
       name: Effect
       description: Type of effect
       #required: false
-      #example/g Pulse
+      #example: Pulse
       #default: 'Clear Effect'
       selector:
         select:
@@ -456,7 +456,7 @@ blueprint:
       name: Effect Brightness
       description: Sets the brightness of the LED's effect.  0 means off.
       #required: false
-      #example/g "8"
+      #example: "8"
       #default: '11'
       selector:
         number:
@@ -469,7 +469,7 @@ blueprint:
       name: Effect Color
       description: Color of LED effect
       #required: false
-      #example/g Red
+      #example: Red
       #default: 'no change'
       selector:
         select:
@@ -1317,8 +1317,10 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if  is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' and ent in integration_entities('zwave_js') %}
-                {% set entities.entities = entities.entities + [ent] %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
+                {% if  is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' and ent in integration_entities('zwave_js') %}
+                  {% set entities.entities = entities.entities + [ent] %}
+                {% endif %}
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
@@ -1328,8 +1330,10 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if  is_device_attr(ent,'model','LZW31') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
-                {% set entities.entities = entities.entities + [ent] %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
+                {% if  is_device_attr(ent,'model','LZW31') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+                  {% set entities.entities = entities.entities + [ent] %}
+                {% endif %}
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
@@ -1339,8 +1343,10 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'LZW30-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'switch' and ent in integration_entities('zwave_js') %}
-                {% set entities.entities = entities.entities + [ent] %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
+                {% if 'LZW30-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'switch' and ent in integration_entities('zwave_js') %}
+                  {% set entities.entities = entities.entities + [ent] %}
+                {% endif %}
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
@@ -1350,8 +1356,10 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'LZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
-                {% set entities.entities = entities.entities + [ent] %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
+                {% if 'LZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+                  {% set entities.entities = entities.entities + [ent] %}
+                {% endif %}
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
@@ -1361,8 +1369,10 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
-                {% set entities.entities = entities.entities + [ent] %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
+                {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+                  {% set entities.entities = entities.entities + [ent] %}
+                {% endif %}
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
@@ -1372,8 +1382,10 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent in integration_entities('zwave_js') %}
-                {% set entities.entities = entities.entities + [ent] %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
+                {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent in integration_entities('zwave_js') %}
+                  {% set entities.entities = entities.entities + [ent] %}
+                {% endif %}
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
@@ -1384,8 +1396,10 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'VZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
-                {% set entities.entities = entities.entities + [ent] %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
+                {% if 'VZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+                  {% set entities.entities = entities.entities + [ent] %}
+                {% endif %}
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
@@ -1399,7 +1413,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if device_attr(ent,'model') is not none and device_attr(ent,'model_id') is not none %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
                 {% if ('2-in-1 switch' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM31-SN')) and ent.split('.')[0] == 'light' and ent in integration_entities('mqtt') %}
                   {% set entities.entities = entities.entities + [ent] %}
                 {% endif %}
@@ -1413,7 +1427,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if device_attr(ent,'model') is not none and device_attr(ent,'model_id') is not none %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
                 {% if ('fan controller' in (device_attr(ent,'model')|lower) or is_device_attr(ent,'model_id','VZM35-SN')) and ent.split('.')[0] == 'fan' and ent in integration_entities('mqtt') %}
                   {% set entities.entities = entities.entities + [ent] %}
                 {% endif %}
@@ -1430,7 +1444,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if device_attr(ent,'model') is not none and device_attr(ent,'model_id') is not none %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
                 {% if 'VZM31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zha') %}
                   {% set entities.entities = entities.entities + [ent] %}
                 {% endif %}
@@ -1444,7 +1458,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if device_attr(ent,'model') is not none and device_attr(ent,'model_id') is not none %}
+              {% if is_device_attr(ent,"manufacturer","Inovelli") %}
                 {% if 'VZM35-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent in integration_entities('zha') %}
                   {% set entities.entities = entities.entities + [ent] %}
                 {% endif %}
