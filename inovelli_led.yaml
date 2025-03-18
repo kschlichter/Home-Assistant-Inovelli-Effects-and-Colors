@@ -30,7 +30,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 67,494s
+#   Add two spaces to lines between label: and variables: 67,495s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 #
@@ -49,7 +49,7 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 #  name: Inovelli LED Settings and Effects Blueprint
 #  domain: script
 #  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
-#  author: Kevin Schlichter
+#  author: "Kevin Schlichter"
 #  description: >-
 #    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
 #    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
@@ -1122,7 +1122,7 @@ variables:
       {% for floor in floor_array.floor_list %}
         {% for area in floor_areas(floor) %}
           {% for ent in area_entities(area) %}
-            {% if ent.split('.')[0] in allowed_domains %}
+            {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
               {% set entities.entities = entities.entities + [ent|string|trim] %}
             {% endif %}
           {% endfor %}
@@ -1164,7 +1164,7 @@ variables:
       {# Detecting entities #}
       {% for area in area_array.area_list %}
         {% for ent in area_entities(area) %}
-          {% if ent.split('.')[0] in allowed_domains %}
+          {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
             {% set entities.entities = entities.entities + [ent|string|trim] %}
           {% endif %}
         {% endfor %}
@@ -1193,7 +1193,7 @@ variables:
       {% for group in group_array.group_list %}
         {% for entity in expand(group) %}
           {% set ent = entity.entity_id %}
-          {% if ent.split('.')[0] in allowed_domains %}
+          {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
             {% set entities.entities = entities.entities + [ent|string|trim] %}
           {% endif %}
         {% endfor %}
@@ -1230,7 +1230,7 @@ variables:
       {# Detecting entities #}
       {% for device in devices.devices %}
         {% for ent in device_entities(device) %}
-          {% if ent.split('.')[0] in allowed_domains %}
+          {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
             {% set entities.entities = entities.entities + [ent|string|trim] %}
           {% endif %}
         {% endfor %}
@@ -1265,7 +1265,7 @@ variables:
 
       {# Detecting entities #}
       {% for ent in entities_array.entities %}
-        {% if ent.split('.')[0] in allowed_domains %}
+        {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
           {% set entities.entities = entities.entities + [ent|string|trim] %}
         {% endif %}
       {% endfor %}
