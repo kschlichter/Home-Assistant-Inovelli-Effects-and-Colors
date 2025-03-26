@@ -72,7 +72,7 @@ fields:
     description: Labels on Inovelli devices and entities, or areas containing Inovelli devices.
     #required: false
     example: 'christmas lights, bedrooms, fans'
-    default: 'invalid'
+    default: []
     selector:
       label:
         multiple: true
@@ -82,7 +82,7 @@ fields:
     description: Floor IDs containing areas with Inovelli devices.  
     #required: false
     example: 'downstairs,upstairs, outside'
-    default: 'invalid'
+    default: []
     selector:
       floor:
         multiple: true
@@ -135,7 +135,7 @@ fields:
     description: Area names or IDs containing Inovelli devices.
     #required: false
     example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
-    default: 'invalid'
+    default: []
     selector:
       area:
         multiple: true
@@ -189,7 +189,7 @@ fields:
     description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
     #required: false
     example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
-    default: 'invalid'
+    default: []
     selector:
       entity:
         multiple: true
@@ -205,7 +205,7 @@ fields:
     description: Device IDs of Inovelli devices.  Mix and match types as you like.
     #required: false
     example: '0249abdc634c12cbf6cdc06d7a507495'
-    default: 'invalid'
+    default: []
     selector:
       device:
         multiple: true
@@ -261,7 +261,7 @@ fields:
       a comma separated list of Inovelli devices.  Mix and match types as you like.
     #required: false
     example: light.office, fan.guest_room
-    default: 'invalid'
+    default: []
     selector:
       entity:
         multiple: true
