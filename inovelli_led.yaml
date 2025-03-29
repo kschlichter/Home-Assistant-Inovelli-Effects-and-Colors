@@ -30,9 +30,8 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 67,495s
+#   Add two spaces to lines between label: and variables: 68,521s
 #   Comment out example:
-#   Uncomment default:
 #   Switch input_* and script variables in all three locations
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
@@ -66,6 +65,32 @@ description: >-
     and can be called by floor, area, group, device, and entity.
 fields:
 
+  selector_mode:
+    name: Selector Mode
+    description: Select devices that meet ANY requirements (logical OR)  or ALL requirements (logical AND).
+    #required: false
+    example: 'any'
+    default: 'any'
+    selector:
+      select:
+        multiple: false
+        options:
+          - "any"
+          - "all"
+
+  domain:
+    name: Domain
+    description: Include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.
+    #required: false
+    example: 'light, fan'
+    default: ['invalid']
+    selector:
+      select:
+        multiple: true
+        options:
+          - "fan"
+          - "light"
+          - "switch"
 
   label:
     name: Label
@@ -497,22 +522,24 @@ fields:
 
 
 variables:
-  #input_label: !input label
-  #input_floor: !input floor
-  #input_area: !input area
-  #input_group: !input group
+  #input_selector_mode: !input selector_mode
+  #input_domain: !input domain
+  #input_label:  !input label
+  #input_floor:  !input floor
+  #input_area:   !input area
+  #input_group:  !input group
   #input_device: !input device
   #input_entity: !input entity
 
-  #input_LEDnumber: !input LEDnumber
-  #input_LEDcolor: !input LEDcolor
-  #input_LEDcolor_off: !input LEDcolor_off
-  #input_LEDbrightness: !input LEDbrightness
+  #input_LEDnumber:         !input LEDnumber
+  #input_LEDcolor:          !input LEDcolor
+  #input_LEDcolor_off:      !input LEDcolor_off
+  #input_LEDbrightness:     !input LEDbrightness
   #input_LEDbrightness_off: !input LEDbrightness_off
-  #input_duration: !input duration
-  #input_effect: !input effect
-  #input_brightness: !input brightness
-  #input_color: !input color
+  #input_duration:          !input duration
+  #input_effect:            !input effect
+  #input_brightness:        !input brightness
+  #input_color:             !input color
 
 
   ##################
@@ -925,14 +952,6 @@ variables:
     - VZM35-SN # Blue Series fan
 
   ##################
-  # Allowed domains to limit which types of entities are processed
-  ##################
-  allowed_domains:
-    - fan
-    - light
-    - switch
-
-  ##################
   # There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
   ##################
   parameters:
@@ -1040,19 +1059,58 @@ variables:
   ##################
   # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
-  label: "{{ label|default(\"invalid\")|lower }}"
-  floor: "{{ floor|default(\"invalid\")|lower }}"
-  area: "{{ area|default(\"invalid\")|lower }}"
-  group: "{{ group|default(\"invalid\")|lower }}"
-  device: "{{ device|default(\"invalid\")|lower }}"
-  entity: "{{ entity|default(\"invalid\")|lower }}"
+  selector_mode: "{{ selector_mode | default(\"any\") | lower }}"
+  domain: "{{ domain | default(\"invalid\") | lower }}"
+  label:  "{{ label  | default(\"invalid\") | lower }}"
+  floor:  "{{ floor  | default(\"invalid\") | lower }}"
+  area:   "{{ area   | default(\"invalid\") | lower }}"
+  group:  "{{ group  | default(\"invalid\") | lower }}"
+  device: "{{ device | default(\"invalid\") | lower }}"
+  entity: "{{ entity | default(\"invalid\") | lower }}"
 
-  #label: "{{ input_label|default(\"invalid\")|lower }}"
-  #floor: "{{ input_floor|default(\"invalid\")|lower }}"
-  #area: "{{ input_area|default(\"invalid\")|lower }}"
-  #group: "{{ input_group|default(\"invalid\")|lower }}"
-  #device: "{{ input_device|default(\"invalid\")|lower }}"
-  #entity: "{{ input_entity|default(\"invalid\")|lower }}"
+  #selector_mode: "{{ iif(input_selector_mode, input_selector_mode | lower, 'any') }}"
+  #domain:        "{{ iif(input_domain,        input_domain        |lower,  'invalid') }}"
+  #label:         "{{ iif(input_label,         input_label         |lower,  'invalid') }}"
+  #floor:         "{{ iif(input_floor,         input_floor         |lower,  'invalid') }}"
+  #area:          "{{ iif(input_area,          input_area          |lower,  'invalid') }}"
+  #group:         "{{ iif(input_group,         input_group         |lower,  'invalid') }}"
+  #device:        "{{ iif(input_device,        input_device        |lower,  'invalid') }}"
+  #entity:        "{{ iif(input_entity,        input_entity        |lower,  'invalid') }}"
+
+  allowed_domains: >-
+    {% set domain_array = namespace(domain_list=[]) %}
+    {% if domain == 'invalid' or 'invalid' in domain and domain|count == 1 %}
+      {% set domain_array.domain_list = ['fan', 'light', 'switch'] %}
+    {% elif domain is iterable and not domain is string %}
+      {% set domainnum = domain | count %}
+      {% for i in range(0,domainnum) %}
+        {% set domain_array.domain_list = domain_array.domain_list + [domain[i]] %}
+      {% endfor %}
+    {% elif ',' in domain %}
+      {% set domainnum = domain.split( ',' ) | count %}
+      {% for i in range(0,domainnum) %}
+        {% set domain_array.domain_list = domain_array.domain_list + [domain.split( ',' )[i]|string|trim ] %}
+      {% endfor %}
+    {% elif ',' not in domain and domain is string and domain != 'default' %}
+      {% set domain_array.domain_list = domain_array.domain_list + [domain|string|trim] %}
+    {% endif %}
+    {{ domain_array.domain_list | reject('equalto', 'invalid') | list }} 
+
+  entities_from_domain: >-
+    {% set entities = namespace(entities=[]) %}
+    {% if domain != 'invalid' and domain != ['invalid'] %}
+      {% set area_list = areas() %}
+      {% for area in area_list %}
+        {% for ent in area_entities(area) %}
+          {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
+            {% set entities.entities = entities.entities + [ent|string|trim] %}
+          {% endif %}
+        {% endfor %} 
+      {% endfor %}  
+    {% else %}
+      {% set entities.entities = ['invalid'] %}
+    {% endif %}
+    {{ entities.entities }}
 
   label_list: >-
     {% set label_array = namespace(label_list=[]) %}
@@ -1079,7 +1137,7 @@ variables:
         {% set label_area_array.label_area_list = label_area_array.label_area_list + label_areas(each_label) %}
       {% endfor %}    
     {% endif %}
-    {{ label_area_array.label_area_list }}
+    {{ iif(label == 'invalid','invalid',label_area_array.label_area_list) }}
 
   devices_from_label: >-
     {% set label_device_array = namespace(label_device_list=[]) %}
@@ -1088,7 +1146,7 @@ variables:
         {% set label_device_array.label_device_list = label_device_array.label_device_list + label_devices(each_label) %}
       {% endfor %}
     {% endif %}
-    {{ label_device_array.label_device_list }}
+    {{ iif(label == 'invalid','invalid',label_device_array.label_device_list) }}
 
   entities_from_label: >-
     {% set label_entity_array = namespace(label_entity_list=[]) %}
@@ -1097,7 +1155,7 @@ variables:
         {% set label_entity_array.label_entity_list = label_entity_array.label_entity_list + label_entities(each_label) %}
       {% endfor %}
     {% endif %}
-    {{ label_entity_array.label_entity_list  }}
+    {{ iif(label == 'invalid','invalid',label_entity_array.label_entity_list|lower)  }}
 
   entities_from_floor: >-
     {% set floor_array = namespace(floor_list=[]) %}
@@ -1130,7 +1188,7 @@ variables:
         {% endfor %}
       {% endfor %}
     {% endif %}
-    {{ entities.entities|lower }}
+    {{ iif(floor == 'invalid',['invalid'],entities.entities|lower) }}
 
   entities_from_area: >-
     {% set area_array = namespace(area_list=[]) %}
@@ -1171,7 +1229,7 @@ variables:
         {% endfor %}
       {% endfor %}
     {% endif %}
-    {{ entities.entities|lower }}
+    {{ iif(area == 'invalid',['invalid'],entities.entities|lower) }}
 
   entities_from_group: >-
     {% set group_array = namespace(group_list=[]) %}
@@ -1200,7 +1258,7 @@ variables:
         {% endfor %}
       {% endfor %}
     {% endif %}
-    {{ entities.entities|lower }}
+    {{ iif(group == 'invalid',['invalid'],entities.entities|lower) }}
 
   entities_from_device: >-
     {% set devices = namespace(devices=[]) %}
@@ -1237,7 +1295,7 @@ variables:
         {% endfor %}
       {% endfor %}
     {% endif %}
-    {{ entities.entities|lower }}
+    {{ iif(device == 'invalid',['invalid'],entities.entities|lower) }}
 
   entities_from_entity: >-
     {% set entities_array = namespace(entities=[]) %}
@@ -1271,10 +1329,28 @@ variables:
         {% endif %}
       {% endfor %}
     {% endif %}
-    {{ entities.entities|lower }}
+    {{ iif(entity == 'invalid',['invalid'],entities.entities|lower) }}
 
   all_selected_entities: >-
-    {{ entities_from_floor + entities_from_area + entities_from_group + entities_from_device + entities_from_entity }}
+    {% set selectors = [entities_from_domain, entities_from_floor, entities_from_area, entities_from_group, entities_from_device, entities_from_entity] %}
+    {% set entities_array = namespace(entities_list=[]) %}
+    {% set selectorsnum = selectors | count %}
+
+    {% if selector_mode == 'all' %}
+      {% for i in range(0,selectorsnum) %}
+        {% if selectors[i] != ['invalid'] %}
+          {% if i == 0 %}
+            {% set entities_array.entities_list = selectors[i] %}
+          {% else %}
+            {% set entities_array.entities_list = entities_array.entities_list | select('in', selectors[i]) | list %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% set entities_array.entities_list = entities_from_domain + entities_from_floor + entities_from_area + entities_from_group + entities_from_domain + entities_from_device + entities_from_entity %}
+    {% endif %}
+    {{ entities_array.entities_list | reject('equalto', 'invalid') | list }}
+
 
 sequence:
 
@@ -1283,25 +1359,25 @@ sequence:
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
-      LEDnumber: "{{ LEDnumber|default(\"all\")|lower }}"
-      LEDcolor: "{{ LEDcolor|default(\"no change\")|lower }}"
-      LEDcolor_off: "{{ LEDcolor_off|default(\"no change\")|lower }}"
-      LEDbrightness: "{{ LEDbrightness|default(\"11\")|float }}"
-      LEDbrightness_off: "{{ LEDbrightness_off|default(\"11\")|float }}"
-      duration: "{{ duration|default(\"0\")|lower }}"
-      effect: "{{ effect|default(\"clear effect\")|lower }}"
-      brightness: "{{ brightness|default(\"11\")|float }}"
-      color: "{{ color|default(\"no change\")|lower }}"
+      LEDnumber:         "{{ LEDnumber         | default(\"all\")          | lower }}"
+      LEDcolor:          "{{ LEDcolor          | default(\"no change\")    | lower }}"
+      LEDcolor_off:      "{{ LEDcolor_off      | default(\"no change\")    | lower }}"
+      LEDbrightness:     "{{ LEDbrightness     | default(\"11\")           | float }}"
+      LEDbrightness_off: "{{ LEDbrightness_off | default(\"11\")           | float }}"
+      duration:          "{{ duration          | default(\"0\")            | lower }}"
+      effect:            "{{ effect            | default(\"clear effect\") | lower }}"
+      brightness:        "{{ brightness        | default(\"11\")           | float }}"
+      color:             "{{ color             | default(\"no change\")    | lower }}"
 
-      #LEDnumber: "{{ input_LEDnumber|default(\"all\")|lower }}"
-      #LEDcolor: "{{ input_LEDcolor|default(\"no change\")|lower }}"
-      #LEDcolor_off: "{{ input_LEDcolor_off|default(\"no change\")|lower }}"
-      #LEDbrightness: "{{ input_LEDbrightness|default(\"11\")|float }}"
-      #LEDbrightness_off: "{{ input_LEDbrightness_off|default(\"11\")|float }}"
-      #duration: "{{ input_duration|default(\"0\")|lower }}"
-      #effect: "{{ input_effect|default(\"clear effect\")|lower }}"
-      #brightness: "{{ input_brightness|default(\"11\")|float }}"
-      #color: "{{ input_color|default(\"no change\")|lower }}"
+      #LEDnumber:         "{{ input_LEDnumber         | default(\"all\")          | lower }}"
+      #LEDcolor:          "{{ input_LEDcolor          | default(\"no change\")    | lower }}"
+      #LEDcolor_off:      "{{ input_LEDcolor_off      | default(\"no change\")    | lower }}"
+      #LEDbrightness:     "{{ input_LEDbrightness     | default(\"11\")           | float }}"
+      #LEDbrightness_off: "{{ input_LEDbrightness_off | default(\"11\")           | float }}"
+      #duration:          "{{ input_duration          | default(\"0\")            | lower }}"
+      #effect:            "{{ input_effect            | default(\"clear effect\") | lower }}"
+      #brightness:        "{{ input_brightness        | default(\"11\")           | float }}"
+      #color:             "{{ input_color             | default(\"no change\")    | lower }}"
 
 
   ##################
