@@ -104,7 +104,7 @@ blueprint:
   
     floor:
       name: Floor
-      description: Floor IDs containing areas with Inovelli devices.  
+      description: Floor names or IDs containing areas with Inovelli devices.  
       #required: false
       #example: 'downstairs,upstairs, outside'
       default: []
