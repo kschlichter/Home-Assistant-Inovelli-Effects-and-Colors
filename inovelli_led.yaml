@@ -80,7 +80,7 @@ fields:
 
   domain:
     name: Domain
-    description: Include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.
+    description: Include all entities with only domain(s) light.*, fan.*, or switch.*.
     #required: false
     example: 'light, fan'
     default: ['invalid']
