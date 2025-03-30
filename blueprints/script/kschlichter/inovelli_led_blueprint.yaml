@@ -449,7 +449,7 @@ blueprint:
   
     effect:
       name: Effect
-      description: Type of effect
+      description: Type of effect. (Red and Blue Series only.  Black Series devices do not support effects)
       #required: false
       #example: Pulse
       default: 'Clear Effect'
