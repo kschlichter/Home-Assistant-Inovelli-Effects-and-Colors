@@ -169,6 +169,7 @@ As a quick start you can follow these steps:
 
 ## Floor:
   Floor names or IDs containing areas with Inovelli devices.
+  
   **Setting an an effect on all devices upstairs:**
   
 ```
@@ -184,6 +185,7 @@ As a quick start you can follow these steps:
 
 ## Area:
   Area names or IDs containing Inovelli devices.
+  
   **'area: all' will find any compatible Inovelli devices in Home Assistant 2023.04 or newer.**
   **Setting an effect on every Inovelli device in the house**
 ```
@@ -211,6 +213,7 @@ As a quick start you can follow these steps:
 
 ## Group:
   Group names or IDs for groups containing Inovelli devices. Mix and match types as you like.
+  
   **Proper list format**
   **Setting a 2min effect on all devices in two groups:**
 ```
@@ -260,6 +263,7 @@ data:
 
 ## Entity:
   The light.*, switch.*, or fan.* entity for the LED we're setting. 
+  
   **A 30 sec effect to signal an event, followed by LED 7 (at the top) turning green as an on-going notification:**
   
 ```
@@ -279,6 +283,7 @@ data:
 
 ## LEDnumber:
   Sets the full LED bar by default or `'all'`, or specific LEDs (1 – 7) starting at the bottom.
+  
   **Configuring an LED color set (color sets start with 'all' and must be set with all LEDs)**
   Once an invidivual LED or an LED color set has been configured, it must be cleared.  The full LED bar settings will be overridden by the individual LED settings.
 ```
