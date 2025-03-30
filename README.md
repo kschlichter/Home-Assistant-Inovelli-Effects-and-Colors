@@ -23,7 +23,7 @@
 
 ## Features
   
-  This blueprint and script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series. Devices of different types can be called simultaneously. **It will accept entities, the device ID, groups, labels, floors,** `floor: 'all'`, **areas, or** `area: 'all'` **and find all Inovelli devices in the house.** This blueprint and script can set everything at once—even if the devices are different series, different sources (e.g. 2 areas, and 3 entities), and different integrations (Z-Wave JS and Zigbee2MQTT, or ZWave JS and ZHA) all at once.
+  This blueprint and script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series. Devices of different types can be called simultaneously. **It will accept entities, the device ID, groups, labels, , device type (e.g.** `fan` **), floors,** `floor: 'all'`, **areas, or** `area: 'all'` **and find all Inovelli devices in the house.** This blueprint and script can set everything at once—even if the devices are different series, different sources (e.g. 2 areas, and 3 entities), and different integrations (Z-Wave JS and Zigbee2MQTT, or ZWave JS and ZHA) all at once.
 
   The  LED indicator can be set alongside an effect in a single call so that an indicator color change doesn't clear the effect (this does restart the duration timer in some versions of Inovelli's firmware, however). For example, setting "chase" for 1 second with a red indicator LED is a nice notification that something changed without being overly obnoxious and distracting (like setting "fast blink" with an infinite duration).  The effect wears off after one second, but the indicator stays red afterwards.
   
@@ -100,11 +100,93 @@ As a quick start you can follow these steps:
         Color sets like "all usa" cannot be used with effects.  I can't think of a way to get all 7 LEDs synchronized for effects like "pulse" or "chase".
 
 
-## Notification effect examples:
-  Area and group values can be IDs or names, mixed as a proper list or a string of comma-separated values.  Entities must use the entity name, and devices must use the device ID.
+## Selector Mode:
+  Select devices that meet ANY requirements (logical OR) or ALL requirements (logical AND).   Since the default for `selector_mode:` is `any`, you can leave this field out / unselected and get the same result.  Blueprints and script calls written before this feature was added do not need to be updated, and will have the same behavior as before.  
+  **Turning off the LED bar for everything that's upstairs, OR ANY fans:**
+  This service call will turn off the LED bar for all Inovelli devices that are upstairs, and also all fans in the house (e.g. upstairs, downstairs, in the garage, or outside).
 
-  **'area: all' will find any compatible Inovelli devices in Home Assistant 2023.04 or newer.**
+```
+  service: script.inovelli_led
+  data:
+    selector_mode: any
+    domain: 'fan'
+    floor: 'upstairs'
+    LEDcolor: 'Off'
+    LEDcolor_off: 'Off'
+``` 
+
+  **Turning off the LED bar only for fans that are upstairs:**
+  By using `selector_mode: 'all'`, we can now limit the entities to upstairs fans.  Fans that are downstairs, or lights that are upstairs will not be changed by this call.
+
+```
+  service: script.inovelli_led
+  data:
+    selector_mode: all
+    domain: 'fan'
+    floor: 'upstairs'
+    LEDcolor: "Off"
+    LEDcolor_off: "Off"
+```
+
+
+## Domain:
+  Include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.  In the background, it uses `areas()` and selecting all three domains makes it functionally equivalent to calling `area: 'all''`.  
+  **Set the LED bar on all fans in the house to purple:**
+```
+  service: script.inovelli_led
+  data:
+    domain: 'fan'
+    LEDcolor: 'purple'
+    LEDcolor_off: 'purple'
+```
+
+**Set the LED bar on all lights and switches in the house to blue:**
+```
+  service: script.inovelli_led
+  data:
+    domain: 
+      - light
+      - switch
+    LEDcolor: 'blue'
+    LEDcolor_off: 'blue'
+```
+
+
+## Label:
+  Labels on Inovelli devices and entities, or areas containing Inovelli devices.  Labels can be on the entity, device, or area.
+
+  **Set all bedroom LEDs to a dim red in the evening:**
+```  
+  action: script.inovelli_led
+  data:
+    LEDcolor: 'RED'
+    LEDcolor_off: 'Red'
+    LEDbrightness: 2
+    LEDbrightness_off: 0.1
+    label: `bedroom`
+```
+
+
+## Floor:
+  Floor names or IDs containing areas with Inovelli devices.
+  **Setting an an effect on all devices upstairs:**
   
+```
+    service: script.inovelli_led
+    data:
+      floor: 'upstairs'
+      duration: 'Forever'
+      effect: 'CHASE'
+      brightness: 8
+      color: 'Teal'
+```
+
+
+## Area:
+  Area names or IDs containing Inovelli devices.
+  **'area: all' will find any compatible Inovelli devices in Home Assistant 2023.04 or newer.**
+  **Setting an effect on every Inovelli device in the house**
+```
     service: script.inovelli_led
     data:
       area: 'all'
@@ -112,9 +194,11 @@ As a quick start you can follow these steps:
       effect: 'Fast Blink'
       brightness: 8.7
       color: 'light pink'
+```
 
    **String of comma-separated values (improper list format still works)**
-   
+   **Setting an effect on all devices in two areas:**
+```
     service: script.inovelli_led
     data:
       area: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c' 
@@ -122,9 +206,14 @@ As a quick start you can follow these steps:
       effect: 'CHASE'
       brightness: 8
       color: 'Teal'
+```
 
+
+## Group:
+  Group names or IDs for groups containing Inovelli devices. Mix and match types as you like.
   **Proper list format**
-  
+  **Setting a 2min effect on all devices in two groups:**
+```
     service: script.inovelli_led
     data:
       group:
@@ -134,34 +223,28 @@ As a quick start you can follow these steps:
       effect: 'pulse'
       brightness: 8
       color: 'red'
-            
-  **Single LED (7, at the top) effect to signal LED transition to new color**
-  
-    service: script.inovelli_led
-    data:
-      entity: 'light.office'
-      LEDcolor: 'green'
-      LEDnumber: 'led 7'
-      LEDbrightness: 7.5
-      LEDbrightness_off: 2.3
-      duration: '1 second'
-      effect: 'Solid'
-      color: 'green'
-      brightness: 7
-      
-  **Clearing an effect**
+```
 
-  Mix and match areas, groups, devices, and entities
+
+## Device: 
+  Device IDs of Inovelli devices. Mix and match types as you like.  Devices will only accept the device ID, making them harder to use unless it's a templated device, like 
+
+  **Mix and match fields:**
+  **Clearing an effect on all devices upstairs, in the office, the device that triggered the event, and the front porch:**
+  Since the default behavior for the script is to clear any effects, there's no need to call `effect: 'Clear Effect'`.  
   
-    service: script.inovelli_led
-    data:
-      floor: 'upstairs'
-      entity: 'fan.front_porch'
-  
-## LED color examples:
+```
+service: script.inovelli_led
+data:
+  floor: 'upstairs'
+  area: 'office'
+  device: '{{ trigger.event.data.device_id }}'
+  entity: 'fan.front_porch'
+```
 
   **Full LED configuration, using device ID**
 
+```
     service: script.inovelli_led
     data:
       device:
@@ -172,24 +255,33 @@ As a quick start you can follow these steps:
       LEDbrightness: 7
       LEDbrightness_off: 2.5
       LEDnumber: 'all'
+```
 
-  **Set by group domain**
 
-    service: script.inovelli_led
-    data:
-      group: 'group.outside_front_lights'
-      LEDcolor: 'Green'
-      
- **LEDcolor_off and LEDbrightness_off example: (maybe part of a nighttime routine?)**
-
+## Entity:
+  The light.*, switch.*, or fan.* entity for the LED we're setting. 
+  **A 30 sec effect to signal an event, followed by LED 7 (at the top) turning green as an on-going notification:**
+  
+```
     service: script.inovelli_led
     data:
       entity: 'light.office'
-      LEDcolor_off: 'RED'
-      LEDbrightness_off: 2
+      LEDcolor: 'green'
+      LEDnumber: 'led 7'
+      LEDbrightness: 7.5
+      LEDbrightness_off: 2.3
+      duration: '30 second'
+      effect: 'fast blink'
+      color: 'green'
+      brightness: 7
+```
+ 
 
- **Configuring an LED color set (color sets start with 'all' and must be set with all LEDs)**
-
+## LEDnumber:
+  Sets the full LED bar by default or `'all'`, or specific LEDs (1 – 7) starting at the bottom.
+  **Configuring an LED color set (color sets start with 'all' and must be set with all LEDs)**
+  Once an invidivual LED or an LED color set has been configured, it must be cleared.  The full LED bar settings will be overridden by the individual LED settings.
+```
     service: script.inovelli_led
     data:
       device:
@@ -199,73 +291,26 @@ As a quick start you can follow these steps:
       LEDcolor_off: 'All USA'
       LEDbrightness: 8.6
       LEDbrightness_off: 0.4
+```
       
  **Configuring an LED color for one LED**
 
+```
     service: script.inovelli_led
     data:
       entity: 'light.office'
       LEDnumber: 'led 4'
       LEDcolor: 'red'
+```
 
-**Clearing all individual LED color settings in the house**
+  **Clearing all individual LED color settings in the house**
+  This will reset the LED bars to red.  
 
+```
     service: script.inovelli_led
     data:
       area: 'all'
       LEDnumber: 'all'
       LEDcolor: 'all clear'
       LEDcolor_off: 'all clear'
-
-
-
-## Automation to listen for a config button press and set everything in the area to "pulse"
-  
-  This automation listens for a config / 3rd button press, checks in the condition stage that it's an Inovelli device, toggles an input_boolean for the area of the device (set this up separately), then sets or clears an effect on every Inovelli device in the area depending on the new state of the boolean.  I use that boolean in other automations to disable lighting controls (like motion timeouts).  
-      
-    alias: Light Locks
-    description: ''
-    trigger:
-      - platform: event
-        event_type: zwave_js_value_notification
-        event_data:
-          value: KeyPressed
-          label: Scene 003
-    condition:
-      - condition: template
-        value_template: >-
-          {{ device_attr(trigger.event.data.device_id,'manufacturer') == 'Inovelli' }}
-    action:
-      - service: input_boolean.toggle
-        data: {}
-        target:
-          entity_id: >-
-            {{ 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' }}
-      - choose:
-          - conditions:
-              - condition: template
-                value_template: >-
-                  {% set use_boolean = 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' %}
-                  {{ is_state(use_boolean,'on') }}
-            sequence:
-             - service: script.inovelli_led
-                data:
-                  area: >
-                    {% set area = namespace(id=[]) %} 
-		    {% set area.id = area.id + [area_id(trigger.event.data.device_id) | string] %} 
-		    {{ area.id|lower }}
-                  duration: Forever
-                  effect: Pulse
-                  brightness: 4
-                  color: Orange
-          - conditions:
-              - condition: template
-                value_template: >-
-                  {% set use_boolean = 'input_boolean.' + area_name(trigger.event.data.device_id)|replace( ' ' , '_' )|string|lower + '_in_use' %}
-                  {{ is_state(use_boolean,'off') }}
-            sequence:
-                - service: script.inovelli_led
-                data:
-                  area: '{{ area_id(trigger.event.data.device_id) | string }}'
-        default: []
-    mode: single
+```
