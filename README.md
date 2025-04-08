@@ -319,3 +319,43 @@ data:
       LEDcolor: 'all clear'
       LEDcolor_off: 'all clear'
 ```
+
+
+## LEDcolor:
+  Sets the color of the LED status bar, which indicates brightness levels of the light.
+  * This is not for effects.
+
+
+## LEDcolor_off:
+  Sets the color of the LED status bar, which indicates brightness levels of the light.
+  * Red 800 and Blue Series only.  No support on Black, or Red 500 devices.
+  * This is not for effects.
+
+
+## LEDbrightness:
+  Sets the brightness of the LED status when on. 0 means off.
+  * This is not for effects.
+
+
+## LEDbrightness_off:
+  Sets the brightness of the LED status when off. 0 means off.
+  * This is not for effects.
+
+
+## LEDnumber_effect:
+  Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
+  ** Blue Series only.  No support on Black or Red series devices.
+
+
+## effect:
+  Type of effect. (Red and Blue Series only.  Black Series devices do not support effects)
+
+
+## brightness:
+  Sets the brightness of the LED's effect.  0 means off.
+
+## color:
+  Color of LED for the effect
+
+## duration:
+  How long the effect will last.
