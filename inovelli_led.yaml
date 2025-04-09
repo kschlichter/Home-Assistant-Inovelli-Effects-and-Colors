@@ -16,12 +16,38 @@
 #   - LEDbrightness_off: (float 0.0 – 10.0) (see note above) Sets the brightness of the status LED when off.
 #
 # Setting LED effects
-#   duration: (required; string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
+#   LEDnumber_effect: (optional; LED 1 .. LED 7 or All)Set to `all` to configure the whole LED bar (default if the parameter is left out) or configure a single LED.
+
+
+### Red 800 ###
+#0	Off
+#1	Solid
+#2	Fast blink
+#3	Slow blink
+#4	Pulse
+#5	Chase
+#6	Falling
+#7	Rising
+#8	Aurora
+#255	Clear
+
+### Blue 800 ###
+# off, solid, fast_blink, slow_blink, pulse, chase, falling, rising, aurora, clear_effect
+
+### TRUE??? ###
+#     If specific LEDs have been set, they'll need to be unset before the LED bar will show anything.  The easiest way is to call LEDnumber 'all' with LEDcolor 'all clear'.
+
+
+
+### Change the effect LEDnumber == 'all' checks to number_effect
+
+
+
+
 #   effect: (required; string) Where older devices don't support a new effect, that effect has been mapped to something that is supported.
 #   brightness: (required; float 1 – 10) Sets the brightness of the LED's effect
 #   color: (required; string) Sets color of LED effect.
-#   LEDnumber: (optional; LED 1 .. LED 7 or All)Set to `all` to configure the whole LED bar (default if the parameter is left out) or configure a single LED.
-#     If specific LEDs have been set, they'll need to be unset before the LED bar will show anything.  The easiest way is to call LEDnumber 'all' with LEDcolor 'all clear'.
+#   duration: (required; string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
 
 #
 # Effects not working?
@@ -80,7 +106,7 @@ fields:
 
   domain:
     name: Domain
-    description: Include all entities with only domain(s) light.*, fan.*, or switch.*.
+    description: Include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.
     #required: false
     example: 'light, fan'
     default: ['invalid']
@@ -104,7 +130,7 @@ fields:
 
   floor:
     name: Floor
-    description: Floor names or IDs containing areas with Inovelli devices.  
+    description: Floor IDs containing areas with Inovelli devices.  
     #required: false
     example: 'downstairs,upstairs, outside'
     default: []
@@ -208,7 +234,6 @@ fields:
             manufacturer: Inovelli
             model: Fan controller
 
-
   group:
     name: Group
     description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
@@ -278,7 +303,6 @@ fields:
             manufacturer: Inovelli
             model: Fan controller
 
-
   entity:
     name: Entity
     description: >-
@@ -318,7 +342,7 @@ fields:
 
   LEDcolor:
     name: LED Color When On (non-effect)
-    description: Sets the color of the LED status, which indicates brightness levels.
+    description: Sets the color of the LED status bar, which indicates brightness levels of the light.
     #required: false
     example: Blue
     default: 'no change'
@@ -347,7 +371,7 @@ fields:
 
   LEDcolor_off:
     name: LED Color When Off (non-effect). Red 800 and Blue Series only.
-    description: Sets the color of the LED status, which indicates brightness levels.
+    description: Sets the color of the LED status bar, which indicates brightness levels of the light.
     #required: false
     example: Blue
     default: 'no change'
@@ -400,6 +424,98 @@ fields:
         step: 0.1
         mode: slider
 
+  LEDnumber_effect:
+    name: LED Number for Effects
+    description: >-
+      Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom. (Red 800, and Blue Series only.  Black and Red 500 Series devices do not support effects on individual LEDs)
+    #required: false
+    example: All
+    default: 'all'
+    selector:
+      select:
+        options:
+          - All
+          - LED 1
+          - LED 2
+          - LED 3
+          - LED 4
+          - LED 5
+          - LED 6
+          - LED 7
+
+  effect:
+    name: Effect
+    description: Type of effect. (Red and Blue Series only.  Black Series devices do not support effects) 
+    #required: false
+    example: Pulse
+    default: 'Clear Effect'
+    selector:
+      select:
+        options:
+          - "Off"
+          - Clear Effect
+          - Aurora
+          - Blink Fast
+          - Blink Medium
+          - Blink Slow
+          - Chase Fast
+          - Chase Medium
+          - Chase Slow
+          - Fall Fast
+          - Fall Medium
+          - Fall Slow
+          - Open Close
+          - Pulse
+          - Rise Fast
+          - Rise Medium
+          - Rise Slow
+          - Siren Fast
+          - Siren Slow
+          - Small to Big
+          - Solid
+
+  brightness:
+    name: Effect Brightness
+    description: Sets the brightness of the LED's effect.  0 means off.
+    #required: false
+    example: "8"
+    default: '11'
+    selector:
+      number:
+        min: 0
+        max: 10
+        step: 0.1
+        mode: slider
+
+  color:
+    name: Effect Color
+    description: Color of LED for the effect
+    #required: false
+    example: Red
+    default: 'no change'
+    selector:
+      select:
+        options:
+          - "Off"
+          - Red
+          - Orange
+          - Lemon
+          - Yellow
+          - Lime
+          - Green
+          - Cyan
+          - Teal
+          - Blue
+          - Purple
+          - Magenta
+          - Light Pink
+          - Pink
+          - Hot Pink
+          - White
+          - All Clear
+          - All Unicorn
+          - All USA
+
   duration:
     name: Duration of Effect
     description: How long the effect will last.
@@ -447,79 +563,6 @@ fields:
           - 2 Hours
           - Indefinitely
 
-  effect:
-    name: Effect
-    description: Type of effect. (Red and Blue Series only.  Black Series devices do not support effects)
-    #required: false
-    example: Pulse
-    default: 'Clear Effect'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Clear Effect
-          - Aurora
-          - Blink Fast
-          - Blink Medium
-          - Blink Slow
-          - Chase Fast
-          - Chase Medium
-          - Chase Slow
-          - Fall Fast
-          - Fall Medium
-          - Fall Slow
-          - Open Close
-          - Pulse
-          - Rise Fast
-          - Rise Medium
-          - Rise Slow
-          - Siren Fast
-          - Siren Slow
-          - Small to Big
-          - Solid
-
-  brightness:
-    name: Effect Brightness
-    description: Sets the brightness of the LED's effect.  0 means off.
-    #required: false
-    example: "8"
-    default: '11'
-    selector:
-      number:
-        min: 0
-        max: 10
-        step: 0.1
-        mode: slider
-
-  color:
-    name: Effect Color
-    description: Color of LED effect
-    #required: false
-    example: Red
-    default: 'no change'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Red
-          - Orange
-          - Lemon
-          - Yellow
-          - Lime
-          - Green
-          - Cyan
-          - Teal
-          - Blue
-          - Purple
-          - Magenta
-          - Light Pink
-          - Pink
-          - Hot Pink
-          - White
-          - All Clear
-          - All Unicorn
-          - All USA
-
 
 variables:
   #input_selector_mode: !input selector_mode
@@ -536,10 +579,11 @@ variables:
   #input_LEDcolor_off:      !input LEDcolor_off
   #input_LEDbrightness:     !input LEDbrightness
   #input_LEDbrightness_off: !input LEDbrightness_off
-  #input_duration:          !input duration
+  #input_LEDnumber_effect:  !input LEDnumber_effect
   #input_effect:            !input effect
   #input_brightness:        !input brightness
   #input_color:             !input color
+  #input_duration:          !input duration
 
 
   ##################
@@ -1177,6 +1221,7 @@ variables:
         {% set floor_array.floor_list = floor %}
       {% endif %}
 
+      {# ### This should change to floor_entities but the minimum version needs to change to 25.04 so we'll give it time before we do that. ### #}
       {# Detecting entities #}
       {% for floor in floor_array.floor_list %}
         {% for area in floor_areas(floor) %}
@@ -1364,20 +1409,22 @@ sequence:
       LEDcolor_off:      "{{ LEDcolor_off      | default(\"no change\")    | lower }}"
       LEDbrightness:     "{{ LEDbrightness     | default(\"11\")           | float }}"
       LEDbrightness_off: "{{ LEDbrightness_off | default(\"11\")           | float }}"
-      duration:          "{{ duration          | default(\"0\")            | lower }}"
+      LEDnumber_effect:  "{{ LEDnumber_effect  | default(\"all\")          | lower }}"
       effect:            "{{ effect            | default(\"clear effect\") | lower }}"
       brightness:        "{{ brightness        | default(\"11\")           | float }}"
       color:             "{{ color             | default(\"no change\")    | lower }}"
+      duration:          "{{ duration          | default(\"0\")            | lower }}"
 
       #LEDnumber:         "{{ input_LEDnumber         | default(\"all\")          | lower }}"
       #LEDcolor:          "{{ input_LEDcolor          | default(\"no change\")    | lower }}"
       #LEDcolor_off:      "{{ input_LEDcolor_off      | default(\"no change\")    | lower }}"
       #LEDbrightness:     "{{ input_LEDbrightness     | default(\"11\")           | float }}"
       #LEDbrightness_off: "{{ input_LEDbrightness_off | default(\"11\")           | float }}"
-      #duration:          "{{ input_duration          | default(\"0\")            | lower }}"
+      #LEDnumber_effect:  "{{ input_LEDnumber_effect  | default(\"all\")          | lower }}"
       #effect:            "{{ input_effect            | default(\"clear effect\") | lower }}"
       #brightness:        "{{ input_brightness        | default(\"11\")           | float }}"
       #color:             "{{ input_color             | default(\"no change\")    | lower }}"
+      #duration:          "{{ input_duration          | default(\"0\")            | lower }}"
 
 
   ##################
@@ -2259,13 +2306,13 @@ sequence:
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' not in repeat.item.device_type and 
                                       repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 
-                                      'all' in LEDnumber and 'all' not in LEDcolor }}"
+                                      'all' in LEDnumber_effect }}"
                       sequence:
                         - service: zwave_js.bulk_set_partial_config_parameters
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >-
-                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber + '_effect_bulk' %}
+                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_bulk' %}
                               {{ parameters[bulk_param] }}
                             value: >-
                               {% if repeat.item.device_type == "LZW30SN" %}
@@ -2280,19 +2327,19 @@ sequence:
 
                 ### Red 800 Series ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type and 'all' in LEDnumber and 'all' not in LEDcolor }}"
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type }}"
                       sequence:
                         - service: zwave_js.bulk_set_partial_config_parameters
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >-
-                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber + '_effect_bulk' %}
+                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[1] + '_effect_bulk' %}
                               {{ parameters[bulk_param] }}
                             value: "{{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}"
 
                 ### Zigbee2mqtt ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'z2m' and 'all' not in LEDcolor }}"
+                    - conditions: "{{ repeat.item.call_type == 'z2m' }}"
                       sequence:
                         - variables:
                             effects: "{{ repeat.item.effects }}"
@@ -2304,11 +2351,15 @@ sequence:
                                   topic: >-
                                     zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
-                                    {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 256 / 10) | int }}" }}
+                                    {% if LEDnumber_effect == 'all' %}
+                                      {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 256 / 10) | int }}" }}
+                                    {% else %}
+                                      {"individual_led_effect": {"led": "{{ led_map[LEDnumber_effect]|int }}", "effect": "{{ effects }}", "color": "{{ color_set[color] }}", "level": "{{ (brightness * 256 / 10) | int }}", "duration": "{{ duration_values[duration] }}"}}
+                                    {% endif %}
 
                 ### ZHA ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zha' and 'all' not in LEDcolor }}"
+                    - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
                         - variables:
                             effects: "{{ repeat.item.effects }}"
@@ -2321,9 +2372,9 @@ sequence:
                                   endpoint_id: 1
                                   cluster_id: 64561
                                   cluster_type: in
-                                  command: "{{ iif('all' in LEDnumber,1,3) }}"
+                                  command: "{{ iif('all' in LEDnumber_effect,1,3) }}"
                                   command_type: server
-                                  params: {"led_number":"{{ led_map[LEDnumber]|int }}","led_color":"{{ color_set[color] }}","led_duration":"{{ duration_values[duration] }}","led_effect":"{{ effects }}","led_level":"{{ (brightness * 10 | int) }}"}
+                                  params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":"{{ color_set[color] }}","led_level":"{{ (brightness * 10) | int }}","led_duration":"{{ duration_values[duration] }}"}
                                   manufacturer: 4655
 
           default:
