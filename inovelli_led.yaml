@@ -17,38 +17,10 @@
 #
 # Setting LED effects
 #   LEDnumber_effect: (optional; LED 1 .. LED 7 or All)Set to `all` to configure the whole LED bar (default if the parameter is left out) or configure a single LED.
-
-
-### Red 800 ###
-#0	Off
-#1	Solid
-#2	Fast blink
-#3	Slow blink
-#4	Pulse
-#5	Chase
-#6	Falling
-#7	Rising
-#8	Aurora
-#255	Clear
-
-### Blue 800 ###
-# off, solid, fast_blink, slow_blink, pulse, chase, falling, rising, aurora, clear_effect
-
-### TRUE??? ###
-#     If specific LEDs have been set, they'll need to be unset before the LED bar will show anything.  The easiest way is to call LEDnumber 'all' with LEDcolor 'all clear'.
-
-
-
-### Change the effect LEDnumber == 'all' checks to number_effect
-
-
-
-
 #   effect: (required; string) Where older devices don't support a new effect, that effect has been mapped to something that is supported.
 #   brightness: (required; float 1 – 10) Sets the brightness of the LED's effect
 #   color: (required; string) Sets color of LED effect.
 #   duration: (required; string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
-
 #
 # Effects not working?
 #   Black 500 Series devices do not support effects.
@@ -402,8 +374,8 @@ fields:
     name: LED Brightness When On (non-effect)
     description: Sets the brightness of the LED status when on. 0 means off.
     #required: false
-    example: "6"
-    default: '11'
+    example: 6
+    default: 11
     selector:
       number:
         min: 0
@@ -415,8 +387,8 @@ fields:
     name: LED Brightness When Off (non-effect).
     description: Sets the brightness of the LED status when off. 0 means off.
     #required: false
-    example: "2"
-    default: '11'
+    example: 2
+    default: 11
     selector:
       number:
         min: 0
@@ -833,7 +805,7 @@ variables:
     slow blink: 4
 
   ### Red 800 Series Dimmer ###
-  VZW31SN_effects:
+  VZW31SN_all_effects:
     "off": 0
     clear effect: 255
     aurora: 8
@@ -860,8 +832,36 @@ variables:
     fast blink: 2
     slow blink: 3
 
+  VZW31SN_led_effects:
+    "off": 0
+    clear effect: 255
+    aurora: 8
+    blink: 2
+    blink fast: 2
+    blink medium: 2
+    blink slow: 3
+    chase: 5
+    chase fast: 5
+    chase medium: 5
+    chase slow: 5
+    fall fast: 6
+    fall medium: 6
+    fall slow: 6
+    open close: 4
+    pulse: 4
+    rise fast: 7
+    rise medium: 7
+    rise slow: 7
+    siren fast: 2
+    siren slow: 3
+    small to big: 5
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+### Blue 800 ###
   ### Blue Series Dimmer ###
-  VZM31SN_ZHA_effects:
+  VZM31SN_ZHA_all_effects:
     "off": 0
     "clear effect": 255
     aurora: 8
@@ -888,7 +888,34 @@ variables:
     fast blink: 2
     slow blink: 3
 
-  VZM31SN_Z2M_effects:
+  VZM31SN_ZHA_led_effects:
+    "off": 0
+    clear effect: 255
+    aurora: 8
+    blink: 2
+    blink fast: 2
+    blink medium: 2
+    blink slow: 3
+    chase: 5
+    chase fast: 5
+    chase medium: 5
+    chase slow: 5
+    fall fast: 6
+    fall medium: 6
+    fall slow: 6
+    open close: 4
+    pulse: 4
+    rise fast: 7
+    rise medium: 7
+    rise slow: 7
+    siren fast: 2
+    siren slow: 3
+    small to big: 5
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+  VZM31SN_Z2M_all_effects:
     "off": "off"
     clear effect: clear_effect
     aurora: aurora
@@ -911,12 +938,39 @@ variables:
     siren fast: fast_siren
     siren slow: slow_siren
     small to big: small_to_big
+    solid: solid
+    fast blink: fast_blink
+    slow blink: slow_blink
+
+  VZM31SN_Z2M_led_effects:
+    "off": "off"
+    clear effect: clear_effect
+    aurora: aurora
+    blink: fast_blink
+    blink fast: fast_blink
+    blink medium: fast_blink
+    blink slow: slow_blink
+    chase: chase
+    chase fast: chase
+    chase medium: chase
+    chase slow: chase
+    fall fast: falling
+    fall medium: falling
+    fall slow: falling
+    open close: pulse
+    pulse: pulse
+    rise fast: rising
+    rise medium: rising
+    rise slow: rising
+    siren fast: fast_blink
+    siren slow: slow_blink
+    small to big: chase
     solid: solid
     fast blink: fast_blink
     slow blink: slow_blink
 
   ### Blue Series Fan ###
-  VZM35SN_ZHA_effects:
+  VZM35SN_ZHA_all_effects:
     "off": 0
     "clear effect": 255
     aurora: 8
@@ -943,7 +997,34 @@ variables:
     fast blink: 2
     slow blink: 3
 
-  VZM35SN_Z2M_effects:
+  VZM35SN_ZHA_led_effects:
+    "off": 0
+    clear effect: 255
+    aurora: 8
+    blink: 2
+    blink fast: 2
+    blink medium: 2
+    blink slow: 3
+    chase: 5
+    chase fast: 5
+    chase medium: 5
+    chase slow: 5
+    fall fast: 6
+    fall medium: 6
+    fall slow: 6
+    open close: 4
+    pulse: 4
+    rise fast: 7
+    rise medium: 7
+    rise slow: 7
+    siren fast: 2
+    siren slow: 3
+    small to big: 5
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+  VZM35SN_Z2M_all_effects:
     "off": "off"
     clear effect: clear_effect
     aurora: aurora
@@ -970,6 +1051,32 @@ variables:
     fast blink: fast_blink
     slow blink: slow_blink
 
+  VZM35SN_Z2M_led_effects:
+    "off": "off"
+    clear effect: clear_effect
+    aurora: aurora
+    blink: fast_blink
+    blink fast: fast_blink
+    blink medium: fast_blink
+    blink slow: slow_blink
+    chase: chase
+    chase fast: chase
+    chase medium: chase
+    chase slow: chase
+    fall fast: medium_falling
+    fall medium: medium_falling
+    fall slow: medium_falling
+    open close: pulse
+    pulse: pulse
+    rise fast: fast_rising
+    rise medium: fast_rising
+    rise slow: fast_rising
+    siren fast: fast_blink
+    siren slow: slow_blink
+    small to big: chase
+    solid: solid
+    fast blink: fast_blink
+    slow blink: slow_blink
 
 
   ##################
@@ -1407,24 +1514,24 @@ sequence:
       LEDnumber:         "{{ LEDnumber         | default(\"all\")          | lower }}"
       LEDcolor:          "{{ LEDcolor          | default(\"no change\")    | lower }}"
       LEDcolor_off:      "{{ LEDcolor_off      | default(\"no change\")    | lower }}"
-      LEDbrightness:     "{{ LEDbrightness     | default(\"11\")           | float }}"
-      LEDbrightness_off: "{{ LEDbrightness_off | default(\"11\")           | float }}"
+      LEDbrightness:     "{{ LEDbrightness     | default(11)               | float }}"
+      LEDbrightness_off: "{{ LEDbrightness_off | default(11)               | float }}"
       LEDnumber_effect:  "{{ LEDnumber_effect  | default(\"all\")          | lower }}"
       effect:            "{{ effect            | default(\"clear effect\") | lower }}"
-      brightness:        "{{ brightness        | default(\"11\")           | float }}"
+      brightness:        "{{ brightness        | default(11)               | float }}"
       color:             "{{ color             | default(\"no change\")    | lower }}"
-      duration:          "{{ duration          | default(\"0\")            | lower }}"
+      duration:          "{{ duration          | default(0)                | lower }}"
 
       #LEDnumber:         "{{ input_LEDnumber         | default(\"all\")          | lower }}"
       #LEDcolor:          "{{ input_LEDcolor          | default(\"no change\")    | lower }}"
       #LEDcolor_off:      "{{ input_LEDcolor_off      | default(\"no change\")    | lower }}"
-      #LEDbrightness:     "{{ input_LEDbrightness     | default(\"11\")           | float }}"
-      #LEDbrightness_off: "{{ input_LEDbrightness_off | default(\"11\")           | float }}"
+      #LEDbrightness:     "{{ input_LEDbrightness     | default(11)               | float }}"
+      #LEDbrightness_off: "{{ input_LEDbrightness_off | default(11)               | float }}"
       #LEDnumber_effect:  "{{ input_LEDnumber_effect  | default(\"all\")          | lower }}"
       #effect:            "{{ input_effect            | default(\"clear effect\") | lower }}"
-      #brightness:        "{{ input_brightness        | default(\"11\")           | float }}"
+      #brightness:        "{{ input_brightness        | default(11)               | float }}"
       #color:             "{{ input_color             | default(\"no change\")    | lower }}"
-      #duration:          "{{ input_duration          | default(\"0\")            | lower }}"
+      #duration:          "{{ input_duration          | default(0)                | lower }}"
 
 
   ##################
@@ -1504,7 +1611,7 @@ sequence:
 
         - device_type: VZW31SN
           call_type: zwave_js
-          effects: "{{ iif(duration != 0,VZW31SN_effects[effect],0) }}" ### So we can pass the device-specific effect into the repeat loop ###
+          effects: "{{ iif(LEDnumber_effect == 'all',VZW31SN_all_effects[effect],VZW31SN_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1519,7 +1626,7 @@ sequence:
         ##################
         - device_type: VZM31SN
           call_type: z2m
-          effects: "{{ iif(duration != 0,VZM31SN_Z2M_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(LEDnumber_effect == 'all',VZM31SN_Z2M_all_effects[effect],VZM31SN_Z2M_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1531,7 +1638,7 @@ sequence:
 
         - device_type: VZM35SN
           call_type: z2m
-          effects: "{{ iif(duration != 0,VZM35SN_Z2M_effects[effect],'clear_effect') }}"
+          effects: "{{ iif(LEDnumber_effect == 'all',VZM35SN_Z2M_all_effects[effect],VZM35SN_Z2M_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1546,7 +1653,7 @@ sequence:
         ##################
         - device_type: VZM31SN
           call_type: zha
-          effects: "{{ iif(duration != 0,VZM31SN_ZHA_effects[effect],0) }}"
+          effects: "{{ iif(LEDnumber_effect == 'all',VZM31SN_ZHA_all_effects[effect],VZM31SN_ZHA_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1558,7 +1665,7 @@ sequence:
 
         - device_type: VZM35SN
           call_type: zha
-          effects: "{{ iif(duration != 0,VZM35SN_ZHA_effects[effect],0) }}"
+          effects: "{{ iif(LEDnumber_effect == 'all',VZM35SN_ZHA_all_effects[effect],VZM35SN_ZHA_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -2333,9 +2440,9 @@ sequence:
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >-
-                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[1] + '_effect_bulk' %}
+                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_bulk' %}
                               {{ parameters[bulk_param] }}
-                            value: "{{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (VZW31SN_effects[effect] * 16777216) }}"
+                            value: "{{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (repeat.item.effects * 16777216) }}"
 
                 ### Zigbee2mqtt ###
                 - choose:
@@ -2390,13 +2497,13 @@ sequence:
             - choose:
 
                 ### Red 500 Series ###
-                - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber }}"
+                - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber_effect }}"
                   sequence:
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_effect' %}
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_effect' %}
                           {{ parameters[effect_param] }}
                         value: >-
                           {% if repeat.item.device_type == "LZW30SN" %}
@@ -2408,7 +2515,7 @@ sequence:
                       data:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_duration' %}
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_duration' %}
                           {{ parameters[effect_param] }}
                         value: 0
 
@@ -2421,14 +2528,14 @@ sequence:
                       data:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_effect' %}
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_effect' %}
                           {{ parameters[effect_param] }}
                         value: "{{ effects }}"
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber + '_effect_duration' %}
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_duration' %}
                           {{ parameters[effect_param] }}
                         value: "{{ duration_values[duration] }}"
 
