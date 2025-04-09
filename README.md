@@ -344,8 +344,10 @@ data:
 
 ## LEDnumber_effect:
   Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
-  ** Blue Series only.  No support on Black or Red series devices.
-
+  * Red800 and Blue Series only.  No support on Black or Red 500 series devices.
+  * The full LED bar will override individual LEDs (e.g. you won't see LED 3 through an effect for the full bar)
+  * When using `duration: forever` each LED's effect will need to be cleared with a separate command.  
+  
 
 ## effect:
   Type of effect. (Red and Blue Series only.  Black Series devices do not support effects)
@@ -354,8 +356,10 @@ data:
 ## brightness:
   Sets the brightness of the LED's effect.  0 means off.
 
+
 ## color:
   Color of LED for the effect
+
 
 ## duration:
   How long the effect will last.
