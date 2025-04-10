@@ -21,6 +21,7 @@
 #   brightness: (required; float 1 – 10) Sets the brightness of the LED's effect
 #   color: (required; string) Sets color of LED effect.
 #   duration: (required; string or whole integer of seconds) Either "Off", an integer of seconds, or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
+
 #
 # Effects not working?
 #   Black 500 Series devices do not support effects.
@@ -28,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 68,521s
+#   Add two spaces to lines between label: and variables: 67,537s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 #
