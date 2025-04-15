@@ -1747,7 +1747,7 @@ sequence:
                                             - service: mqtt.publish
                                               data:
                                                 topic: >-
-                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
                                                 payload: >-
                                                   {% if repeat.item == 'all' %}
                                                     { "ledColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
@@ -1772,7 +1772,7 @@ sequence:
                                       - service: mqtt.publish
                                         data:
                                           topic: >-
-                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                           payload: >-
                                             {% if LEDnumber == 'all' %}
                                               { "ledColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
@@ -1926,7 +1926,7 @@ sequence:
                                             - service: mqtt.publish
                                               data:
                                                 topic: >-
-                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
                                                 payload: >-
                                                   {% if repeat.item == 'all' %}
                                                     { "ledColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
@@ -1951,7 +1951,7 @@ sequence:
                                       - service: mqtt.publish
                                         data:
                                           topic: >-
-                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                           payload: >-
                                             {% if LEDnumber == 'all' %}
                                               { "ledColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
@@ -2111,7 +2111,7 @@ sequence:
                                             - service: mqtt.publish
                                               data:
                                                 topic: >-
-                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
                                                 payload: >-
                                                   {% if repeat.item == 'all' %}
                                                     { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
@@ -2136,7 +2136,7 @@ sequence:
                                       - service: mqtt.publish
                                         data:
                                           topic: >-
-                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                           payload: >-
                                             {% if LEDnumber == 'all' %}
                                               { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
@@ -2289,7 +2289,7 @@ sequence:
                                             - service: mqtt.publish
                                               data:
                                                 topic: >-
-                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
                                                 payload: >-
                                                   {% if repeat.item == 'all' %}
                                                     { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
@@ -2314,7 +2314,7 @@ sequence:
                                       - service: mqtt.publish
                                         data:
                                           topic: >-
-                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                           payload: >-
                                             {% if LEDnumber == 'all' %}
                                               { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
@@ -2473,7 +2473,7 @@ sequence:
                               - service: mqtt.publish
                                 data:
                                   topic: >-
-                                    zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                    {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     {% if LEDnumber_effect == 'all' %}
                                       {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 256 / 10) | int }}" }}
@@ -2568,7 +2568,7 @@ sequence:
                           - service: mqtt.publish
                             data:
                               topic: >-
-                                zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                               payload: >-
                                 {"led_effect":{"duration":"{{duration_values[duration]}}","effect":"{{effects}}" }}
 
