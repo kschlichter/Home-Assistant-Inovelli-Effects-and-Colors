@@ -102,6 +102,7 @@ As a quick start you can follow these steps:
 
 ## Selector Mode:
   Select devices that meet ANY requirements (logical OR) or ALL requirements (logical AND).   Since the default for `selector_mode:` is `any`, you can leave this field out / unselected and get the same result.  Blueprints and script calls written before this feature was added do not need to be updated, and will have the same behavior as before.  
+  
   **Turning off the LED bar for everything that's upstairs, OR ANY fans:**
   This service call will turn off the LED bar for all Inovelli devices that are upstairs, and also all fans in the house (e.g. upstairs, downstairs, in the garage, or outside).
 
@@ -131,6 +132,7 @@ As a quick start you can follow these steps:
 
 ## Z2M Topic
   Topic (string) used to identify and route messages within the MQTT protocol.  Default: 'zigbee2mqtt'
+  
   **Turn off LEDs on all devices reporting through the topic "zigbee2mqttupstairs":**
 ```
   service: script.inovelli_led
@@ -146,6 +148,7 @@ As a quick start you can follow these steps:
      
 ## Domain:
   Include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.  In the background, it uses `areas()` and selecting all three domains makes it functionally equivalent to calling `area: 'all''`.  
+  
   **Set the LED bar on all fans in the house to purple:**
 ```
   service: script.inovelli_led
