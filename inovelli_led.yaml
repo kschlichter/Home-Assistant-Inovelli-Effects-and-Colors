@@ -29,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 67,537s
+#   Add two spaces to lines between label: and variables: 67,548s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 #
@@ -76,6 +76,17 @@ fields:
         options:
           - "any"
           - "all"
+
+  z2m_topic:
+    name: Zigbee2MQTT Topic
+    description: Topic (string) used to identify and route messages within the MQTT protocol
+    #required: false
+    example: 'zigbee2mqtt'
+    default: 'zigbee2mqtt'
+    selector:
+      text:
+        multiple: false
+        type: text
 
   domain:
     name: Domain
@@ -539,6 +550,7 @@ fields:
 
 variables:
   #input_selector_mode: !input selector_mode
+  #input_z2m_topic:     !input z2m_topic
   #input_domain: !input domain
   #input_label:  !input label
   #input_floor:  !input floor
@@ -1211,16 +1223,18 @@ variables:
   ##################
   # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
-  selector_mode: "{{ selector_mode | default(\"any\") | lower }}"
-  domain: "{{ domain | default(\"invalid\") | lower }}"
-  label:  "{{ label  | default(\"invalid\") | lower }}"
-  floor:  "{{ floor  | default(\"invalid\") | lower }}"
-  area:   "{{ area   | default(\"invalid\") | lower }}"
-  group:  "{{ group  | default(\"invalid\") | lower }}"
-  device: "{{ device | default(\"invalid\") | lower }}"
-  entity: "{{ entity | default(\"invalid\") | lower }}"
+  selector_mode: "{{ selector_mode | default('any') | lower | trim }}"
+  z2m_topic: "{{ z2m_topic | default('zigbee2mqtt') | lower | trim }}"
+  domain: "{{ domain | default('invalid') | lower | map('trim') | list }}"
+  label:  "{{ label  | default('invalid') | lower | map('trim') | list }}"
+  floor:  "{{ floor  | default('invalid') | lower | map('trim') | list }}"
+  area:   "{{ area   | default('invalid') | lower | map('trim') | list }}"
+  group:  "{{ group  | default('invalid') | lower | map('trim') | list }}"
+  device: "{{ device | default('invalid') | lower | map('trim') | list }}"
+  entity: "{{ entity | default('invalid') | lower | map('trim') | list }}"
 
   #selector_mode: "{{ iif(input_selector_mode, input_selector_mode | lower, 'any') }}"
+  #z2m_topic:     "{{ iif(input_z2m_topic,     input_z2m_topic,    | lower, 'zigbee2mqtt') }}"
   #domain:        "{{ iif(input_domain,        input_domain        |lower,  'invalid') }}"
   #label:         "{{ iif(input_label,         input_label         |lower,  'invalid') }}"
   #floor:         "{{ iif(input_floor,         input_floor         |lower,  'invalid') }}"
@@ -1512,26 +1526,28 @@ sequence:
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
-      LEDnumber:         "{{ LEDnumber         | default(\"all\")          | lower }}"
-      LEDcolor:          "{{ LEDcolor          | default(\"no change\")    | lower }}"
-      LEDcolor_off:      "{{ LEDcolor_off      | default(\"no change\")    | lower }}"
+      z2m_topic: "{{ z2m_topic | lower | trim }}"
+
+      LEDnumber:         "{{ LEDnumber         | default('all')          | lower }}"
+      LEDcolor:          "{{ LEDcolor          | default('no change')    | lower }}"
+      LEDcolor_off:      "{{ LEDcolor_off      | default('no change')    | lower }}"
       LEDbrightness:     "{{ LEDbrightness     | default(11)               | float }}"
       LEDbrightness_off: "{{ LEDbrightness_off | default(11)               | float }}"
-      LEDnumber_effect:  "{{ LEDnumber_effect  | default(\"all\")          | lower }}"
-      effect:            "{{ effect            | default(\"clear effect\") | lower }}"
+      LEDnumber_effect:  "{{ LEDnumber_effect  | default('all')          | lower }}"
+      effect:            "{{ effect            | default('clear effect') | lower }}"
       brightness:        "{{ brightness        | default(11)               | float }}"
-      color:             "{{ color             | default(\"no change\")    | lower }}"
+      color:             "{{ color             | default('no change')    | lower }}"
       duration:          "{{ duration          | default(0)                | lower }}"
 
-      #LEDnumber:         "{{ input_LEDnumber         | default(\"all\")          | lower }}"
-      #LEDcolor:          "{{ input_LEDcolor          | default(\"no change\")    | lower }}"
-      #LEDcolor_off:      "{{ input_LEDcolor_off      | default(\"no change\")    | lower }}"
+      #LEDnumber:         "{{ input_LEDnumber         | default('all')          | lower }}"
+      #LEDcolor:          "{{ input_LEDcolor          | default('no change')    | lower }}"
+      #LEDcolor_off:      "{{ input_LEDcolor_off      | default('no change')    | lower }}"
       #LEDbrightness:     "{{ input_LEDbrightness     | default(11)               | float }}"
       #LEDbrightness_off: "{{ input_LEDbrightness_off | default(11)               | float }}"
-      #LEDnumber_effect:  "{{ input_LEDnumber_effect  | default(\"all\")          | lower }}"
-      #effect:            "{{ input_effect            | default(\"clear effect\") | lower }}"
+      #LEDnumber_effect:  "{{ input_LEDnumber_effect  | default('all')          | lower }}"
+      #effect:            "{{ input_effect            | default('clear effect') | lower }}"
       #brightness:        "{{ input_brightness        | default(11)               | float }}"
-      #color:             "{{ input_color             | default(\"no change\")    | lower }}"
+      #color:             "{{ input_color             | default('no change')    | lower }}"
       #duration:          "{{ input_duration          | default(0)                | lower }}"
 
 
@@ -1688,7 +1704,7 @@ sequence:
         # LED strip color
         ##################
         - choose:
-            - conditions: "{{ LEDcolor != \"no change\" }}"
+            - conditions: "{{ LEDcolor != 'no change' }}"
               sequence:
 
                 ### Zwave JS
@@ -1867,7 +1883,7 @@ sequence:
         # LED strip color when off
         ##################
         - choose:
-            - conditions: "{{ LEDcolor_off != \"no change\" }}"
+            - conditions: "{{ LEDcolor_off != 'no change' }}"
               sequence:
 
                 ### Zwave JS ###
