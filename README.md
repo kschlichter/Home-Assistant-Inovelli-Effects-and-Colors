@@ -129,6 +129,21 @@ As a quick start you can follow these steps:
 ```
 
 
+## Z2M Topic
+  Topic (string) used to identify and route messages within the MQTT protocol.  Default: 'zigbee2mqtt'
+  **Turn off LEDs on all devices reporting through the topic "zigbee2mqttupstairs":**
+```
+  service: script.inovelli_led
+  data:
+    selector_mode: all
+    domain: 'fan'
+    z2m_topic: 'zigbee2mqttupstairs'
+    LEDcolor: "Off"
+    LEDcolor_off: "Off"
+```
+
+
+     
 ## Domain:
   Include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.  In the background, it uses `areas()` and selecting all three domains makes it functionally equivalent to calling `area: 'all''`.  
   **Set the LED bar on all fans in the house to purple:**
