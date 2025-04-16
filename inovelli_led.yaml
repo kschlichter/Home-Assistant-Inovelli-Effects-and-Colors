@@ -1234,7 +1234,7 @@ variables:
   entity: "{{ entity | default('invalid') | lower }}"
 
   #selector_mode: "{{ iif(input_selector_mode, input_selector_mode | lower, 'any') }}"
-  #z2m_topic:     "{{ iif(input_z2m_topic,     input_z2m_topic,    | lower, 'zigbee2mqtt') }}"
+  #z2m_topic:     "{{ iif(input_z2m_topic,     input_z2m_topic     | lower, 'zigbee2mqtt') }}"
   #domain:        "{{ iif(input_domain,        input_domain        |lower,  'invalid') }}"
   #label:         "{{ iif(input_label,         input_label         |lower,  'invalid') }}"
   #floor:         "{{ iif(input_floor,         input_floor         |lower,  'invalid') }}"
