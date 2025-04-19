@@ -29,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 67,537s
+#   Add two spaces to lines between label: and variables: 66,562s
 #   Comment out example:
 #   Switch input_* and script variables in all three locations
 #
@@ -52,23 +52,23 @@ blueprint:
   description: >-
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
     through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
-    and can be called by floor, area, group, device, and entity.
+    and can be called by domain, label, floor, area, group, device, and entity.
   homeassistant:
-    min_version: 2024.06.0
+    min_version: 2025.04.0
   input:
 
 #alias: Inovelli LED Settings and Effects
 #description: >-
 #    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
 #    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
-#    and can be called by floor, area, group, device, and entity.
+#    and can be called by domain, label, floor, area, group, device, and entity.
 #fields:
-
+  
     selector_mode:
       name: Selector Mode
       description: Select devices that meet ANY requirements (logical OR)  or ALL requirements (logical AND).
       #required: false
-      #example 'any'
+      #example: 'any'
       default: 'any'
       selector:
         select:
@@ -77,12 +77,37 @@ blueprint:
             - "any"
             - "all"
   
+    z2m_topic:
+      name: Zigbee2MQTT Topic
+      description: Topic (string) used to identify and route messages within the MQTT protocol
+      #required: false
+      #example: 'zigbee2mqtt'
+      default: 'zigbee2mqtt'
+      selector:
+        text:
+          multiple: false
+          type: text
+  
+    allowed_domains:
+      name: Allowed Domain
+      description: Only allow entities of the following type.
+      #required: false
+      #example: 'light, fan'
+      default: ['fan','light','switch']
+      selector:
+        select:
+          multiple: true
+          options:
+            - "fan"
+            - "light"
+            - "switch"
+  
     domain:
       name: Domain
-      description: Include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.
+      description: Select all entities of this domain type.
       #required: false
-      #example 'light, fan'
-      default: ['invalid']
+      #example: 'light, fan'
+      default: []
       selector:
         select:
           multiple: true
@@ -95,7 +120,7 @@ blueprint:
       name: Label
       description: Labels on Inovelli devices and entities, or areas containing Inovelli devices.
       #required: false
-      #example 'christmas lights, bedrooms, fans'
+      #example: 'christmas lights, bedrooms, fans'
       default: []
       selector:
         label:
@@ -105,7 +130,7 @@ blueprint:
       name: Floor
       description: Floor IDs containing areas with Inovelli devices.  
       #required: false
-      #example 'downstairs,upstairs, outside'
+      #example: 'downstairs,upstairs, outside'
       default: []
       selector:
         floor:
@@ -158,7 +183,7 @@ blueprint:
       name: Area
       description: Area names or IDs containing Inovelli devices.
       #required: false
-      #example 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
+      #example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
       default: []
       selector:
         area:
@@ -211,7 +236,7 @@ blueprint:
       name: Group
       description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
       #required: false
-      #example 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
+      #example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
       default: []
       selector:
         entity:
@@ -227,7 +252,7 @@ blueprint:
       name: Device
       description: Device IDs of Inovelli devices.  Mix and match types as you like.
       #required: false
-      #example '0249abdc634c12cbf6cdc06d7a507495'
+      #example: '0249abdc634c12cbf6cdc06d7a507495'
       default: []
       selector:
         device:
@@ -282,7 +307,7 @@ blueprint:
         The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
         a comma separated list of Inovelli devices.  Mix and match types as you like.
       #required: false
-      #example light.office, fan.guest_room
+      #example: light.office, fan.guest_room
       default: []
       selector:
         entity:
@@ -299,7 +324,7 @@ blueprint:
       description: >-
         Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
       #required: false
-      #example All
+      #example: All
       default: 'all'
       selector:
         select:
@@ -317,7 +342,7 @@ blueprint:
       name: LED Color When On (non-effect)
       description: Sets the color of the LED status bar, which indicates brightness levels of the light.
       #required: false
-      #example Blue
+      #example: Blue
       default: 'no change'
       selector:
         select:
@@ -346,7 +371,7 @@ blueprint:
       name: LED Color When Off (non-effect). Red 800 and Blue Series only.
       description: Sets the color of the LED status bar, which indicates brightness levels of the light.
       #required: false
-      #example Blue
+      #example: Blue
       default: 'no change'
       selector:
         select:
@@ -375,7 +400,7 @@ blueprint:
       name: LED Brightness When On (non-effect)
       description: Sets the brightness of the LED status when on. 0 means off.
       #required: false
-      #example 6
+      #example: 6
       default: 11
       selector:
         number:
@@ -388,7 +413,7 @@ blueprint:
       name: LED Brightness When Off (non-effect).
       description: Sets the brightness of the LED status when off. 0 means off.
       #required: false
-      #example 2
+      #example: 2
       default: 11
       selector:
         number:
@@ -402,7 +427,7 @@ blueprint:
       description: >-
         Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom. (Red 800, and Blue Series only.  Black and Red 500 Series devices do not support effects on individual LEDs)
       #required: false
-      #example All
+      #example: All
       default: 'all'
       selector:
         select:
@@ -420,7 +445,7 @@ blueprint:
       name: Effect
       description: Type of effect. (Red and Blue Series only.  Black Series devices do not support effects) 
       #required: false
-      #example Pulse
+      #example: Pulse
       default: 'Clear Effect'
       selector:
         select:
@@ -451,7 +476,7 @@ blueprint:
       name: Effect Brightness
       description: Sets the brightness of the LED's effect.  0 means off.
       #required: false
-      #example "8"
+      #example: "8"
       default: '11'
       selector:
         number:
@@ -464,7 +489,7 @@ blueprint:
       name: Effect Color
       description: Color of LED for the effect
       #required: false
-      #example Red
+      #example: Red
       default: 'no change'
       selector:
         select:
@@ -493,7 +518,7 @@ blueprint:
       name: Duration of Effect
       description: How long the effect will last.
       #required: false
-      #example "Off"
+      #example: "Off"
       default: '0'
       selector:
         select:
@@ -539,6 +564,8 @@ blueprint:
 
 variables:
   input_selector_mode: !input selector_mode
+  input_z2m_topic:     !input z2m_topic
+  input_allowed_domains: !input allowed_domains
   input_domain: !input domain
   input_label:  !input label
   input_floor:  !input floor
@@ -1211,298 +1238,264 @@ variables:
   ##################
   # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
-  #selector_mode: "{{ selector_mode | default(\"any\") | lower }}"
-  #domain: "{{ domain | default(\"invalid\") | lower }}"
-  #label:  "{{ label  | default(\"invalid\") | lower }}"
-  #floor:  "{{ floor  | default(\"invalid\") | lower }}"
-  #area:   "{{ area   | default(\"invalid\") | lower }}"
-  #group:  "{{ group  | default(\"invalid\") | lower }}"
-  #device: "{{ device | default(\"invalid\") | lower }}"
-  #entity: "{{ entity | default(\"invalid\") | lower }}"
+  #selector_mode: "{{ selector_mode | default('any') | lower | trim }}"
+  #z2m_topic: "{{ z2m_topic | default('zigbee2mqtt') | lower | trim }}"
+  #allowed_domains: "{{ allowed_domains | default([]) }}"
+  #domain: "{{ domain | default('invalid') | lower | trim }}"
+  #label:  "{{ label  | default('invalid') | lower | trim }}"
+  #floor:  "{{ floor  | default('invalid') | lower | trim }}"
+  #area:   "{{ area   | default('invalid') | lower | trim }}"
+  #group:  "{{ group  | default('invalid') | lower | trim }}"
+  #device: "{{ device | default('invalid') | lower | trim }}"
+  #entity: "{{ entity | default('invalid') | lower | trim }}"
 
   selector_mode: "{{ iif(input_selector_mode, input_selector_mode | lower, 'any') }}"
-  domain:        "{{ iif(input_domain,        input_domain        |lower,  'invalid') }}"
-  label:         "{{ iif(input_label,         input_label         |lower,  'invalid') }}"
-  floor:         "{{ iif(input_floor,         input_floor         |lower,  'invalid') }}"
-  area:          "{{ iif(input_area,          input_area          |lower,  'invalid') }}"
-  group:         "{{ iif(input_group,         input_group         |lower,  'invalid') }}"
-  device:        "{{ iif(input_device,        input_device        |lower,  'invalid') }}"
-  entity:        "{{ iif(input_entity,        input_entity        |lower,  'invalid') }}"
+  z2m_topic:     "{{ iif(input_z2m_topic,     input_z2m_topic     | lower, 'zigbee2mqtt') }}"
+  allowed_domains: "{{ iif(inputallowed_domains, input_allowed_domains, []) }}"
+  domain:        "{{ iif(input_domain,        input_domain        | lower,  'invalid') }}"
+  label:         "{{ iif(input_label,         input_label         | lower,  'invalid') }}"
+  floor:         "{{ iif(input_floor,         input_floor         | lower,  'invalid') }}"
+  area:          "{{ iif(input_area,          input_area          | lower,  'invalid') }}"
+  group:         "{{ iif(input_group,         input_group         | lower,  'invalid') }}"
+  device:        "{{ iif(input_device,        input_device        | lower,  'invalid') }}"
+  entity:        "{{ iif(input_entity,        input_entity        | lower,  'invalid') }}"
 
   allowed_domains: >-
-    {% set domain_array = namespace(domain_list=[]) %}
-    {% if domain == 'invalid' or 'invalid' in domain and domain|count == 1 %}
-      {% set domain_array.domain_list = ['fan', 'light', 'switch'] %}
-    {% elif domain is iterable and not domain is string %}
-      {% set domainnum = domain | count %}
-      {% for i in range(0,domainnum) %}
-        {% set domain_array.domain_list = domain_array.domain_list + [domain[i]] %}
-      {% endfor %}
-    {% elif ',' in domain %}
-      {% set domainnum = domain.split( ',' ) | count %}
-      {% for i in range(0,domainnum) %}
-        {% set domain_array.domain_list = domain_array.domain_list + [domain.split( ',' )[i]|string|trim ] %}
-      {% endfor %}
-    {% elif ',' not in domain and domain is string and domain != 'default' %}
-      {% set domain_array.domain_list = domain_array.domain_list + [domain|string|trim] %}
+    {% set allowed_domains = [] %}
+    {% if allowed_domains == 'invalid' or allowed_domains == ['invalid'] or allowed_domains == [] or allowed_domains == '' %}
+      {% set allowed_domains = ['fan', 'light', 'switch'] %}
+    {% elif typeof(allowed_domains) == 'list' %}
+      {% set allowed_domains = allowed_domains | map('lower') | map('trim') | list %}
+    {% elif typeof(allowed_domains) == 'str' %}
+      {% set allowed_domains = allowed_domains.split( ',' ) | map('lower') | map('trim') | list %}
     {% endif %}
-    {{ domain_array.domain_list | reject('equalto', 'invalid') | list }} 
+    {{ allowed_domains }}
 
   entities_from_domain: >-
-    {% set entities = namespace(entities=[]) %}
-    {% if domain != 'invalid' and domain != ['invalid'] %}
-      {% set area_list = areas() %}
-      {% for area in area_list %}
-        {% for ent in area_entities(area) %}
-          {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
-            {% set entities.entities = entities.entities + [ent|string|trim] %}
-          {% endif %}
-        {% endfor %} 
-      {% endfor %}  
-    {% else %}
-      {% set entities.entities = ['invalid'] %}
+    {% set domain_list = [] %}
+    {% if domain == 'invalid' or domain == ['invalid'] or domain == [] or domain == '' %}
+      {% set domain_list = [] %}
+    {% elif typeof(domain) == 'list' %}
+      {% set domain_list = domain 
+             | map('lower') 
+             | map('trim') 
+             | reject('equalto', 'invalid') 
+             | reject('equalto', '') 
+             | list %}
+    {% elif typeof(domain) == 'str' %}
+      {% set domain_list = domain.split( ',' ) 
+             | map('lower') 
+             | map('trim') 
+             | reject('equalto', 'invalid') 
+             | reject('equalto', '') 
+             | list %}
     {% endif %}
-    {{ entities.entities }}
+
+    {% set entities = [] %}
+    {% if domain_list != [] %}
+      {% set entities = states
+             | selectattr('domain', 'in', domain_list )
+             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
+             | map(attribute='entity_id')
+             | list %}
+    {% else %}
+      {% set entities = [] %}
+    {% endif %}
+    {{ entities }}
 
   label_list: >-
-    {% set label_array = namespace(label_list=[]) %}
-    {# convert CSV to proper list #}
-    {% if label != 'invalid' %}
-      {% if ',' in label %}
-        {% set labelnum = label.split( ',' ) | count %}
-        {% for i in range(0,labelnum) %}
-          {% set label_array.label_list = label_array.label_list + [label.split( ',' )[i]|string|trim] %}
-        {% endfor %}
-      {% elif label[0]|count == 1 %}
-        {# if the first item in the list has only a single character, it isn't a valid list #}
-        {% set label_array.label_list = label_array.label_list + [label|string|trim] %}
-      {% else %}
-        {% set label_array.label_list = label %}
-      {% endif %}
+    {% set label_list=[] %}
+    {% if label == 'invalid' or label == ['invalid'] %}
+      {% set label_list = [] %}
+    {% elif typeof(label) == 'list' %}
+      {% set label_list = label | map('trim') | list %}
+    {% elif label is string %}
+      {% set label_list = label.split( ',' ) | list %}
     {% endif %}
-    {{ label_array.label_list }}
+    {% set label_list = label_list | map('trim') | reject('equalto', 'invalid') | reject('equalto', '') | list %}
+    {{ label_list }}
 
-  areas_from_label: >-
+  entities_from_label_area: >-
+    {% set entities_from_label_area = [] %}
     {% set label_area_array = namespace(label_area_list=[]) %}
-    {% if label != 'invalid' %}
-      {% for each_label in label_list %}
-        {% set label_area_array.label_area_list = label_area_array.label_area_list + label_areas(each_label) %}
-      {% endfor %}    
+    {% if label_list != [] %}
+      {% set label_area_array.label_area_list = label_list
+             | map('label_areas')
+             | flatten
+             | map('area_entities')
+             | expand
+             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
+             | map(attribute='entity_id')
+             | list %}
     {% endif %}
-    {{ iif(label == 'invalid','invalid',label_area_array.label_area_list) }}
+    {% set entities_from_label_area = label_area_array.label_area_list %}
+    {{ entities_from_label_area }}
 
-  devices_from_label: >-
+  entities_from_label_device: >-
+    {% set entities_from_label_device = [] %}
     {% set label_device_array = namespace(label_device_list=[]) %}
-    {% if label != 'invalid' %}
-      {% for each_label in label_list %}
-        {% set label_device_array.label_device_list = label_device_array.label_device_list + label_devices(each_label) %}
-      {% endfor %}
+    {% if label_list != [] %}
+      {% set label_device_array.label_device_list = label_list 
+             | map('label_devices') 
+             | flatten 
+             | map('device_entities')
+             | sum(start=[])
+             | select('is_device_attr', 'manufacturer', 'Inovelli')
+             | expand
+             | map(attribute='entity_id')
+             | expand
+             | selectattr('domain', 'in', allowed_domains )
+             | map(attribute='entity_id')
+             | list %}
     {% endif %}
-    {{ iif(label == 'invalid','invalid',label_device_array.label_device_list) }}
+    {% set entities_from_label_device = label_device_array.label_device_list %}
+    {{ entities_from_label_device }}
 
-  entities_from_label: >-
+  entities_from_label_entity: >-
+    {% set entities_from_label_entity = [] %}
     {% set label_entity_array = namespace(label_entity_list=[]) %}
-    {% if label != 'invalid' %}
-      {% for each_label in label_list %}
-        {% set label_entity_array.label_entity_list = label_entity_array.label_entity_list + label_entities(each_label) %}
-      {% endfor %}
+    {% if label_list != [] %}
+      {% set label_entity_array.label_entity_list = label_list
+             | map('label_entities')
+             | flatten
+             | select('is_device_attr', 'manufacturer', 'Inovelli')
+             | expand
+             | selectattr('domain', 'in', allowed_domains )
+             | map(attribute='entity_id')
+             | list %}
     {% endif %}
-    {{ iif(label == 'invalid','invalid',label_entity_array.label_entity_list|lower)  }}
+    {% set entities_from_label_entity = label_entity_array.label_entity_list %}
+    {{ entities_from_label_entity }}
 
   entities_from_floor: >-
+    {% set entities_from_floor = [] %}
     {% set floor_array = namespace(floor_list=[]) %}
-    {% set entities = namespace(entities=[]) %}
-    {% if floor != 'invalid' %}
+    {% if floor != 'invalid' and floor != ['invalid'] and floor != [] and floor != '' %}
       {% if floor == 'all' %}
         {% set floor_array.floor_list = floors() %}
-
-      {# Converting to a list #}
-      {% elif ',' in floor %}
-        {% set floornum = floor.split( ',' ) | count %}
-        {% for i in range(0,floornum) %}
-          {% set floor_array.floor_list = floor_array.floor_list + [floor.split( ',' )[i]|string|trim ] %}
-        {% endfor %}
-      {% elif floor[0]|count == 1 %}
-        {# if the first item in the list has only a single character, it isn't a valid list #}
-        {% set floor_array.floor_list = floor_array.floor_list + [floor|string|trim] %}
+      {% elif typeof(floor) == 'str' %}
+        {% set floor_array.floor_list = floor.split( ',' ) | map('lower') | map('trim') | reject('equalto', 'invalid') | list %}
       {% else %}
-        {% set floor_array.floor_list = floor %}
+        {% set floor_array.floor_list = floor | map('lower') | map('trim') | reject('equalto', 'invalid') | list %}  
       {% endif %}
+    {% endif %} 
 
-      {# ### This should change to floor_entities but the minimum version needs to change to 25.04 so we'll give it time before we do that. ### #}
-      {# Detecting entities #}
-      {% for floor in floor_array.floor_list %}
-        {% for area in floor_areas(floor) %}
-          {% for ent in area_entities(area) %}
-            {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
-              {% set entities.entities = entities.entities + [ent|string|trim] %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-      {% endfor %}
-    {% endif %}
-    {{ iif(floor == 'invalid',['invalid'],entities.entities|lower) }}
+    {% set entities_from_floor = floor_array.floor_list
+           | map('floor_entities') 
+           | expand
+           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
+           | map(attribute='entity_id')
+           | list %}
+    {{ entities_from_floor }}
 
   entities_from_area: >-
+    {% set entities_from_area = [] %}
     {% set area_array = namespace(area_list=[]) %}
-    {% set entities = namespace(entities=[]) %}
-    {% if area == 'invalid' %}
-      {% set area = areas_from_label %}
-    {% endif %}
-    {% if area != 'invalid' %}
-      {# I'd like to handle 'all' as a list for templating simplicity #}
-      {# changing this to 'all' in area would trigger an area named 'all upstairs' #}
+    {% if area != 'invalid' and area != ['invalid'] and area != [] and area != '' %}
       {% if area == 'all' %}
         {% set area_array.area_list = areas() %}
-
-      {# Converting to a list #}
-      {% elif ',' in area %}
-        {% set areanum = area.split( ',' ) | count %}
-        {% for i in range(0,areanum) %}
-          {% set area_array.area_list = area_array.area_list + [area.split( ',' )[i]|string|trim ] %}
-        {% endfor %}
-      {% elif area[0]|count == 1 %}
-        {# if the first item in the list has only a single character, it isn't a valid list #}
-        {% set area_array.area_list = area_array.area_list + [area|string|trim] %}
+      {% elif typeof(area) == 'str' %}
+        {% set area_array.area_list = area.split( ',' ) | map('lower') | map('trim') | reject('equalto', 'invalid') | list %}
       {% else %}
-        {% set area_array.area_list = area %}
+        {% set area_array.area_list = area | map('lower') | map('trim') | reject('equalto', 'invalid') | list %}
       {% endif %}
-      {% for each in areas_from_label %}
-        {% if each not in area_array.area_list %}
-          {% set area_array.area_list = area_array.area_list + [each|string|trim] %}
-        {% endif %}
-      {% endfor %}
-
-      {# Detecting entities #}
-      {% for area in area_array.area_list %}
-        {% for ent in area_entities(area) %}
-          {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
-            {% set entities.entities = entities.entities + [ent|string|trim] %}
-          {% endif %}
-        {% endfor %}
-      {% endfor %}
     {% endif %}
-    {{ iif(area == 'invalid',['invalid'],entities.entities|lower) }}
+
+    {% set entities_from_area = area_array.area_list
+           | map('area_entities')
+           | expand
+           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
+           | map(attribute='entity_id')
+           | list %}
+    {{ entities_from_area }}
 
   entities_from_group: >-
+    {% set entities_from_group = [] %}
     {% set group_array = namespace(group_list=[]) %}
-    {% set entities = namespace(entities=[]) %}
-    {% if group != 'invalid' %}
-      {# Converting to a list #}
-      {% if ',' in group %}
-        {% set groupnum = group.split( ',' ) | count %}
-        {% for i in range(0,groupnum) %}
-          {% set group_array.group_list = group_array.group_list + [group.split( ',' )[i]|string|trim ] %}
-        {% endfor %}
-      {% elif group[0]|count == 1 %}
-        {# if the first item in the list has only a single character, it isn't a valid list #}
-        {% set group_array.group_list = group_array.group_list + [group|string|trim] %}
+    {% if group != 'invalid' and group != ['invalid'] and group != [] and group != '' %}
+      {% if typeof(group) == 'str' %}
+        {% set group_array.group_list = group.split( ',' ) | map('lower') | map('trim') | list %}
       {% else %}
-        {% set group_array.group_list = group %}
+        {% set group_array.group_list = group | map('lower') | map('trim') | list %}
       {% endif %}
-
-      {# Detecting entities #}
-      {% for group in group_array.group_list %}
-        {% for entity in expand(group) %}
-          {% set ent = entity.entity_id %}
-          {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
-            {% set entities.entities = entities.entities + [ent|string|trim] %}
-          {% endif %}
-        {% endfor %}
-      {% endfor %}
     {% endif %}
-    {{ iif(group == 'invalid',['invalid'],entities.entities|lower) }}
+    {% set entities_from_group = group_array.group_list
+           | expand
+           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
+           | map(attribute='entity_id')
+           | list %}
+    {{ entities_from_group }}
 
   entities_from_device: >-
-    {% set devices = namespace(devices=[]) %}
-    {% set entities = namespace(entities=[]) %}
-    {% if device == 'invalid' %}
-      {% set device = devices_from_label %}
-    {% endif %}
-    {% if device != 'invalid' %}
-      {# Converting to a list #}
-      {% if ',' in device %}
-        {% set devicenum = device.split( ',' ) | count %}
-        {% for i in range(0,devicenum) %}
-          {% set devices.devices = devices.devices + [device.split( ',' )[i]|string|trim ] %}
-        {% endfor %}
-      {% elif device[0]|count == 1 %}
-        {# if the first item in the list has only a single character, it isn't a valid list #}
-        {% set devices.devices = devices.devices + [device|string|trim] %}
+    {% set entities_from_device = [] %}
+    {% set device_array = namespace(device_list=[]) %}
+    {% if device != 'invalid' and device != ['invalid'] and device != [] and device != '' %}
+      {% if typeof(device) == 'str' %}
+        {% set device_array.device_list = device.split( ',' ) | map('lower') | map('trim') | list %}
       {% else %}
-        {% set devices.devices = device %}
+        {% set device_array.device_list = device | map('lower') | map('trim') | list %}
       {% endif %}
-      {% for each in devices_from_label %}
-        {% if each not in devices.devices %}
-          {% set devices.devices = devices.devices + [each|string|trim] %}
-        {% endif %}
-      {% endfor %}
-
-
-      {# Detecting entities #}
-      {% for device in devices.devices %}
-        {% for ent in device_entities(device) %}
-          {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
-            {% set entities.entities = entities.entities + [ent|string|trim] %}
-          {% endif %}
-        {% endfor %}
-      {% endfor %}
     {% endif %}
-    {{ iif(device == 'invalid',['invalid'],entities.entities|lower) }}
+
+    {% set entities_from_device = device_array.device_list
+           | map('device_entities')
+           | sum(start=[])
+           | select('is_device_attr', 'manufacturer', 'Inovelli')
+           | expand
+           | map(attribute='entity_id')
+           | expand
+           | selectattr('domain', 'in', allowed_domains )
+           | map(attribute='entity_id')
+           | list %}
+    {{ entities_from_device }}
 
   entities_from_entity: >-
-    {% set entities_array = namespace(entities=[]) %}
-    {% set entities = namespace(entities=[]) %}
-    {% if entity == 'invalid' %}
-      {% set entity = entities_from_label %}
-    {% endif %}
-    {% if entity != 'invalid' %}
-      {# Converting to a list #}
-      {% if ',' in entity %}
-        {% set entitynum = entity.split( ',' ) | count %}
-        {% for i in range(0,entitynum) %}
-          {% set entities_array.entities = entities_array.entities + [entity.split( ',' )[i]|string|trim ] %}
-        {% endfor %}
-      {% elif entity[0]|count == 1 %}
-        {# if the first item in the list has only a single character, it isn't a valid list #}
-        {% set entities_array.entities = entities_array.entities + [entity|string|trim] %}
+    {% set entities_from_entity = [] %}
+    {% set entity_array = namespace(entity_list=[]) %}
+    {% if entity != 'invalid' and entity != ['invalid'] and entity != [] and entity != '' %}
+      {% if typeof(entity) == 'str' %}
+        {% set entity_array.entity_list = entity.split( ',' ) | map('lower') | map('trim') | list %}
       {% else %}
-        {% set entities_array.entities = entity %}
+        {% set entity_array.entity_list = entity | map('lower') | map('trim') | list %}
       {% endif %}
-      {% for each in entities_from_label %}
-        {% if each not in entities_array.entities %}
-          {% set entities_array.entities = entities_array.entities + [each|string|trim] %}
-        {% endif %}
-      {% endfor %}
-
-      {# Detecting entities #}
-      {% for ent in entities_array.entities %}
-        {% if ent.split('.')[0] in allowed_domains and is_device_attr(ent,"manufacturer","Inovelli") %}
-          {% set entities.entities = entities.entities + [ent|string|trim] %}
-        {% endif %}
-      {% endfor %}
     {% endif %}
-    {{ iif(entity == 'invalid',['invalid'],entities.entities|lower) }}
+
+    {% set entities_from_entity = entity_array.entity_list
+           | select('is_device_attr', 'manufacturer', 'Inovelli')
+           | expand
+           | selectattr('domain', 'in', allowed_domains )
+           | map(attribute='entity_id')
+           | list %}
+    {{ entities_from_entity }}
 
   all_selected_entities: >-
-    {% set selectors = [entities_from_domain, entities_from_floor, entities_from_area, entities_from_group, entities_from_device, entities_from_entity] %}
-    {% set entities_array = namespace(entities_list=[]) %}
-    {% set selectorsnum = selectors | count %}
-
+    {% set all_selected_entities = [] %}
+    {% set selectors = [ entities_from_domain,
+                         entities_from_label_area,
+                         entities_from_label_device,
+                         entities_from_label_entity,
+                         entities_from_floor,
+                         entities_from_area,
+                         entities_from_group,
+                         entities_from_device,
+                         entities_from_entity ]
+                         | reject('equalto', [])
+                         | list %}
     {% if selector_mode == 'all' %}
-      {% for i in range(0,selectorsnum) %}
-        {% if selectors[i] != ['invalid'] %}
-          {% if i == 0 %}
-            {% set entities_array.entities_list = selectors[i] %}
-          {% else %}
-            {% set entities_array.entities_list = entities_array.entities_list | select('in', selectors[i]) | list %}
-          {% endif %}
-        {% endif %}
+      {% set selector_array = namespace(selector_list=selectors[0]) %}
+      {% for i in range(0,selectors|count) %}
+        {% set selector_array.selector_list = intersect(selectors[i], selector_array.selector_list) %}
       {% endfor %}
+      {% set all_selected_entities = selector_array.selector_list %}
     {% else %}
-      {% set entities_array.entities_list = entities_from_domain + entities_from_floor + entities_from_area + entities_from_group + entities_from_domain + entities_from_device + entities_from_entity %}
+      {% set all_selected_entities = selectors |flatten | unique | list %}
     {% endif %}
-    {{ entities_array.entities_list | reject('equalto', 'invalid') | list }}
+    {{ all_selected_entities }}
 
 
 sequence:
@@ -1512,27 +1505,38 @@ sequence:
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
-      #LEDnumber:         "{{ LEDnumber         | default(\"all\")          | lower }}"
-      #LEDcolor:          "{{ LEDcolor          | default(\"no change\")    | lower }}"
-      #LEDcolor_off:      "{{ LEDcolor_off      | default(\"no change\")    | lower }}"
-      #LEDbrightness:     "{{ LEDbrightness     | default(11)               | float }}"
-      #LEDbrightness_off: "{{ LEDbrightness_off | default(11)               | float }}"
-      #LEDnumber_effect:  "{{ LEDnumber_effect  | default(\"all\")          | lower }}"
-      #effect:            "{{ effect            | default(\"clear effect\") | lower }}"
-      #brightness:        "{{ brightness        | default(11)               | float }}"
-      #color:             "{{ color             | default(\"no change\")    | lower }}"
-      #duration:          "{{ duration          | default(0)                | lower }}"
+      selector_mode:   "{{ selector_mode }}"
+      z2m_topic:       "{{ z2m_topic }}"
+      allowed_domains: "{{ allowed_domains }}"
+      domain:          "{{ domain }}"
+      label:           "{{ label }}"
+      floor:           "{{ floor }}"
+      area:            "{{ area }}"
+      group:           "{{ group }}"
+      device:          "{{ device }}"
+      entity:          "{{ entity }}"
 
-      LEDnumber:         "{{ input_LEDnumber         | default(\"all\")          | lower }}"
-      LEDcolor:          "{{ input_LEDcolor          | default(\"no change\")    | lower }}"
-      LEDcolor_off:      "{{ input_LEDcolor_off      | default(\"no change\")    | lower }}"
-      LEDbrightness:     "{{ input_LEDbrightness     | default(11)               | float }}"
-      LEDbrightness_off: "{{ input_LEDbrightness_off | default(11)               | float }}"
-      LEDnumber_effect:  "{{ input_LEDnumber_effect  | default(\"all\")          | lower }}"
-      effect:            "{{ input_effect            | default(\"clear effect\") | lower }}"
-      brightness:        "{{ input_brightness        | default(11)               | float }}"
-      color:             "{{ input_color             | default(\"no change\")    | lower }}"
-      duration:          "{{ input_duration          | default(0)                | lower }}"
+      #LEDnumber:         "{{ LEDnumber         | default('all')          | lower }}"
+      #LEDcolor:          "{{ LEDcolor          | default('no change')    | lower }}"
+      #LEDcolor_off:      "{{ LEDcolor_off      | default('no change')    | lower }}"
+      #LEDbrightness:     "{{ LEDbrightness     | default(11)             | float }}"
+      #LEDbrightness_off: "{{ LEDbrightness_off | default(11)             | float }}"
+      #LEDnumber_effect:  "{{ LEDnumber_effect  | default('all')          | lower }}"
+      #effect:            "{{ effect            | default('clear effect') | lower }}"
+      #brightness:        "{{ brightness        | default(11)             | float }}"
+      #color:             "{{ color             | default('no change')    | lower }}"
+      #duration:          "{{ duration          | default(0)              | lower }}"
+
+      LEDnumber:         "{{ input_LEDnumber         | default('all')          | lower }}"
+      LEDcolor:          "{{ input_LEDcolor          | default('no change')    | lower }}"
+      LEDcolor_off:      "{{ input_LEDcolor_off      | default('no change')    | lower }}"
+      LEDbrightness:     "{{ input_LEDbrightness     | default(11)             | float }}"
+      LEDbrightness_off: "{{ input_LEDbrightness_off | default(11)             | float }}"
+      LEDnumber_effect:  "{{ input_LEDnumber_effect  | default('all')          | lower }}"
+      effect:            "{{ input_effect            | default('clear effect') | lower }}"
+      brightness:        "{{ input_brightness        | default(11)             | float }}"
+      color:             "{{ input_color             | default('no change')    | lower }}"
+      duration:          "{{ input_duration          | default(0)              | lower }}"
 
 
   ##################
@@ -1688,7 +1692,7 @@ sequence:
         # LED strip color
         ##################
         - choose:
-            - conditions: "{{ LEDcolor != \"no change\" }}"
+            - conditions: "{{ LEDcolor != 'no change' }}"
               sequence:
 
                 ### Zwave JS
@@ -1731,7 +1735,7 @@ sequence:
                                             - service: mqtt.publish
                                               data:
                                                 topic: >-
-                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
                                                 payload: >-
                                                   {% if repeat.item == 'all' %}
                                                     { "ledColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
@@ -1756,7 +1760,7 @@ sequence:
                                       - service: mqtt.publish
                                         data:
                                           topic: >-
-                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                           payload: >-
                                             {% if LEDnumber == 'all' %}
                                               { "ledColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
@@ -1867,7 +1871,7 @@ sequence:
         # LED strip color when off
         ##################
         - choose:
-            - conditions: "{{ LEDcolor_off != \"no change\" }}"
+            - conditions: "{{ LEDcolor_off != 'no change' }}"
               sequence:
 
                 ### Zwave JS ###
@@ -1910,7 +1914,7 @@ sequence:
                                             - service: mqtt.publish
                                               data:
                                                 topic: >-
-                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
                                                 payload: >-
                                                   {% if repeat.item == 'all' %}
                                                     { "ledColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
@@ -1935,7 +1939,7 @@ sequence:
                                       - service: mqtt.publish
                                         data:
                                           topic: >-
-                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                           payload: >-
                                             {% if LEDnumber == 'all' %}
                                               { "ledColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
@@ -2095,7 +2099,7 @@ sequence:
                                             - service: mqtt.publish
                                               data:
                                                 topic: >-
-                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
                                                 payload: >-
                                                   {% if repeat.item == 'all' %}
                                                     { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
@@ -2120,7 +2124,7 @@ sequence:
                                       - service: mqtt.publish
                                         data:
                                           topic: >-
-                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                           payload: >-
                                             {% if LEDnumber == 'all' %}
                                               { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
@@ -2273,7 +2277,7 @@ sequence:
                                             - service: mqtt.publish
                                               data:
                                                 topic: >-
-                                                  zigbee2mqtt/{{ states[entity].attributes.friendly_name }}/set
+                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
                                                 payload: >-
                                                   {% if repeat.item == 'all' %}
                                                     { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
@@ -2298,7 +2302,7 @@ sequence:
                                       - service: mqtt.publish
                                         data:
                                           topic: >-
-                                            zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                           payload: >-
                                             {% if LEDnumber == 'all' %}
                                               { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
@@ -2457,7 +2461,7 @@ sequence:
                               - service: mqtt.publish
                                 data:
                                   topic: >-
-                                    zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                    {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                                   payload: >-
                                     {% if LEDnumber_effect == 'all' %}
                                       {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 256 / 10) | int }}" }}
@@ -2552,7 +2556,7 @@ sequence:
                           - service: mqtt.publish
                             data:
                               topic: >-
-                                zigbee2mqtt/{{ states[repeat.item].attributes.friendly_name }}/set
+                                {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                               payload: >-
                                 {"led_effect":{"duration":"{{duration_values[duration]}}","effect":"{{effects}}" }}
 
