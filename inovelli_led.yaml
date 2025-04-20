@@ -31,7 +31,7 @@
 #   Switch blueprint: and script alias: lines
 #   Add two spaces to lines between label: and variables: 66,562s
 #   Comment out example:
-#   Switch input_* and script variables in all three locations
+#   Switch input_* and script variables in both locations
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
 # ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417
@@ -563,29 +563,6 @@ fields:
 
 
 variables:
-  #input_selector_mode:     !input selector_mode
-  #input_z2m_topic:         !input z2m_topic
-  #input_allowed_domains:   !input allowed_domains
-  #input_domain:            !input domain
-  #input_label:             !input label
-  #input_floor:             !input floor
-  #input_area:              !input area
-  #input_group:             !input group
-  #input_device:            !input device
-  #input_entity:            !input entity
-
-  #input_LEDnumber:         !input LEDnumber
-  #input_LEDcolor:          !input LEDcolor
-  #input_LEDcolor_off:      !input LEDcolor_off
-  #input_LEDbrightness:     !input LEDbrightness
-  #input_LEDbrightness_off: !input LEDbrightness_off
-  #input_LEDnumber_effect:  !input LEDnumber_effect
-  #input_effect:            !input effect
-  #input_brightness:        !input brightness
-  #input_color:             !input color
-  #input_duration:          !input duration
-
-
   ##################
   # Look-up tables for easy reference and future maintenance.
   ##################
@@ -1238,9 +1215,32 @@ variables:
   ##################
   # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
+  #selector_mode:     !input selector_mode
+  #input_z2m_topic:   !input z2m_topic
+  #z2m_topic:         "{{ z2m_topic | default('zigbee2mqtt') }}"
+  ####allowed_domains:   !input allowed_domains
+  #domain:            !input domain
+  #label:             !input label
+  #floor:             !input floor
+  #area:              !input area
+  #group:             !input group
+  #device:            !input device
+  #entity:            !input entity
+
+  #LEDnumber:         !input LEDnumber
+  #LEDcolor:          !input LEDcolor
+  #LEDcolor_off:      !input LEDcolor_off
+  #LEDbrightness:     !input LEDbrightness
+  #LEDbrightness_off: !input LEDbrightness_off
+  #LEDnumber_effect:  !input LEDnumber_effect
+  #effect:            !input effect
+  #brightness:        !input brightness
+  #color:             !input color
+  #duration:          !input duration
+
   selector_mode:   "{{ selector_mode }}"
-  z2m_topic:       "{{ z2m_topic }}"
-  allowed_domains: "{{ allowed_domains }}"
+  z2m_topic:       "{{ z2m_topic | default('zigbee2mqtt') }}"
+  ###allowed_domains: "{{ allowed_domains }}"
   domain:          "{{ domain }}"
   label:           "{{ label }}"
   floor:           "{{ floor }}"
@@ -1249,16 +1249,6 @@ variables:
   device:          "{{ device }}"
   entity:          "{{ entity }}"
 
-  #selector_mode: "{{ iif(input_selector_mode, input_selector_mode | lower, 'any') }}"
-  #z2m_topic:     "{{ iif(input_z2m_topic,     input_z2m_topic     | lower, 'zigbee2mqtt') }}"
-  #allowed_domains: "{{ iif(inputallowed_domains, input_allowed_domains, []) }}"
-  #domain:        "{{ iif(input_domain,        input_domain        | lower,  'invalid') }}"
-  #label:         "{{ iif(input_label,         input_label         | lower,  'invalid') }}"
-  #floor:         "{{ iif(input_floor,         input_floor         | lower,  'invalid') }}"
-  #area:          "{{ iif(input_area,          input_area          | lower,  'invalid') }}"
-  #group:         "{{ iif(input_group,         input_group         | lower,  'invalid') }}"
-  #device:        "{{ iif(input_device,        input_device        | lower,  'invalid') }}"
-  #entity:        "{{ iif(input_entity,        input_entity        | lower,  'invalid') }}"
 
   allowed_domains: >-
     {% set allowed_domains = [] %}
@@ -1526,17 +1516,6 @@ sequence:
       brightness:        "{{ brightness        | default(11)             | float }}"
       color:             "{{ color             | default('no change')    | lower }}"
       duration:          "{{ duration          | default(0)              | lower }}"
-
-      #LEDnumber:         "{{ input_LEDnumber         | default('all')          | lower }}"
-      #LEDcolor:          "{{ input_LEDcolor          | default('no change')    | lower }}"
-      #LEDcolor_off:      "{{ input_LEDcolor_off      | default('no change')    | lower }}"
-      #LEDbrightness:     "{{ input_LEDbrightness     | default(11)             | float }}"
-      #LEDbrightness_off: "{{ input_LEDbrightness_off | default(11)             | float }}"
-      #LEDnumber_effect:  "{{ input_LEDnumber_effect  | default('all')          | lower }}"
-      #effect:            "{{ input_effect            | default('clear effect') | lower }}"
-      #brightness:        "{{ input_brightness        | default(11)             | float }}"
-      #color:             "{{ input_color             | default('no change')    | lower }}"
-      #duration:          "{{ input_duration          | default(0)              | lower }}"
 
 
   ##################
