@@ -44,522 +44,522 @@ mode: parallel
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches and you're calling the script per entity for some goofy reason.
 
 
-#blueprint:
-#  name: Inovelli LED Settings and Effects Blueprint
-#  domain: script
-#  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
-#  author: "Kevin Schlichter"
-#  description: >-
-#    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
-#    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
-#    and can be called by domain, label, floor, area, group, device, and entity.
-#  homeassistant:
-#    min_version: 2025.04.0
-#  input:
-
-alias: Inovelli LED Settings and Effects
-description: >-
+blueprint:
+  name: Inovelli LED Settings and Effects Blueprint
+  domain: script
+  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
+  author: "Kevin Schlichter"
+  description: >-
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
     through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
     and can be called by domain, label, floor, area, group, device, and entity.
-fields:
+  homeassistant:
+    min_version: 2025.04.0
+  input:
 
-  selector_mode:
-    name: Selector Mode
-    description: Select devices that meet ANY requirements (logical OR)  or ALL requirements (logical AND).
-    #required: false
-    example: 'any'
-    default: 'any'
-    selector:
-      select:
-        multiple: false
-        options:
-          - "any"
-          - "all"
-
-  z2m_topic:
-    name: Zigbee2MQTT Topic
-    description: Topic (string) used to identify and route messages within the MQTT protocol
-    #required: false
-    example: 'zigbee2mqtt'
-    default: 'zigbee2mqtt'
-    selector:
-      text:
-        multiple: false
-        type: text
-
-  allowed_domains:
-    name: Allowed Domain
-    description: Only allow entities of the following type.
-    #required: false
-    example: 'light, fan'
-    default: ['fan','light','switch']
-    selector:
-      select:
-        multiple: true
-        options:
-          - "fan"
-          - "light"
-          - "switch"
-
-  domain:
-    name: Domain
-    description: Select all entities of this domain type.
-    #required: false
-    example: 'light, fan'
-    default: []
-    selector:
-      select:
-        multiple: true
-        options:
-          - "fan"
-          - "light"
-          - "switch"
-
-  label:
-    name: Label
-    description: Labels on Inovelli devices and entities, or areas containing Inovelli devices.
-    #required: false
-    example: 'christmas lights, bedrooms, fans'
-    default: []
-    selector:
-      label:
-        multiple: true
-
-  floor:
-    name: Floor
-    description: Floor IDs containing areas with Inovelli devices.  
-    #required: false
-    example: 'downstairs,upstairs, outside'
-    default: []
-    selector:
-      floor:
-        multiple: true
+#alias: Inovelli LED Settings and Effects
+#description: >-
+#    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
+#    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
+#    and can be called by domain, label, floor, area, group, device, and entity.
+#fields:
+  
+    selector_mode:
+      name: Selector Mode
+      description: Select devices that meet ANY requirements (logical OR)  or ALL requirements (logical AND).
+      #required: false
+      #example: 'any'
+      default: 'any'
+      selector:
+        select:
+          multiple: false
+          options:
+            - "any"
+            - "all"
+  
+    z2m_topic:
+      name: Zigbee2MQTT Topic
+      description: Topic (string) used to identify and route messages within the MQTT protocol
+      #required: false
+      #example: 'zigbee2mqtt'
+      default: 'zigbee2mqtt'
+      selector:
+        text:
+          multiple: false
+          type: text
+  
+    allowed_domains:
+      name: Allowed Domain
+      description: Only allow entities of the following type.
+      #required: false
+      #example: 'light, fan'
+      default: ['fan','light','switch']
+      selector:
+        select:
+          multiple: true
+          options:
+            - "fan"
+            - "light"
+            - "switch"
+  
+    domain:
+      name: Domain
+      description: Select and include all entities of this domain type.
+      #required: false
+      #example: 'light, fan'
+      default: []
+      selector:
+        select:
+          multiple: true
+          options:
+            - "fan"
+            - "light"
+            - "switch"
+  
+    label:
+      name: Label
+      description: Labels on Inovelli devices and entities, or areas containing Inovelli devices.
+      #required: false
+      #example: 'christmas lights, bedrooms, fans'
+      default: []
+      selector:
+        label:
+          multiple: true
+  
+    floor:
+      name: Floor
+      description: Floor IDs containing areas with Inovelli devices.  
+      #required: false
+      #example: 'downstairs,upstairs, outside'
+      default: []
+      selector:
+        floor:
+          multiple: true
+          device:
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW36
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: VZW31-SN
+            - integration: zha
+              manufacturer: Inovelli
+              model: VZM31-SN
+            - integration: zha
+              manufacturer: Inovelli
+              model: VZM35-SN
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: 2-in-1 switch + dimmer (VZM31-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Fan Controller (VZM35-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli Fan Controller (VZM35-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: 2-in-1 switch + dimmer
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Fan controller
+  
+    area:
+      name: Area
+      description: Area names or IDs containing Inovelli devices.
+      #required: false
+      #example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
+      default: []
+      selector:
+        area:
+          multiple: true
+          device:
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW36
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: VZW31-SN
+            - integration: zha
+              manufacturer: Inovelli
+              model: VZM31-SN
+            - integration: zha
+              manufacturer: Inovelli
+              model: VZM35-SN
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: 2-in-1 switch + dimmer (VZM31-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Fan Controller (VZM35-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli Fan Controller (VZM35-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: 2-in-1 switch + dimmer
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Fan controller
+  
+    group:
+      name: Group
+      description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
+      #required: false
+      #example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain:
+                - group
+                - fan
+                - light
+                - switch
+  
+    device:
+      name: Device
+      description: Device IDs of Inovelli devices.  Mix and match types as you like.
+      #required: false
+      #example: '0249abdc634c12cbf6cdc06d7a507495'
+      default: []
+      selector:
         device:
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW36
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: VZW31-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM31-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM35-SN
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan controller
-
-  area:
-    name: Area
-    description: Area names or IDs containing Inovelli devices.
-    #required: false
-    example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
-    default: []
-    selector:
-      area:
-        multiple: true
-        device:
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW36
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: VZW31-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM31-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM35-SN
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan controller
-
-  group:
-    name: Group
-    description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
-    #required: false
-    example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
-    default: []
-    selector:
-      entity:
-        multiple: true
-        filter:
-          - domain:
-              - group
-              - fan
-              - light
-              - switch
-
-  device:
-    name: Device
-    description: Device IDs of Inovelli devices.  Mix and match types as you like.
-    #required: false
-    example: '0249abdc634c12cbf6cdc06d7a507495'
-    default: []
-    selector:
-      device:
-        multiple: true
-        filter:
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW36
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: VZW31-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM31-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM35-SN
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan controller
-
-  entity:
-    name: Entity
-    description: >-
-      The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
-      a comma separated list of Inovelli devices.  Mix and match types as you like.
-    #required: false
-    example: light.office, fan.guest_room
-    default: []
-    selector:
-      entity:
-        multiple: true
-        filter:
-          - domain:
-              - fan
-              - light
-              - switch
-            #model: LZW36 # Device model should really be an option for entities.
-
-  LEDnumber:
-    name: LED Number
-    description: >-
-      Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
-    #required: false
-    example: All
-    default: 'all'
-    selector:
-      select:
-        options:
-          - All
-          - LED 1
-          - LED 2
-          - LED 3
-          - LED 4
-          - LED 5
-          - LED 6
-          - LED 7
-
-  LEDcolor:
-    name: LED Color When On (non-effect)
-    description: Sets the color of the LED status bar, which indicates brightness levels of the light.
-    #required: false
-    example: Blue
-    default: 'no change'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Red
-          - Orange
-          - Lemon
-          - Yellow
-          - Lime
-          - Green
-          - Cyan
-          - Teal
-          - Blue
-          - Purple
-          - Magenta
-          - Light Pink
-          - Pink
-          - Hot Pink
-          - White
-          - All Clear
-          - All Unicorn
-          - All USA
-
-  LEDcolor_off:
-    name: LED Color When Off (non-effect). Red 800 and Blue Series only.
-    description: Sets the color of the LED status bar, which indicates brightness levels of the light.
-    #required: false
-    example: Blue
-    default: 'no change'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Red
-          - Orange
-          - Lemon
-          - Yellow
-          - Lime
-          - Green
-          - Cyan
-          - Teal
-          - Blue
-          - Purple
-          - Magenta
-          - Light Pink
-          - Pink
-          - Hot Pink
-          - White
-          - All Clear
-          - All Unicorn
-          - All USA
-
-  LEDbrightness:
-    name: LED Brightness When On (non-effect)
-    description: Sets the brightness of the LED status when on. 0 means off.
-    #required: false
-    example: 6
-    default: 11
-    selector:
-      number:
-        min: 0
-        max: 10
-        step: 0.1
-        mode: slider
-
-  LEDbrightness_off:
-    name: LED Brightness When Off (non-effect).
-    description: Sets the brightness of the LED status when off. 0 means off.
-    #required: false
-    example: 2
-    default: 11
-    selector:
-      number:
-        min: 0
-        max: 10
-        step: 0.1
-        mode: slider
-
-  LEDnumber_effect:
-    name: LED Number for Effects
-    description: >-
-      Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom. (Red 800, and Blue Series only.  Black and Red 500 Series devices do not support effects on individual LEDs)
-    #required: false
-    example: All
-    default: 'all'
-    selector:
-      select:
-        options:
-          - All
-          - LED 1
-          - LED 2
-          - LED 3
-          - LED 4
-          - LED 5
-          - LED 6
-          - LED 7
-
-  effect:
-    name: Effect
-    description: Type of effect. (Red and Blue Series only.  Black Series devices do not support effects) 
-    #required: false
-    example: Pulse
-    default: 'Clear Effect'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Clear Effect
-          - Aurora
-          - Blink Fast
-          - Blink Medium
-          - Blink Slow
-          - Chase Fast
-          - Chase Medium
-          - Chase Slow
-          - Fall Fast
-          - Fall Medium
-          - Fall Slow
-          - Open Close
-          - Pulse
-          - Rise Fast
-          - Rise Medium
-          - Rise Slow
-          - Siren Fast
-          - Siren Slow
-          - Small to Big
-          - Solid
-
-  brightness:
-    name: Effect Brightness
-    description: Sets the brightness of the LED's effect.  0 means off.
-    #required: false
-    example: "8"
-    default: '11'
-    selector:
-      number:
-        min: 0
-        max: 10
-        step: 0.1
-        mode: slider
-
-  color:
-    name: Effect Color
-    description: Color of LED for the effect
-    #required: false
-    example: Red
-    default: 'no change'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Red
-          - Orange
-          - Lemon
-          - Yellow
-          - Lime
-          - Green
-          - Cyan
-          - Teal
-          - Blue
-          - Purple
-          - Magenta
-          - Light Pink
-          - Pink
-          - Hot Pink
-          - White
-          - All Clear
-          - All Unicorn
-          - All USA
-
-  duration:
-    name: Duration of Effect
-    description: How long the effect will last.
-    #required: false
-    example: "Off"
-    default: '0'
-    selector:
-      select:
-        options:
-          - "Off"
-          - Forever
-          - 1 Second
-          - 2 Seconds
-          - 3 Seconds
-          - 4 Seconds
-          - 5 Seconds
-          - 6 Seconds
-          - 7 Seconds
-          - 8 Seconds
-          - 9 Seconds
-          - 10 Seconds
-          - 15 Seconds
-          - 20 Seconds
-          - 25 Seconds
-          - 30 Seconds
-          - 35 Seconds
-          - 40 Seconds
-          - 45 Seconds
-          - 50 Seconds
-          - 55 Seconds
-          - 60 Seconds
-          - 2 Minutes
-          - 3 Minutes
-          - 4 Minutes
-          - 5 Minutes
-          - 6 Minutes
-          - 7 Minutes
-          - 8 Minutes
-          - 9 Minutes
-          - 10 Minutes
-          - 15 Minutes
-          - 30 Minutes
-          - 45 Minutes
-          - 1 Hour
-          - 2 Hours
-          - Indefinitely
+          multiple: true
+          filter:
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW36
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: VZW31-SN
+            - integration: zha
+              manufacturer: Inovelli
+              model: VZM31-SN
+            - integration: zha
+              manufacturer: Inovelli
+              model: VZM35-SN
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: 2-in-1 switch + dimmer (VZM31-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Fan Controller (VZM35-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Inovelli Fan Controller (VZM35-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: 2-in-1 switch + dimmer
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: Fan controller
+  
+    entity:
+      name: Entity
+      description: >-
+        The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
+        a comma separated list of Inovelli devices.  Mix and match types as you like.
+      #required: false
+      #example: light.office, fan.guest_room
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain:
+                - fan
+                - light
+                - switch
+              #model: LZW36 # Device model should really be an option for entities.
+  
+    LEDnumber:
+      name: LED Number
+      description: >-
+        Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
+      #required: false
+      #example: All
+      default: 'all'
+      selector:
+        select:
+          options:
+            - All
+            - LED 1
+            - LED 2
+            - LED 3
+            - LED 4
+            - LED 5
+            - LED 6
+            - LED 7
+  
+    LEDcolor:
+      name: LED Color When On (non-effect)
+      description: Sets the color of the LED status bar, which indicates brightness levels of the light.
+      #required: false
+      #example: Blue
+      default: 'no change'
+      selector:
+        select:
+          options:
+            - "Off"
+            - Red
+            - Orange
+            - Lemon
+            - Yellow
+            - Lime
+            - Green
+            - Cyan
+            - Teal
+            - Blue
+            - Purple
+            - Magenta
+            - Light Pink
+            - Pink
+            - Hot Pink
+            - White
+            - All Clear
+            - All Unicorn
+            - All USA
+  
+    LEDcolor_off:
+      name: LED Color When Off (non-effect). Red 800 and Blue Series only.
+      description: Sets the color of the LED status bar, which indicates brightness levels of the light.
+      #required: false
+      #example: Blue
+      default: 'no change'
+      selector:
+        select:
+          options:
+            - "Off"
+            - Red
+            - Orange
+            - Lemon
+            - Yellow
+            - Lime
+            - Green
+            - Cyan
+            - Teal
+            - Blue
+            - Purple
+            - Magenta
+            - Light Pink
+            - Pink
+            - Hot Pink
+            - White
+            - All Clear
+            - All Unicorn
+            - All USA
+  
+    LEDbrightness:
+      name: LED Brightness When On (non-effect)
+      description: Sets the brightness of the LED status when on. 0 means off.
+      #required: false
+      #example: 6
+      default: 11
+      selector:
+        number:
+          min: 0
+          max: 10
+          step: 0.1
+          mode: slider
+  
+    LEDbrightness_off:
+      name: LED Brightness When Off (non-effect).
+      description: Sets the brightness of the LED status when off. 0 means off.
+      #required: false
+      #example: 2
+      default: 11
+      selector:
+        number:
+          min: 0
+          max: 10
+          step: 0.1
+          mode: slider
+  
+    LEDnumber_effect:
+      name: LED Number for Effects
+      description: >-
+        Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom. (Red 800, and Blue Series only.  Black and Red 500 Series devices do not support effects on individual LEDs)
+      #required: false
+      #example: All
+      default: 'all'
+      selector:
+        select:
+          options:
+            - All
+            - LED 1
+            - LED 2
+            - LED 3
+            - LED 4
+            - LED 5
+            - LED 6
+            - LED 7
+  
+    effect:
+      name: Effect
+      description: Type of effect. (Red and Blue Series only.  Black Series devices do not support effects) 
+      #required: false
+      #example: Pulse
+      default: 'Clear Effect'
+      selector:
+        select:
+          options:
+            - "Off"
+            - Clear Effect
+            - Aurora
+            - Blink Fast
+            - Blink Medium
+            - Blink Slow
+            - Chase Fast
+            - Chase Medium
+            - Chase Slow
+            - Fall Fast
+            - Fall Medium
+            - Fall Slow
+            - Open Close
+            - Pulse
+            - Rise Fast
+            - Rise Medium
+            - Rise Slow
+            - Siren Fast
+            - Siren Slow
+            - Small to Big
+            - Solid
+  
+    brightness:
+      name: Effect Brightness
+      description: Sets the brightness of the LED's effect.  0 means off.
+      #required: false
+      #example: "8"
+      default: '11'
+      selector:
+        number:
+          min: 0
+          max: 10
+          step: 0.1
+          mode: slider
+  
+    color:
+      name: Effect Color
+      description: Color of LED for the effect
+      #required: false
+      #example: Red
+      default: 'no change'
+      selector:
+        select:
+          options:
+            - "Off"
+            - Red
+            - Orange
+            - Lemon
+            - Yellow
+            - Lime
+            - Green
+            - Cyan
+            - Teal
+            - Blue
+            - Purple
+            - Magenta
+            - Light Pink
+            - Pink
+            - Hot Pink
+            - White
+            - All Clear
+            - All Unicorn
+            - All USA
+  
+    duration:
+      name: Duration of Effect
+      description: How long the effect will last.
+      #required: false
+      #example: "Off"
+      default: '0'
+      selector:
+        select:
+          options:
+            - "Off"
+            - Forever
+            - 1 Second
+            - 2 Seconds
+            - 3 Seconds
+            - 4 Seconds
+            - 5 Seconds
+            - 6 Seconds
+            - 7 Seconds
+            - 8 Seconds
+            - 9 Seconds
+            - 10 Seconds
+            - 15 Seconds
+            - 20 Seconds
+            - 25 Seconds
+            - 30 Seconds
+            - 35 Seconds
+            - 40 Seconds
+            - 45 Seconds
+            - 50 Seconds
+            - 55 Seconds
+            - 60 Seconds
+            - 2 Minutes
+            - 3 Minutes
+            - 4 Minutes
+            - 5 Minutes
+            - 6 Minutes
+            - 7 Minutes
+            - 8 Minutes
+            - 9 Minutes
+            - 10 Minutes
+            - 15 Minutes
+            - 30 Minutes
+            - 45 Minutes
+            - 1 Hour
+            - 2 Hours
+            - Indefinitely
 
 
 variables:
@@ -1215,51 +1215,51 @@ variables:
   ##################
   # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
-  #selector_mode:     !input selector_mode
-  #input_z2m_topic:   !input z2m_topic
-  #z2m_topic:         "{{ z2m_topic | default('zigbee2mqtt') }}"
-  ####allowed_domains:   !input allowed_domains
-  #domain:            !input domain
-  #label:             !input label
-  #floor:             !input floor
-  #area:              !input area
-  #group:             !input group
-  #device:            !input device
-  #entity:            !input entity
+  selector_mode:     !input selector_mode
+  input_z2m_topic:   !input z2m_topic
+  z2m_topic:         "{{ z2m_topic | default('zigbee2mqtt') }}"
+  allowed_domains:   !input allowed_domains
+  domain:            !input domain
+  label:             !input label
+  floor:             !input floor
+  area:              !input area
+  group:             !input group
+  device:            !input device
+  entity:            !input entity
 
-  #LEDnumber:         !input LEDnumber
-  #LEDcolor:          !input LEDcolor
-  #LEDcolor_off:      !input LEDcolor_off
-  #LEDbrightness:     !input LEDbrightness
-  #LEDbrightness_off: !input LEDbrightness_off
-  #LEDnumber_effect:  !input LEDnumber_effect
-  #effect:            !input effect
-  #brightness:        !input brightness
-  #color:             !input color
-  #duration:          !input duration
+  LEDnumber:         !input LEDnumber
+  LEDcolor:          !input LEDcolor
+  LEDcolor_off:      !input LEDcolor_off
+  LEDbrightness:     !input LEDbrightness
+  LEDbrightness_off: !input LEDbrightness_off
+  LEDnumber_effect:  !input LEDnumber_effect
+  effect:            !input effect
+  brightness:        !input brightness
+  color:             !input color
+  duration:          !input duration
 
-  selector_mode:   "{{ selector_mode }}"
-  z2m_topic:       "{{ z2m_topic | default('zigbee2mqtt') }}"
-  ###allowed_domains: "{{ allowed_domains }}"
-  domain:          "{{ domain }}"
-  label:           "{{ label }}"
-  floor:           "{{ floor }}"
-  area:            "{{ area }}"
-  group:           "{{ group }}"
-  device:          "{{ device }}"
-  entity:          "{{ entity }}"
+  #selector_mode:   "{{ selector_mode }}"
+  #z2m_topic:       "{{ z2m_topic | default('zigbee2mqtt') }}"
+  #allowed_domains: "{{ allowed_domains }}"
+  #domain:          "{{ domain }}"
+  #label:           "{{ label }}"
+  #floor:           "{{ floor }}"
+  #area:            "{{ area }}"
+  #group:           "{{ group }}"
+  #device:          "{{ device }}"
+  #entity:          "{{ entity }}"
 
 
-  allowed_domains: >-
-    {% set allowed_domains = [] %}
+  domains_allowed: >-
+    {% set domains_allowed = [] %}
     {% if allowed_domains == 'invalid' or allowed_domains == ['invalid'] or allowed_domains == [] or allowed_domains == '' %}
-      {% set allowed_domains = ['fan', 'light', 'switch'] %}
+      {% set domains_allowed = ['fan', 'light', 'switch'] %}
     {% elif typeof(allowed_domains) == 'list' %}
-      {% set allowed_domains = allowed_domains | map('lower') | map('trim') | list %}
+      {% set domains_allowed = allowed_domains | map('lower') | map('trim') | list %}
     {% elif typeof(allowed_domains) == 'str' %}
-      {% set allowed_domains = allowed_domains.split( ',' ) | map('lower') | map('trim') | list %}
+      {% set domains_allowed = allowed_domains.split( ',' ) | map('lower') | map('trim') | list %}
     {% endif %}
-    {{ allowed_domains }}
+    {{ domains_allowed }}
 
   entities_from_domain: >-
     {% set domain_list = [] %}
@@ -1285,7 +1285,7 @@ variables:
     {% if domain_list != [] %}
       {% set entities = states
              | selectattr('domain', 'in', domain_list )
-             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('domain', 'in', domains_allowed )
              | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
              | map(attribute='entity_id')
              | list %}
@@ -1315,7 +1315,7 @@ variables:
              | flatten
              | map('area_entities')
              | expand
-             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('domain', 'in', domains_allowed )
              | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
              | map(attribute='entity_id')
              | list %}
@@ -1336,7 +1336,7 @@ variables:
              | expand
              | map(attribute='entity_id')
              | expand
-             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('domain', 'in', domains_allowed )
              | map(attribute='entity_id')
              | list %}
     {% endif %}
@@ -1352,7 +1352,7 @@ variables:
              | flatten
              | select('is_device_attr', 'manufacturer', 'Inovelli')
              | expand
-             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('domain', 'in', domains_allowed )
              | map(attribute='entity_id')
              | list %}
     {% endif %}
@@ -1375,7 +1375,7 @@ variables:
     {% set entities_from_floor = floor_array.floor_list
            | map('floor_entities') 
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
            | map(attribute='entity_id')
            | list %}
@@ -1397,7 +1397,7 @@ variables:
     {% set entities_from_area = area_array.area_list
            | map('area_entities')
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
            | map(attribute='entity_id')
            | list %}
@@ -1415,7 +1415,7 @@ variables:
     {% endif %}
     {% set entities_from_group = group_array.group_list
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
            | map(attribute='entity_id')
            | list %}
@@ -1439,7 +1439,7 @@ variables:
            | expand
            | map(attribute='entity_id')
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | map(attribute='entity_id')
            | list %}
     {{ entities_from_device }}
@@ -1458,7 +1458,7 @@ variables:
     {% set entities_from_entity = entity_array.entity_list
            | select('is_device_attr', 'manufacturer', 'Inovelli')
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | map(attribute='entity_id')
            | list %}
     {{ entities_from_entity }}
@@ -1497,7 +1497,7 @@ sequence:
   - variables:
       selector_mode:   "{{ selector_mode }}"
       z2m_topic:       "{{ z2m_topic }}"
-      allowed_domains: "{{ allowed_domains }}"
+      domains_allowed: "{{ domains_allowed }}"
       domain:          "{{ domain }}"
       label:           "{{ label }}"
       floor:           "{{ floor }}"
