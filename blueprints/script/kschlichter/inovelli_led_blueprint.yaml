@@ -104,7 +104,7 @@ blueprint:
   
     domain:
       name: Domain
-      description: Select all entities of this domain type.
+      description: Select and include all entities of this domain type.
       #required: false
       #example: 'light, fan'
       default: []
@@ -1216,8 +1216,9 @@ variables:
   # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
   selector_mode:     !input selector_mode
-  z2m_topic:         !input z2m_topic
-  ###allowed_domains:   !input allowed_domains
+  input_z2m_topic:   !input z2m_topic
+  z2m_topic:         "{{ z2m_topic | default('zigbee2mqtt') }}"
+  allowed_domains:   !input allowed_domains
   domain:            !input domain
   label:             !input label
   floor:             !input floor
@@ -1238,8 +1239,8 @@ variables:
   duration:          !input duration
 
   #selector_mode:   "{{ selector_mode }}"
-  #z2m_topic:       "{{ z2m_topic }}"
-  ####allowed_domains: "{{ allowed_domains }}"
+  #z2m_topic:       "{{ z2m_topic | default('zigbee2mqtt') }}"
+  #allowed_domains: "{{ allowed_domains }}"
   #domain:          "{{ domain }}"
   #label:           "{{ label }}"
   #floor:           "{{ floor }}"
@@ -1249,16 +1250,16 @@ variables:
   #entity:          "{{ entity }}"
 
 
-  allowed_domains: >-
-    {% set allowed_domains = [] %}
+  domains_allowed: >-
+    {% set domains_allowed = [] %}
     {% if allowed_domains == 'invalid' or allowed_domains == ['invalid'] or allowed_domains == [] or allowed_domains == '' %}
-      {% set allowed_domains = ['fan', 'light', 'switch'] %}
+      {% set domains_allowed = ['fan', 'light', 'switch'] %}
     {% elif typeof(allowed_domains) == 'list' %}
-      {% set allowed_domains = allowed_domains | map('lower') | map('trim') | list %}
+      {% set domains_allowed = allowed_domains | map('lower') | map('trim') | list %}
     {% elif typeof(allowed_domains) == 'str' %}
-      {% set allowed_domains = allowed_domains.split( ',' ) | map('lower') | map('trim') | list %}
+      {% set domains_allowed = allowed_domains.split( ',' ) | map('lower') | map('trim') | list %}
     {% endif %}
-    {{ allowed_domains }}
+    {{ domains_allowed }}
 
   entities_from_domain: >-
     {% set domain_list = [] %}
@@ -1284,7 +1285,7 @@ variables:
     {% if domain_list != [] %}
       {% set entities = states
              | selectattr('domain', 'in', domain_list )
-             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('domain', 'in', domains_allowed )
              | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
              | map(attribute='entity_id')
              | list %}
@@ -1314,7 +1315,7 @@ variables:
              | flatten
              | map('area_entities')
              | expand
-             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('domain', 'in', domains_allowed )
              | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
              | map(attribute='entity_id')
              | list %}
@@ -1335,7 +1336,7 @@ variables:
              | expand
              | map(attribute='entity_id')
              | expand
-             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('domain', 'in', domains_allowed )
              | map(attribute='entity_id')
              | list %}
     {% endif %}
@@ -1351,7 +1352,7 @@ variables:
              | flatten
              | select('is_device_attr', 'manufacturer', 'Inovelli')
              | expand
-             | selectattr('domain', 'in', allowed_domains )
+             | selectattr('domain', 'in', domains_allowed )
              | map(attribute='entity_id')
              | list %}
     {% endif %}
@@ -1374,7 +1375,7 @@ variables:
     {% set entities_from_floor = floor_array.floor_list
            | map('floor_entities') 
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
            | map(attribute='entity_id')
            | list %}
@@ -1396,7 +1397,7 @@ variables:
     {% set entities_from_area = area_array.area_list
            | map('area_entities')
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
            | map(attribute='entity_id')
            | list %}
@@ -1414,7 +1415,7 @@ variables:
     {% endif %}
     {% set entities_from_group = group_array.group_list
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | selectattr('entity_id', 'is_device_attr', 'manufacturer', 'Inovelli')
            | map(attribute='entity_id')
            | list %}
@@ -1438,7 +1439,7 @@ variables:
            | expand
            | map(attribute='entity_id')
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | map(attribute='entity_id')
            | list %}
     {{ entities_from_device }}
@@ -1457,7 +1458,7 @@ variables:
     {% set entities_from_entity = entity_array.entity_list
            | select('is_device_attr', 'manufacturer', 'Inovelli')
            | expand
-           | selectattr('domain', 'in', allowed_domains )
+           | selectattr('domain', 'in', domains_allowed )
            | map(attribute='entity_id')
            | list %}
     {{ entities_from_entity }}
@@ -1496,7 +1497,7 @@ sequence:
   - variables:
       selector_mode:   "{{ selector_mode }}"
       z2m_topic:       "{{ z2m_topic }}"
-      allowed_domains: "{{ allowed_domains }}"
+      domains_allowed: "{{ domains_allowed }}"
       domain:          "{{ domain }}"
       label:           "{{ label }}"
       floor:           "{{ floor }}"
