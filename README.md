@@ -38,19 +38,17 @@
     * "Automations & Scenes"
     * "Blueprints" near the top in a horizontal menu.
     * "Inovelli LED Settings and Effects Blueprint" to open a new screen with the configuration options.
-    * Use the UI to set static parameters.
-      * **These cannot be changed dynamically in automations** (at least I don't know how, so if you see a blueprint that does this, let me know and I'll learn something new)
+    * Use the UI to set static parameters or call it like the script version with dynamic or templated inputs.
     * Click the blue "Save Script" button in the lower-right corner of the screen.
     * Give your script a name (e.g. bedroom_night) and click "rename"
     * Call it from an automation with `service: script.bedroom_night`
-    * **Repeat the above steps for each version of the script you want to have.  You cannot change these values in an automation service call.**
 
 <a href="https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fkschlichter%2FHome-Assistant-Inovelli-Effects-and-Colors%2Fblob%2Fmaster%2Fblueprints%2Fscript%2Fkschlichter%2Finovelli_led_blueprint.yaml" target="_blank" rel="noreferrer noopener"><img src="https://my.home-assistant.io/badges/blueprint_import.svg" alt="Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled." /></a>
 
 
 ## Script Installation Instructions
 
-The easiest way to install is via blueprint.  If you'd rather use the script, which can accept templeted inputs, I recommend adding a directory called `scripts` and [including it in your configuration.yaml file](https://www.home-assistant.io/docs/configuration/splitting_configuration/).
+The easiest way to install is via blueprint.  If you'd rather use the script I recommend adding a directory called `scripts` and [including it in your configuration.yaml file](https://www.home-assistant.io/docs/configuration/splitting_configuration/).
 ```
 script: !include scripts.yaml
 script folder: !include_dir_named scripts
@@ -101,7 +99,7 @@ As a quick start you can follow these steps:
 
 
 ## Selector Mode:
-  Select devices that meet ANY requirements (logical OR) or ALL requirements (logical AND).   Since the default for `selector_mode:` is `any`, you can leave this field out / unselected and get the same result.  Blueprints and script calls written before this feature was added do not need to be updated, and will have the same behavior as before.  
+  Select devices that meet *ANY* requirements (logical OR) or *ALL* requirements (logical AND).   Since the default for `selector_mode:` is `any`, you can leave this field out / unselected and get the same result.  Blueprints and script calls written before this feature was added do not need to be updated, and will have the same behavior as before.  
   **Turning off the LED bar for everything that's upstairs, OR ANY fans:**
   This service call will turn off the LED bar for all Inovelli devices that are upstairs, and also all fans in the house (e.g. upstairs, downstairs, in the garage, or outside).
 
@@ -128,9 +126,34 @@ As a quick start you can follow these steps:
     LEDcolor_off: "Off"
 ```
 
+## Z2M Topic
+  Topic (string) used to identify and route messages within the MQTT protocol.  Default: 'zigbee2mqtt'
+  
+  **Turn off LEDs on all devices reporting through the topic "zigbee2mqttupstairs":**
+```
+  service: script.inovelli_led
+  data:
+    selector_mode: all
+    domain: 'fan'
+    z2m_topic: 'zigbee2mqttupstairs'
+    LEDcolor: "Off"
+    LEDcolor_off: "Off"
+```
 
+## Allowed Domains:
+  Only allow entities of these types.  The default will allow all three types.
+  **Set the LED bar on all fans on the first floor to purple (while leaving lights and switches blue):**
+```
+  service: script.inovelli_led
+  data:
+    allowed_domains: 'fan'
+    floor: 'first floor'
+    LEDcolor: 'purple'
+    LEDcolor_off: 'purple'
+```
+  
 ## Domain:
-  Include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.  In the background, it uses `areas()` and selecting all three domains makes it functionally equivalent to calling `area: 'all''`.  
+  Select and include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.  
   **Set the LED bar on all fans in the house to purple:**
 ```
   service: script.inovelli_led
@@ -159,11 +182,11 @@ As a quick start you can follow these steps:
 ```  
   action: script.inovelli_led
   data:
+    label: `bedroom`
     LEDcolor: 'RED'
     LEDcolor_off: 'Red'
     LEDbrightness: 2
     LEDbrightness_off: 0.1
-    label: `bedroom`
 ```
 
 
