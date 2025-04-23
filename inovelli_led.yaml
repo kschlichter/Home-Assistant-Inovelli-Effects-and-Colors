@@ -31,7 +31,7 @@
 #   Switch blueprint: and script alias: lines
 #   Add two spaces to lines between label: and variables: 66,562s
 #   Comment out example:
-#   Switch input_* and script variables in both locations
+#   Switch input_* and script variables
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
 # ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417
@@ -1238,16 +1238,16 @@ variables:
   #color:             !input color
   #duration:          !input duration
 
-  selector_mode:   "{{ selector_mode }}"
-  z2m_topic:       "{{ z2m_topic | default('zigbee2mqtt') }}"
-  allowed_domains: "{{ allowed_domains }}"
-  domain:          "{{ domain }}"
-  label:           "{{ label }}"
-  floor:           "{{ floor }}"
-  area:            "{{ area }}"
-  group:           "{{ group }}"
-  device:          "{{ device }}"
-  entity:          "{{ entity }}"
+  selector_mode:   "{{ selector_mode   | default('any') }}"
+  z2m_topic:       "{{ z2m_topic       | default('zigbee2mqtt') }}"
+  allowed_domains: "{{ allowed_domains | default([]) }}"
+  domain:          "{{ domain          | default([]) }}"
+  label:           "{{ label           | default([]) }}"
+  floor:           "{{ floor           | default([]) }}"
+  area:            "{{ area            | default([]) }}"
+  group:           "{{ group           | default([]) }}"
+  device:          "{{ device          | default([]) }}"
+  entity:          "{{ entity          | default([]) }}"
 
 
   domains_allowed: >-
@@ -1491,7 +1491,7 @@ variables:
 sequence:
 
   ##################
-  # Cleaning up inputs; using lower case since it's able to handle capital letters in the middle of mistyped and camelcase words like "LightPink".
+  # Cleaning up other variables; using lower case since it's able to handle capital letters in the middle of mistyped and camelcase words like "LightPink".
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
