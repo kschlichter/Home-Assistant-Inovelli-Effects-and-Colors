@@ -1238,16 +1238,17 @@ variables:
   color:             !input color
   duration:          !input duration
 
-  #selector_mode:   "{{ selector_mode }}"
-  #z2m_topic:       "{{ z2m_topic | default('zigbee2mqtt') }}"
-  #allowed_domains: "{{ allowed_domains }}"
-  #domain:          "{{ domain }}"
-  #label:           "{{ label }}"
-  #floor:           "{{ floor }}"
-  #area:            "{{ area }}"
-  #group:           "{{ group }}"
-  #device:          "{{ device }}"
-  #entity:          "{{ entity }}"
+  #selector_mode:   "{{ selector_mode   | default('any') }}"
+  #z2m_topic:       "{{ z2m_topic       | default('zigbee2mqtt') }}"
+  #allowed_domains: "{{ allowed_domains | default([]) }}"
+  #domain:          "{{ domain          | default([]) }}"
+  #label:           "{{ label           | default([]) }}"
+  #floor:           "{{ floor           | default([]) }}"
+  #area:            "{{ area            | default([]) }}"
+  #group:           "{{ group           | default([]) }}"
+  #device:          "{{ device          | default([]) }}"
+  #entity:          "{{ entity          | default([]) }}"
+
 
 
   domains_allowed: >-
