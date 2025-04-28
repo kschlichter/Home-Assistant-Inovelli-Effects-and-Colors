@@ -1,7 +1,7 @@
 ############
 # Forum: https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-red-and-blue-dimmers-switches-and-combo-fan-lights-by-area-group-device-or-entity/421862
 # Github: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors
-# Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
+# ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417
 #
 # Setting the LED indicator
 #   - LEDnumber: (Blue Series only; LED 1 .. LED 7 or All) Set to `all` to configure the whole LED bar (default if the parameter is left out) or configure a single LED.
@@ -29,15 +29,15 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 66,562s
+#   Add two spaces to lines between label: and variables: 66,587s
 #   Comment out example:
 #   Switch input_* and script variables
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
-# ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417
 # ZHA quirks: https://github.com/zigpy/zha-device-handlers/blob/dev/zhaquirks/inovelli/__init__.py#L199
 # Z-Wave Config DB: https://devices.zwave-js.io/?jumpTo=0x031e:0x0001:0x0001:0.0
 # Inovelli Toolbox: https://inovelliusa.github.io/inovelli-switch-toolbox/
+# Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
 ############
 
 mode: parallel
@@ -366,10 +366,24 @@ fields:
           - All Clear
           - All Unicorn
           - All USA
+          - All Custom On
+
+  LEDcolor_custom:
+    name: LED Color Custom Dict When On (non-effect). Blue Series only.
+    description: Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
+    #required: false
+    example: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}"
+    default: {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
+    selector:
+      text:
+        multiline: true
+        prefix: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}"
+        type: text
+        multiple: false
 
   LEDcolor_off:
     name: LED Color When Off (non-effect). Red 800 and Blue Series only.
-    description: Sets the color of the LED status bar, which indicates brightness levels of the light.
+    description: Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
     #required: false
     example: Blue
     default: 'no change'
@@ -395,6 +409,20 @@ fields:
           - All Clear
           - All Unicorn
           - All USA
+          - All Custom Off
+
+  LEDcolor_off_custom:
+    name: LED Color Custom Dict When Off (non-effect). Blue Series only.
+    description: Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
+    #required: false
+    example: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}"
+    default: {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
+    selector:
+      text:
+        multiline: true
+        prefix: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}"
+        type: text
+        multiple: false
 
   LEDbrightness:
     name: LED Brightness When On (non-effect)
@@ -510,9 +538,6 @@ fields:
           - Pink
           - Hot Pink
           - White
-          - All Clear
-          - All Unicorn
-          - All USA
 
   duration:
     name: Duration of Effect
@@ -586,6 +611,8 @@ variables:
     "all clear": {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
     "all unicorn": {'led 1':234,'led 2':234,'led 3':170,'led 4':170,'led 5':170,'led 6':85,'led 7':85,'all':0}
     "all usa": {'led 1':170,'led 2':170,'led 3':255,'led 4':255,'led 5':0,'led 6':0,'led 7':0,'all':255}
+    "all custom on": "{{ LEDcolor_custom | default({'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}) }}"
+    "all custom off": "{{ LEDcolor_off_custom | default({'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}) }}"
 
   ### Blue Series ZHA Quirks says 1 – 7 but it seems to be 0 – 6 ###
   led_map:
