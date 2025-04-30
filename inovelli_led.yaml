@@ -2440,7 +2440,13 @@ sequence:
                             parameter: >-
                               {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_bulk' %}
                               {{ parameters[bulk_param] }}
-                            value: "{{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (repeat.item.effects * 16777216) }}"
+                            value: >-
+                              {% if effect != 'clear effect' %}
+                                {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (repeat.item.effects * 16777216) }}
+                              {% else %}
+                                {# clear effect generates an error even though the calculation is correct by Inovelli's toolbox #}
+                                {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (0) + (0 * 16777216) }}
+                              {% endif %}
 
                 ### Zigbee2mqtt ###
                 - choose:
