@@ -65,8 +65,8 @@ blueprint:
 #    and can be called by domain, label, floor, area, group, device, and entity.
 #
 #    **Syntax and examples https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors**
-
-fields:
+#
+#fields:
 
     selector_mode:
       name: Selector Mode
