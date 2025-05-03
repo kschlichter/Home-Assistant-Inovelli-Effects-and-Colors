@@ -1,7 +1,7 @@
 ############
 # Forum: https://community.home-assistant.io/t/control-leds-and-led-effects-on-inovelli-red-and-blue-dimmers-switches-and-combo-fan-lights-by-area-group-device-or-entity/421862
 # Github: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors
-# Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
+# ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417
 #
 # Setting the LED indicator
 #   - LEDnumber: (Blue Series only; LED 1 .. LED 7 or All) Set to `all` to configure the whole LED bar (default if the parameter is left out) or configure a single LED.
@@ -29,15 +29,14 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 66,562s
-#   Comment out example:
-#   Switch input_* and script variables in both locations
+#   Add two spaces to lines between label: and variables: 72.574s
+#   Switch input_* and script variables
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
-# ZHA LED config: https://community.inovelli.com/t/setting-blue-series-led-color-and-brightness-non-effect-in-home-assistant-zha/16417
 # ZHA quirks: https://github.com/zigpy/zha-device-handlers/blob/dev/zhaquirks/inovelli/__init__.py#L199
 # Z-Wave Config DB: https://devices.zwave-js.io/?jumpTo=0x031e:0x0001:0x0001:0.0
 # Inovelli Toolbox: https://inovelliusa.github.io/inovelli-switch-toolbox/
+# Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
 ############
 
 mode: parallel
@@ -49,26 +48,31 @@ blueprint:
   domain: script
   source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
   author: "Kevin Schlichter"
-  description: >-
+  description: |
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
     through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
     and can be called by domain, label, floor, area, group, device, and entity.
+
+    Syntax and examples: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors
   homeassistant:
     min_version: 2025.04.0
   input:
 
 #alias: Inovelli LED Settings and Effects
-#description: >-
+#description: |
 #    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
 #    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
 #    and can be called by domain, label, floor, area, group, device, and entity.
-#fields:
-  
+#
+#    **Syntax and examples https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors**
+
+fields:
+
     selector_mode:
       name: Selector Mode
-      description: Select devices that meet ANY requirements (logical OR)  or ALL requirements (logical AND).
+      description: |
+        (selector_mode: 'any') - Select devices that meet ANY requirements (logical OR)  or ALL requirements (logical AND).
       #required: false
-      #example: 'any'
       default: 'any'
       selector:
         select:
@@ -79,9 +83,9 @@ blueprint:
   
     z2m_topic:
       name: Zigbee2MQTT Topic
-      description: Topic (string) used to identify and route messages within the MQTT protocol
+      description: |
+        (z2m_topic: 'zigbee2mqtt') - Topic (string) used to identify and route messages within the MQTT protocol
       #required: false
-      #example: 'zigbee2mqtt'
       default: 'zigbee2mqtt'
       selector:
         text:
@@ -90,9 +94,9 @@ blueprint:
   
     allowed_domains:
       name: Allowed Domain
-      description: Only allow entities of the following type.
+      description: |
+        (allowed_domains: 'light, fan') - Only allow entities of the following type.
       #required: false
-      #example: 'light, fan'
       default: ['fan','light','switch']
       selector:
         select:
@@ -104,9 +108,9 @@ blueprint:
   
     domain:
       name: Domain
-      description: Select and include all entities of this domain type.
+      description: |
+        (domain: 'light, fan') - Select and include all entities of this domain type.
       #required: false
-      #example: 'light, fan'
       default: []
       selector:
         select:
@@ -118,9 +122,9 @@ blueprint:
   
     label:
       name: Label
-      description: Labels on Inovelli devices and entities, or areas containing Inovelli devices.
+      description: |
+        (label: 'christmas lights, bedrooms, fans') - Labels on Inovelli devices and entities, or areas containing Inovelli devices.
       #required: false
-      #example: 'christmas lights, bedrooms, fans'
       default: []
       selector:
         label:
@@ -128,9 +132,9 @@ blueprint:
   
     floor:
       name: Floor
-      description: Floor IDs containing areas with Inovelli devices.  
+      description: |
+        (floor: 'downstairs,upstairs, outside') - Floor IDs containing areas with Inovelli devices.  
       #required: false
-      #example: 'downstairs,upstairs, outside'
       default: []
       selector:
         floor:
@@ -181,9 +185,9 @@ blueprint:
   
     area:
       name: Area
-      description: Area names or IDs containing Inovelli devices.
+      description: |
+        (area: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c') - Area names or IDs containing Inovelli devices.
       #required: false
-      #example: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c'
       default: []
       selector:
         area:
@@ -234,9 +238,9 @@ blueprint:
   
     group:
       name: Group
-      description: Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
+      description: |
+        (group: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495') - Group names or IDs for groups containing Inovelli devices.  Mix and match types as you like.
       #required: false
-      #example: 'group.lights_and_switches, 0249abdc634c12cbf6cdc06d7a507495'
       default: []
       selector:
         entity:
@@ -250,9 +254,8 @@ blueprint:
   
     device:
       name: Device
-      description: Device IDs of Inovelli devices.  Mix and match types as you like.
-      #required: false
-      #example: '0249abdc634c12cbf6cdc06d7a507495'
+      description: |
+        (device: '0249abdc634c12cbf6cdc06d7a507495') - Device IDs of Inovelli devices.  Mix and match types as you like.
       default: []
       selector:
         device:
@@ -303,11 +306,8 @@ blueprint:
   
     entity:
       name: Entity
-      description: >-
-        The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be
-        a comma separated list of Inovelli devices.  Mix and match types as you like.
-      #required: false
-      #example: light.office, fan.guest_room
+      description: | 
+        (entity: light.office, fan.guest_room) - The light.*, switch.*, or fan.* entity for the LED we're setting.  Can be a comma separated list of Inovelli devices.  Mix and match types as you like.
       default: []
       selector:
         entity:
@@ -321,10 +321,8 @@ blueprint:
   
     LEDnumber:
       name: LED Number
-      description: >-
-        Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
-      #required: false
-      #example: All
+      description: |
+        (LEDnumber: All) - Sets the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
       default: 'all'
       selector:
         select:
@@ -340,9 +338,8 @@ blueprint:
   
     LEDcolor:
       name: LED Color When On (non-effect)
-      description: Sets the color of the LED status bar, which indicates brightness levels of the light.
-      #required: false
-      #example: Blue
+      description: |
+        (LEDcolor: Blue) - Sets the color of the LED status bar, which indicates brightness levels of the light.
       default: 'no change'
       selector:
         select:
@@ -366,12 +363,24 @@ blueprint:
             - All Clear
             - All Unicorn
             - All USA
+            - All Custom On
+  
+    LEDcolor_custom:
+      name: LED Color Custom Dict When On (non-effect). Blue Series only.
+      description: |
+        (LEDcolor_custom: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}") - Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
+      default: {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
+      selector:
+        text:
+          multiline: true
+          prefix: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}"
+          type: text
+          multiple: false
   
     LEDcolor_off:
       name: LED Color When Off (non-effect). Red 800 and Blue Series only.
-      description: Sets the color of the LED status bar, which indicates brightness levels of the light.
-      #required: false
-      #example: Blue
+      description: |
+        (LEDcolor_off: Blue) - Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
       default: 'no change'
       selector:
         select:
@@ -395,12 +404,24 @@ blueprint:
             - All Clear
             - All Unicorn
             - All USA
+            - All Custom Off
+  
+    LEDcolor_off_custom:
+      name: LED Color Custom Dict When Off (non-effect). Blue Series only.
+      description: |
+        (LEDcolor_off_custom: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}") - Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
+      default: {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
+      selector:
+        text:
+          multiline: true
+          prefix: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}"
+          type: text
+          multiple: false
   
     LEDbrightness:
       name: LED Brightness When On (non-effect)
-      description: Sets the brightness of the LED status when on. 0 means off.
-      #required: false
-      #example: 6
+      description: |
+        (LEDbrightness: 6) - Sets the brightness of the LED status when on. 0 means off.
       default: 11
       selector:
         number:
@@ -411,9 +432,8 @@ blueprint:
   
     LEDbrightness_off:
       name: LED Brightness When Off (non-effect).
-      description: Sets the brightness of the LED status when off. 0 means off.
-      #required: false
-      #example: 2
+      description: |
+        (LEDbrightness_off: 2) - Sets the brightness of the LED status when off. 0 means off.
       default: 11
       selector:
         number:
@@ -424,10 +444,8 @@ blueprint:
   
     LEDnumber_effect:
       name: LED Number for Effects
-      description: >-
-        Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom. (Red 800, and Blue Series only.  Black and Red 500 Series devices do not support effects on individual LEDs)
-      #required: false
-      #example: All
+      description: |
+        (LEDnumber_effect: All) - Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom. (Red 800, and Blue Series only.  Black and Red 500 Series devices do not support effects on individual LEDs)
       default: 'all'
       selector:
         select:
@@ -443,9 +461,8 @@ blueprint:
   
     effect:
       name: Effect
-      description: Type of effect. (Red and Blue Series only.  Black Series devices do not support effects) 
-      #required: false
-      #example: Pulse
+      description: |
+        (effect: Pulse) - Type of effect. (Red and Blue Series only.  Black Series devices do not support effects) 
       default: 'Clear Effect'
       selector:
         select:
@@ -474,9 +491,8 @@ blueprint:
   
     brightness:
       name: Effect Brightness
-      description: Sets the brightness of the LED's effect.  0 means off.
-      #required: false
-      #example: "8"
+      description: |
+        (brightness: "8") - Sets the brightness of the LED's effect.  0 means off.
       default: '11'
       selector:
         number:
@@ -487,9 +503,8 @@ blueprint:
   
     color:
       name: Effect Color
-      description: Color of LED for the effect
-      #required: false
-      #example: Red
+      description: |
+        (color: Red) - Color of LED for the effect
       default: 'no change'
       selector:
         select:
@@ -510,15 +525,11 @@ blueprint:
             - Pink
             - Hot Pink
             - White
-            - All Clear
-            - All Unicorn
-            - All USA
   
     duration:
       name: Duration of Effect
-      description: How long the effect will last.
-      #required: false
-      #example: "Off"
+      description: |
+        (duration: "Off") - How long the effect will last.
       default: '0'
       selector:
         select:
@@ -586,6 +597,8 @@ variables:
     "all clear": {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
     "all unicorn": {'led 1':234,'led 2':234,'led 3':170,'led 4':170,'led 5':170,'led 6':85,'led 7':85,'all':0}
     "all usa": {'led 1':170,'led 2':170,'led 3':255,'led 4':255,'led 5':0,'led 6':0,'led 7':0,'all':255}
+    "all custom on": "{{ LEDcolor_custom | default({'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}) }}"
+    "all custom off": "{{ LEDcolor_off_custom | default({'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}) }}"
 
   ### Blue Series ZHA Quirks says 1 – 7 but it seems to be 0 – 6 ###
   led_map:
@@ -1250,7 +1263,6 @@ variables:
   #entity:          "{{ entity          | default([]) }}"
 
 
-
   domains_allowed: >-
     {% set domains_allowed = [] %}
     {% if allowed_domains == 'invalid' or allowed_domains == ['invalid'] or allowed_domains == [] or allowed_domains == '' %}
@@ -1492,7 +1504,7 @@ variables:
 sequence:
 
   ##################
-  # Cleaning up inputs; using lower case since it's able to handle capital letters in the middle of mistyped and camelcase words like "LightPink".
+  # Cleaning up other variables; using lower case since it's able to handle capital letters in the middle of mistyped and camelcase words like "LightPink".
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
@@ -1552,6 +1564,7 @@ sequence:
 
         - device_type: LZW30SN
           call_type: zwave_js
+          effects: "{{ LZW30SN_effects[effect] }}" 
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1563,6 +1576,7 @@ sequence:
 
         - device_type: LZW31SN
           call_type: zwave_js
+          effects: "{{ LZW31SN_effects[effect] }}" 
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1574,6 +1588,7 @@ sequence:
 
         - device_type: LZW36_light
           call_type: zwave_js
+          effects: "{{ LZW36_light_effects[effect] }}" 
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1585,6 +1600,7 @@ sequence:
 
         - device_type: LZW36_fan
           call_type: zwave_js
+          effects: "{{ LZW36_fan_effects[effect] }}" 
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
@@ -1857,7 +1873,7 @@ sequence:
                 ### Zwave JS ###
                 ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type == 'VZW31SN' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type == 'VZW31SN' and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
                       sequence:
                         - service: zwave_js.set_config_parameter
                           data:
@@ -2215,7 +2231,7 @@ sequence:
                 ### Zwave JS ###
                 ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
                       sequence:
                         - service: zwave_js.set_config_parameter
                           data:
@@ -2427,7 +2443,13 @@ sequence:
                             parameter: >-
                               {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_bulk' %}
                               {{ parameters[bulk_param] }}
-                            value: "{{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (repeat.item.effects * 16777216) }}"
+                            value: >-
+                              {% if effect != 'clear effect' %}
+                                {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (repeat.item.effects * 16777216) }}
+                              {% else %}
+                                {# Working around an Inovelli bug #}
+                                {{ duration_values[0] }}
+                              {% endif %}
 
                 ### Zigbee2mqtt ###
                 - choose:
@@ -2484,6 +2506,8 @@ sequence:
                 ### Red 500 Series ###
                 - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber_effect }}"
                   sequence:
+                    - variables:
+                        effects: "{{ repeat.item.effects }}"
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
@@ -2494,7 +2518,7 @@ sequence:
                           {% if repeat.item.device_type == "LZW30SN" %}
                             0
                           {% else %}
-                            255
+                            {{ effects }}
                           {% endif %}
                     - service: zwave_js.set_config_parameter
                       data:
@@ -2502,7 +2526,7 @@ sequence:
                         parameter: >-
                           {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_duration' %}
                           {{ parameters[effect_param] }}
-                        value: 0
+                        value: "{{ duration_values[duration] }}"
 
                 ### Red 800 Series ###
                 - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type }}"
@@ -2513,15 +2537,15 @@ sequence:
                       data:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_effect' %}
-                          {{ parameters[effect_param] }}
+                          {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_effect' %}
+                          {{ parameters[bulk_param] }}
                         value: "{{ effects }}"
                     - service: zwave_js.set_config_parameter
                       data:
                         entity_id: "{{ repeat.item.entities }}"
                         parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_duration' %}
-                          {{ parameters[effect_param] }}
+                          {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_duration' %}
+                          {{ parameters[bulk_param] }}
                         value: "{{ duration_values[duration] }}"
 
             ### Zigbee2mqtt ###
@@ -2538,7 +2562,11 @@ sequence:
                               topic: >-
                                 {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                               payload: >-
-                                {"led_effect":{"duration":"{{duration_values[duration]}}","effect":"{{effects}}" }}
+                                {% if LEDnumber_effect == 'all' %}
+                                  {"led_effect":{"duration":"{{ duration_values[duration] }}","effect":"{{ effects }}"}}
+                                {% else %}
+                                  {"individual_led_effect": {"led": "{{ led_map[LEDnumber_effect]|int }}", "effect": "{{ effects }}", "duration": "{{ duration_values[duration] }}"}}
+                                {% endif %}
 
             ### ZHA ###
             - choose:
@@ -2555,7 +2583,7 @@ sequence:
                               endpoint_id: 1
                               cluster_id: 64561
                               cluster_type: in
-                              command: 1
+                              command: "{{ iif('all' in LEDnumber_effect,1,3) }}"
                               command_type: server
-                              params: {'led_number': -1, 'led_effect': '{{effects}}', 'led_color': 0, 'led_level': 0, 'led_duration': '{{duration_values[duration]}}' }
+                              params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":0,"led_level":0,"led_duration":"{{ duration_values[duration] }}"}
                               manufacturer: 4655
