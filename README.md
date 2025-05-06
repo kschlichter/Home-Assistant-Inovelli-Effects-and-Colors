@@ -314,7 +314,7 @@ service: script.inovelli_led
 data:
   device:
     - 88f56168bdb28f3ac764fc3d7e3d407b
-  LEDnumber: 'All'
+  LEDnumber: 'LED 1'
   LEDcolor: 'All Unicorn'
   LEDcolor_off: 'All USA'
   LEDbrightness: 8.6
@@ -364,6 +364,7 @@ data:
 ## LEDcolor_custom:
   Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
   * example: `{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}`
+  * Needs `LEDcolor` set to `'all custom on'`
   * Custom color sets:
     * Blue Series only.
     * Setting `LEDcolor` will not override the individual LED colors.
@@ -375,7 +376,7 @@ data:
     {'led 1':75,'led 2':75,'led 3':75,'led 4':75,'led 5':75,'led 6':75,'led 7':75,'all':0}
   entity:
     - light.office
-  LEDcolor: All Custom On
+  LEDcolor: 'All Custom On'
 ```
 
 ## LEDcolor_off:
