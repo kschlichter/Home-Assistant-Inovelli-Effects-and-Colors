@@ -104,26 +104,26 @@ As a quick start you can follow these steps:
   This service call will turn off the LED bar for all Inovelli devices that are upstairs, and also all fans in the house (e.g. upstairs, downstairs, in the garage, or outside).
 
 ```
-  service: script.inovelli_led
-  data:
-    selector_mode: any
-    domain: 'fan'
-    floor: 'upstairs'
-    LEDcolor: 'Off'
-    LEDcolor_off: 'Off'
+service: script.inovelli_led
+data:
+  selector_mode: any
+  domain: 'fan'
+  floor: 'upstairs'
+  LEDcolor: 'Off'
+  LEDcolor_off: 'Off'
 ``` 
 
   **Turning off the LED bar only for fans that are upstairs:**
   By using `selector_mode: 'all'`, we can now limit the entities to upstairs fans.  Fans that are downstairs, or lights that are upstairs will not be changed by this call.
 
 ```
-  service: script.inovelli_led
-  data:
-    selector_mode: all
-    domain: 'fan'
-    floor: 'upstairs'
-    LEDcolor: "Off"
-    LEDcolor_off: "Off"
+service: script.inovelli_led
+data:
+  selector_mode: all
+  domain: 'fan'
+  floor: 'upstairs'
+  LEDcolor: "Off"
+  LEDcolor_off: "Off"
 ```
 
 ## Z2M Topic
@@ -131,47 +131,47 @@ As a quick start you can follow these steps:
   
   **Turn off LEDs on all devices reporting through the topic "zigbee2mqttupstairs":**
 ```
-  service: script.inovelli_led
-  data:
-    selector_mode: all
-    domain: 'fan'
-    z2m_topic: 'zigbee2mqttupstairs'
-    LEDcolor: "Off"
-    LEDcolor_off: "Off"
+service: script.inovelli_led
+data:
+  selector_mode: all
+  domain: 'fan'
+  z2m_topic: 'zigbee2mqttupstairs'
+  LEDcolor: "Off"
+  LEDcolor_off: "Off"
 ```
 
 ## Allowed Domains:
   Only allow entities of these types.  The default will allow all three types.
   **Set the LED bar on all fans on the first floor to purple (while leaving lights and switches blue):**
 ```
-  service: script.inovelli_led
-  data:
-    allowed_domains: 'fan'
-    floor: 'first floor'
-    LEDcolor: 'purple'
-    LEDcolor_off: 'purple'
+service: script.inovelli_led
+data:
+  allowed_domains: 'fan'
+  floor: 'first floor'
+  LEDcolor: 'purple'
+  LEDcolor_off: 'purple'
 ```
   
 ## Domain:
   Select and include all entities with domain(s) light.*, fan.*, or switch.* or deselect for all.  
   **Set the LED bar on all fans in the house to purple:**
 ```
-  service: script.inovelli_led
-  data:
-    domain: 'fan'
-    LEDcolor: 'purple'
-    LEDcolor_off: 'purple'
+service: script.inovelli_led
+data:
+  domain: 'fan'
+  LEDcolor: 'purple'
+  LEDcolor_off: 'purple'
 ```
 
 **Set the LED bar on all lights and switches in the house to blue:**
 ```
-  service: script.inovelli_led
-  data:
-    domain: 
-      - light
-      - switch
-    LEDcolor: 'blue'
-    LEDcolor_off: 'blue'
+service: script.inovelli_led
+data:
+  domain: 
+    - light
+    - switch
+  LEDcolor: 'blue'
+  LEDcolor_off: 'blue'
 ```
 
 
@@ -180,13 +180,13 @@ As a quick start you can follow these steps:
 
   **Set all bedroom LEDs to a dim red in the evening:**
 ```  
-  action: script.inovelli_led
-  data:
-    label: `bedroom`
-    LEDcolor: 'RED'
-    LEDcolor_off: 'Red'
-    LEDbrightness: 2
-    LEDbrightness_off: 0.1
+action: script.inovelli_led
+data:
+  label: `bedroom`
+  LEDcolor: 'RED'
+  LEDcolor_off: 'Red'
+  LEDbrightness: 2
+  LEDbrightness_off: 0.1
 ```
 
 
@@ -196,13 +196,13 @@ As a quick start you can follow these steps:
   **Setting an an effect on all devices upstairs:**
   
 ```
-    service: script.inovelli_led
-    data:
-      floor: 'upstairs'
-      duration: 'Forever'
-      effect: 'CHASE'
-      brightness: 8
-      color: 'Teal'
+service: script.inovelli_led
+data:
+  floor: 'upstairs'
+  duration: 'Forever'
+  effect: 'CHASE'
+  brightness: 8
+  color: 'Teal'
 ```
 
 
@@ -212,25 +212,25 @@ As a quick start you can follow these steps:
   **'area: all' will find any compatible Inovelli devices in Home Assistant 2023.04 or newer.**
   **Setting an effect on every Inovelli device in the house**
 ```
-    service: script.inovelli_led
-    data:
-      area: 'all'
-      duration: 'Forever'
-      effect: 'Fast Blink'
-      brightness: 8.7
-      color: 'light pink'
+service: script.inovelli_led
+data:
+  area: 'all'
+  duration: 'Forever'
+  effect: 'Fast Blink'
+  brightness: 8.7
+  color: 'light pink'
 ```
 
    **String of comma-separated values (improper list format still works)**
    **Setting an effect on all devices in two areas:**
 ```
-    service: script.inovelli_led
-    data:
-      area: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c' 
-      duration: 'Forever'
-      effect: 'CHASE'
-      brightness: 8
-      color: 'Teal'
+service: script.inovelli_led
+data:
+  area: 'Family Room, 7d7a44fe4d0f4bee947c430d2714e45c' 
+  duration: 'Forever'
+  effect: 'CHASE'
+  brightness: 8
+  color: 'Teal'
 ```
 
 
@@ -240,15 +240,15 @@ As a quick start you can follow these steps:
   **Proper list format**
   **Setting a 2min effect on all devices in two groups:**
 ```
-    service: script.inovelli_led
-    data:
-      group:
-        - group.lights_and_switches
-        - 0249abdc634c12cbf6cdc06d7a507495
-      duration: '2 minutes'
-      effect: 'pulse'
-      brightness: 8
-      color: 'red'
+service: script.inovelli_led
+data:
+  group:
+    - group.lights_and_switches
+    - 0249abdc634c12cbf6cdc06d7a507495
+  duration: '2 minutes'
+  effect: 'pulse'
+  brightness: 8
+  color: 'red'
 ```
 
 
@@ -271,16 +271,16 @@ data:
   **Full LED configuration, using device ID**
 
 ```
-    service: script.inovelli_led
-    data:
-      device:
-        - 531d79e9270d72d9cab44a4f295967d4
-        - ef82d0eb91499feadf45e257c0e5eda1
-      LEDcolor: 'blue'
-      LEDcolor_off: 'hOt PiNk'
-      LEDbrightness: 7
-      LEDbrightness_off: 2.5
-      LEDnumber: 'all'
+service: script.inovelli_led
+data:
+  device:
+    - 531d79e9270d72d9cab44a4f295967d4
+    - ef82d0eb91499feadf45e257c0e5eda1
+  LEDcolor: 'blue'
+  LEDcolor_off: 'hOt PiNk'
+  LEDbrightness: 7
+  LEDbrightness_off: 2.5
+  LEDnumber: 'all'
 ```
 
 
@@ -290,17 +290,17 @@ data:
   **A 30 sec effect to signal an event, followed by LED 7 (at the top) turning green as an on-going notification:**
   
 ```
-    service: script.inovelli_led
-    data:
-      entity: 'light.office'
-      LEDcolor: 'green'
-      LEDnumber: 'led 7'
-      LEDbrightness: 7.5
-      LEDbrightness_off: 2.3
-      duration: '30 second'
-      effect: 'fast blink'
-      color: 'green'
-      brightness: 7
+service: script.inovelli_led
+data:
+  entity: 'light.office'
+  LEDcolor: 'green'
+  LEDnumber: 'led 7'
+  LEDbrightness: 7.5
+  LEDbrightness_off: 2.3
+  duration: '30 second'
+  effect: 'fast blink'
+  color: 'green'
+  brightness: 7
 ```
  
 
@@ -310,49 +310,82 @@ data:
   **Configuring an LED color set (color sets start with 'all' and must be set with all LEDs)**
   Once an invidivual LED or an LED color set has been configured, it must be cleared.  The full LED bar settings will be overridden by the individual LED settings.
 ```
-    service: script.inovelli_led
-    data:
-      device:
-        - 88f56168bdb28f3ac764fc3d7e3d407b
-      LEDnumber: 'All'
-      LEDcolor: 'All Unicorn'
-      LEDcolor_off: 'All USA'
-      LEDbrightness: 8.6
-      LEDbrightness_off: 0.4
+service: script.inovelli_led
+data:
+  device:
+    - 88f56168bdb28f3ac764fc3d7e3d407b
+  LEDnumber: 'All'
+  LEDcolor: 'All Unicorn'
+  LEDcolor_off: 'All USA'
+  LEDbrightness: 8.6
+  LEDbrightness_off: 0.4
 ```
       
  **Configuring an LED color for one LED**
 
 ```
-    service: script.inovelli_led
-    data:
-      entity: 'light.office'
-      LEDnumber: 'led 4'
-      LEDcolor: 'red'
+service: script.inovelli_led
+data:
+  entity: 'light.office'
+  LEDnumber: 'led 4'
+  LEDcolor: 'red'
 ```
 
   **Clearing all individual LED color settings in the house**
   This will reset the LED bars to red.  
 
 ```
-    service: script.inovelli_led
-    data:
-      area: 'all'
-      LEDnumber: 'all'
-      LEDcolor: 'all clear'
-      LEDcolor_off: 'all clear'
+service: script.inovelli_led
+data:
+  area: 'all'
+  LEDnumber: 'all'
+  LEDcolor: 'all clear'
+  LEDcolor_off: 'all clear'
 ```
 
 
 ## LEDcolor:
   Sets the color of the LED status bar, which indicates brightness levels of the light.
   * This is not for effects.
+  * Color sets:
+    * Blue Series only.
+    * Pre-defined sets, like `all unicorn` and `all usa`, can be cleared with `all clear`.
+    * Setting `LEDcolor` will not override the individual LED colors.
 
+```
+action: script.inovelli_led
+data:
+  entity:
+    - light.office
+  LEDnumber: All
+  LEDcolor: All Clear
+```
+
+## LEDcolor_custom:
+  Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
+  * example: `{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}`
+  * Custom color sets:
+    * Blue Series only.
+    * Setting `LEDcolor` will not override the individual LED colors.
+```
+action: script.inovelli_led
+data:
+  LEDnumber: All
+  LEDcolor_custom: >-
+    {'led 1':75,'led 2':75,'led 3':75,'led 4':75,'led 5':75,'led 6':75,'led 7':75,'all':0}
+  entity:
+    - light.office
+  LEDcolor: All Custom On
+```
 
 ## LEDcolor_off:
   Sets the color of the LED status bar, which indicates brightness levels of the light.
   * Red 800 and Blue Series only.  No support on Black, or Red 500 devices.
   * This is not for effects.
+  * Custom color sets:
+    * Blue Series only.
+    * Pre-defined sets, like `all unicorn` and `all usa`, can be cleared with `all clear`.
+    * Setting `LEDcolor` will not override the individual LED colors.
 
 
 ## LEDbrightness:
@@ -363,18 +396,40 @@ data:
 ## LEDbrightness_off:
   Sets the brightness of the LED status when off. 0 means off.
   * This is not for effects.
+  * Red 800 and Blue Series only.
 
 
 ## LEDnumber_effect:
   Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
   * Red800 and Blue Series only.  No support on Black or Red 500 series devices.
   * The full LED bar will override individual LEDs (e.g. you won't see LED 3 through an effect for the full bar)
+    * Once the full bar effect is cleared, the individual LED effects will still be running.
+    * Individual LED effects need to be cleared 
   * When using `duration: forever` each LED's effect will need to be cleared with a separate command.  
-  
+
+```
+action: script.inovelli_led
+data:
+  entity:
+    - light.office
+  LEDnumber_effect: LED 4
+  effect: Pulse
+  brightness: 7.5
+  color: Lime
+  duration: Forever
+```
 
 ## effect:
+#### To set an effect, all four of the parameters below must be defined ####
   Type of effect. (Red and Blue Series only.  Black Series devices do not support effects.)
-
+action: script.inovelli_led
+data:
+  entity:
+    - light.office
+  effect: chase
+  brightness: 7
+  color: red
+  duration: Forever
 
 ## brightness:
   Sets the brightness of the LED's effect.  0 means off.
@@ -386,3 +441,21 @@ data:
 
 ## duration:
   How long the effect will last.
+
+## Clearing an effect: ##
+Clearing an effect can be done by simply calling the entity (or floor, area, label, etc):
+```
+action: script.inovelli_led
+data:
+  entity:
+    - light.office
+```
+
+To clear one LED, add the LEDnumber_effect parameter:
+```
+action: script.inovelli_led
+data:
+  entity:
+    - light.office
+  LEDnumber_effect: LED 4
+```
