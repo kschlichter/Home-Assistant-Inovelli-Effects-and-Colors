@@ -17,13 +17,16 @@
   * Zigbee2MQTT or ZHA:
     * [VZM31-SN Blue Series 2-in-1 Dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
     * [VZM35-SN Blue Series 3-Speed Fan Switch](https://inovelli.com/products/blue-series-fan-switch-zigbee-3-0)
+  * Matter:
+    * [VTM31-SN White Series Smart 2-1 Switch](https://inovelli.com/collections/inovelli-white-series/products/thread-matter-white-series-smart-2-1-on-off-dimmer-switch)
+    * [VTM35-SN White Series Smart Fan Switch](https://inovelli.com/collections/inovelli-white-series/products/thread-matter-white-series-smart-fan-switch-3-speed-ceiling-on-off-exhaust)
 
   This is a complete rewrite of the work done by BrianHanifin on post: https://community.home-assistant.io/t/inovelli-z-wave-red-series-notification-led/165483
 
 
 ## Features
   
-  This blueprint and script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", and "Blue" series. Devices of different types can be called simultaneously. **It will accept entities, the device ID, groups, labels, , device type (e.g.** `fan` **), floors,** `floor: 'all'`, **areas, or** `area: 'all'` **and find all Inovelli devices in the house.** This blueprint and script can set everything at once—even if the devices are different series, different sources (e.g. 2 areas, and 3 entities), and different integrations (Z-Wave JS and Zigbee2MQTT, or ZWave JS and ZHA) all at once.
+  This blueprint and script can set and clear effects as well as configure the LED or LED strip on Inovelli dimmers, switches, and fan / light combo dimmers from the "Black", "Red 500", "Red 800", "Blue", and "White" series. Devices of different types can be called simultaneously. **It will accept entities, the device ID, groups, labels, , device type (e.g.** `fan` **), floors,** `floor: 'all'`, **areas, or** `area: 'all'` **and find all Inovelli devices in the house.** This blueprint and script can set everything at once—even if the devices are different series, different sources (e.g. 2 areas, and 3 entities), and different integrations (Z-Wave JS and Zigbee2MQTT, or ZHA and Matter) all at once.
 
   The  LED indicator can be set alongside an effect in a single call so that an indicator color change doesn't clear the effect (this does restart the duration timer in some versions of Inovelli's firmware, however). For example, setting "chase" for 1 second with a red indicator LED is a nice notification that something changed without being overly obnoxious and distracting (like setting "fast blink" with an infinite duration).  The effect wears off after one second, but the indicator stays red afterwards.
   
@@ -81,7 +84,7 @@ As a quick start you can follow these steps:
     - LEDcolor: (int or string) Sets color of the status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
         If a "color set" is used like "all unicorn", LEDnumber cannot be set to "LED {n}"; "all" LEDs must be configured or none will be.
     - LEDcolor_off: (Red 800 and Blue Series only; int or string) Sets color of status LED when off, for devices that support this feature.
-        Note that the Blue Series and Red 800 Series support separate colors for on and off while the Black 500 and Red 500 Series devices do not and will ignore the variable.
+        Note that the Blue Series and Red 800 Series support separate colors for on and off while the Black 500, Red 500, and White Series devices do not and will ignore the variable.
         If a "color set" is used like "all unicorn", LEDnumber cannot be set to "LED {n}"; "all" LEDs must be configured or none will be.
     - LEDbrightness: (float 0.0 – 10.0) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
         LEDbrightness is multiplied by 10 or rounded off for each device, depending on whether they support 0 – 100 or 0 – 10 brightness levels.  This was done for backwards compatibility with old automations.
@@ -382,7 +385,7 @@ data:
 
 ## LEDcolor_off:
   Sets the color of the LED status bar, which indicates brightness levels of the light.
-  * Red 800 and Blue Series only.  No support on Black, or Red 500 devices.
+  * Red 800 and Blue Series only.  No support on Black, Red 500, or White devices.
   * This is not for effects.
   * Custom color sets:
     * Blue Series only.
@@ -403,7 +406,7 @@ data:
 
 ## LEDnumber_effect:
   Sets the effect on the full LED bar by default, or specific LEDs (1 – 7) starting at the bottom.
-  * Red800 and Blue Series only.  No support on Black or Red 500 series devices.
+  * Red800 and Blue Series only.  No support on Black, Red 500, or White series devices.
   * The full LED bar will override individual LEDs (e.g. you won't see LED 3 through an effect for the full bar)
     * Once the full bar effect is cleared, the individual LED effects will still be running.
     * Individual LED effects need to be cleared 
@@ -423,7 +426,7 @@ data:
 
 ## effect:
 #### To set an effect, all four of the parameters below must be defined ####
-  Type of effect. (Red and Blue Series only.  Black Series devices do not support effects.)
+  Type of effect. (Red and Blue Series only.  Black and White Series devices do not support effects.)
 action: script.inovelli_led
 data:
   entity:
