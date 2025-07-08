@@ -183,6 +183,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Fan controller
+          - integration: matter
+            manufacturer: Inovelli
+            model: White Series Smart 2-1 Switch
 
   area:
     name: Area
@@ -236,6 +239,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Fan controller
+          - integration: matter
+            manufacturer: Inovelli
+            model: White Series Smart 2-1 Switch
 
   group:
     name: Group
@@ -304,6 +310,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Fan controller
+          - integration: matter
+            manufacturer: Inovelli
+            model: White Series Smart 2-1 Switch
 
   entity:
     name: Entity
@@ -882,7 +891,7 @@ variables:
   ### Blue Series Dimmer ###
   VZM31SN_ZHA_all_effects:
     "off": 0
-    "clear effect": 255
+    clear effect: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -991,7 +1000,7 @@ variables:
   ### Blue Series Fan ###
   VZM35SN_ZHA_all_effects:
     "off": 0
-    "clear effect": 255
+    clear effect: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -1097,11 +1106,66 @@ variables:
     fast blink: fast_blink
     slow blink: slow_blink
 
+  ### White Series Switch ###
+  VTM35SN_all_effects:
+    "off": 0
+    clear effect: 0
+    aurora: 0
+    blink: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase: 0
+    chase fast: 0
+    chase medium: 0
+    chase slow: 0
+    fall fast: 0
+    fall medium: 0
+    fall slow: 0
+    open close: 0
+    pulse: 0
+    rise fast: 0
+    rise medium: 0
+    rise slow: 0
+    siren fast: 0
+    siren slow: 0
+    small to big: 0
+    solid: 0
+    fast blink: 0
+    slow blink: 0
+
+  VTM35SN_led_effects:
+    "off": 0
+    clear effect: 0
+    aurora: 0
+    blink: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase: 0
+    chase fast: 0
+    chase medium: 0
+    chase slow: 0
+    fall fast: 0
+    fall medium: 0
+    fall slow: 0
+    open close: 0
+    pulse: 0
+    rise fast: 0
+    rise medium: 0
+    rise slow: 0
+    siren fast: 0
+    siren slow: 0
+    small to big: 0
+    solid: 0 
+    fast blink: 0
+    slow blink: 0
+
 
   ##################
   # Store model names for reference and validation checks if necessary
   ##################
-  zwave_models:
+  zwave_models: #Black and Red
     - LZW30    # Black 500 Series switch
     - LZW31    # Black 500 Series dimmer
     - LZW30-SN # Red 500 Series switch
@@ -1109,7 +1173,7 @@ variables:
     - LZW36    # Red 500 Series combo_light, combo_fan
     - VZW31-SN # Red 800 series dimmer
 
-  zigbee2mqtt_models: # BLUE
+  zigbee2mqtt_models: # Blue
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer Zigbee2MQTT 1.35 and below
     - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan Zigbee2MQTT 1.35 and below
     - 2-in-1 switch + dimmer (VZM31-SN)          # Blue Series dimmer Zigbee2MQTT 1.36 and above
@@ -1117,9 +1181,12 @@ variables:
     - 2-in-1 switch + dimmer                     # Blue Series dimmer Zigbee2MQTT 2.0.0 and above
     - Fan controller                             # Blue Series fan Zigbee2MQTT 2.0.0 and above
 
-  zha_models: # BLUE
+  zha_models: # Blue
     - VZM31-SN # Blue Series dimmer
     - VZM35-SN # Blue Series fan
+
+  matter_models: # White
+    - White Series Smart 2-1 Switch # VTM35-SN
 
   ##################
   # There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
@@ -1268,7 +1335,7 @@ variables:
     {% set domains_allowed = [] %}
     {% if allowed_domains == 'invalid' or allowed_domains == ['invalid'] or allowed_domains == [] or allowed_domains == '' %}
       {% set domains_allowed = ['fan', 'light', 'switch'] %}
-    {% elif typeof(allowed_domains) == 'list' %}
+    {% elif typeof(allowed_domains) == 'list' or typeof(allowed_domains) == 'Wrapper' %}
       {% set domains_allowed = allowed_domains | map('lower') | map('trim') | list %}
     {% elif typeof(allowed_domains) == 'str' %}
       {% set domains_allowed = allowed_domains.split( ',' ) | map('lower') | map('trim') | list %}
@@ -1497,7 +1564,7 @@ variables:
       {% endfor %}
       {% set all_selected_entities = selector_array.selector_list %}
     {% else %}
-      {% set all_selected_entities = selectors |flatten | unique | list %}
+      {% set all_selected_entities = selectors | flatten | unique | list %}
     {% endif %}
     {{ all_selected_entities }}
 
@@ -1672,6 +1739,20 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'VZM35-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent in integration_entities('zha') %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+        ##################
+        # Matter
+        ##################
+        - device_type: VTM35SN
+          call_type: matter
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'white series' in (device_attr(ent,'model') | lower) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2407,7 +2488,7 @@ sequence:
         - choose:
             - conditions: >-
                 {{ effect != "off" and effect != "clear effect" and color != "no change" and duration != 0 and brightness != 11 and
-                   repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
+                   repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and repeat.item.device_type != 'VTM35SN' }}
               sequence:
 
                 ### Zwave JS
