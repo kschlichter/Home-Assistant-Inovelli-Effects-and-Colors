@@ -186,6 +186,9 @@ fields:
           - integration: matter
             manufacturer: Inovelli
             model: White Series Smart 2-1 Switch
+          - integration: matter
+            manufacturer: Inovelli
+            model: White Series Smart Fan Switch
 
   area:
     name: Area
@@ -242,6 +245,9 @@ fields:
           - integration: matter
             manufacturer: Inovelli
             model: White Series Smart 2-1 Switch
+          - integration: matter
+            manufacturer: Inovelli
+            model: White Series Smart Fan Switch
 
   group:
     name: Group
@@ -313,6 +319,9 @@ fields:
           - integration: matter
             manufacturer: Inovelli
             model: White Series Smart 2-1 Switch
+          - integration: matter
+            manufacturer: Inovelli
+            model: White Series Smart Fan Switch
 
   entity:
     name: Entity
@@ -1106,7 +1115,62 @@ variables:
     fast blink: fast_blink
     slow blink: slow_blink
 
-  ### White Series Switch ###
+  ### White Series Dimmer ###
+  VTM31SN_all_effects:
+    "off": 0
+    clear effect: 0
+    aurora: 0
+    blink: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase: 0
+    chase fast: 0
+    chase medium: 0
+    chase slow: 0
+    fall fast: 0
+    fall medium: 0
+    fall slow: 0
+    open close: 0
+    pulse: 0
+    rise fast: 0
+    rise medium: 0
+    rise slow: 0
+    siren fast: 0
+    siren slow: 0
+    small to big: 0
+    solid: 0
+    fast blink: 0
+    slow blink: 0
+
+  VTM31SN_led_effects:
+    "off": 0
+    clear effect: 0
+    aurora: 0
+    blink: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase: 0
+    chase fast: 0
+    chase medium: 0
+    chase slow: 0
+    fall fast: 0
+    fall medium: 0
+    fall slow: 0
+    open close: 0
+    pulse: 0
+    rise fast: 0
+    rise medium: 0
+    rise slow: 0
+    siren fast: 0
+    siren slow: 0
+    small to big: 0
+    solid: 0 
+    fast blink: 0
+    slow blink: 0
+
+  ### White Series Fan ###
   VTM35SN_all_effects:
     "off": 0
     clear effect: 0
@@ -1157,9 +1221,10 @@ variables:
     siren fast: 0
     siren slow: 0
     small to big: 0
-    solid: 0 
+    solid: 0
     fast blink: 0
     slow blink: 0
+
 
 
   ##################
@@ -1186,7 +1251,8 @@ variables:
     - VZM35-SN # Blue Series fan
 
   matter_models: # White
-    - White Series Smart 2-1 Switch # VTM35-SN
+    - White Series Smart 2-1 Switch # VTM31-SN
+    - White Series Smart Fan Switch # VTM35-SN ### What's the model description for the fan? 
 
   ##################
   # There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
@@ -1747,12 +1813,23 @@ sequence:
         ##################
         # Matter
         ##################
-        - device_type: VTM35SN
+        - device_type: VTM31SN
           call_type: matter
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'white series' in (device_attr(ent,'model') | lower) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+        - device_type: VTM35SN
+          call_type: matter
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'white series' in (device_attr(ent,'model') | lower) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2488,7 +2565,7 @@ sequence:
         - choose:
             - conditions: >-
                 {{ effect != "off" and effect != "clear effect" and color != "no change" and duration != 0 and brightness != 11 and
-                   repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and repeat.item.device_type != 'VTM35SN' }}
+                   repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and repeat.item.device_type != 'VTM31SN' and repeat.item.device_type != 'VTM35SN' }}
               sequence:
 
                 ### Zwave JS
