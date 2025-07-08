@@ -9,7 +9,7 @@
 #   - LEDcolor: (int or string) Sets color of the status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
 #       If a "color set" is used like "all unicorn", LEDnumber cannot be set to "LED {n}"; "all" LEDs must be configured or none will be.
 #   - LEDcolor_off: (Red 800 and Blue Series only; int or string) Sets color of status LED when off, for devices that support this feature.
-#       Note that the Blue Series and Red 800 Series support separate colors for on and off while the Black 500 and Red 500 Series devices do not and will ignore the variable.
+#       Note that the Blue Series and Red 800 Series support separate colors for on and off while the Black 500, Red 500, and White Series devices do not and will ignore the variable.
 #       If a "color set" is used like "all unicorn", LEDnumber cannot be set to "LED {n}"; "all" LEDs must be configured or none will be.
 #   - LEDbrightness: (float 0.0 – 10.0) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
 #       LEDbrightness is multiplied by 10 or rounded off for each device, depending on whether they support 0 – 100 or 0 – 10 brightness levels.  This was done for backwards compatibility with old automations.
@@ -24,7 +24,7 @@
 
 #
 # Effects not working?
-#   Black 500 Series devices do not support effects.
+#   Black 500 and White Series devices do not support effects.
 #   Check that your device supports the effect you're selecting at https://inovelliusa.github.io/inovelli-switch-toolbox/
 #
 # Convert to blueprint:
@@ -50,8 +50,8 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 #  source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
 #  author: "Kevin Schlichter"
 #  description: |
-#    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
-#    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
+#    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", "Blue", and "White" Series switches, dimmers, and fan controllers
+#    through the Zwave JS, ZHA, Zigbee2MQTT, and Matter integrations.  Devices from all series can be used together,
 #    and can be called by domain, label, floor, area, group, device, and entity.
 #
 #    Syntax and examples: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors
@@ -61,8 +61,8 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 
 alias: Inovelli LED Settings and Effects
 description: |
-    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
-    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
+    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", "Blue", and "White" Series switches, dimmers, and fan controllers
+    through the Zwave JS, ZHA, Zigbee2MQTT, and Matter integrations.  Devices from all series can be used together,
     and can be called by domain, label, floor, area, group, device, and entity.
 
     **Syntax and examples https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors**
