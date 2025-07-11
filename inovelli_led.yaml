@@ -29,9 +29,9 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 72.574s
+#   Add two spaces to lines between label: and variables: 70.591s
 #   Comment out example:
-#   Switch input_* and script variables
+#   Switch input_* and script variables (1 place)
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
 # ZHA quirks: https://github.com/zigpy/zha-device-handlers/blob/dev/zhaquirks/inovelli/__init__.py#L199
@@ -66,7 +66,6 @@ description: |
     and can be called by domain, label, floor, area, group, device, and entity.
 
     **Syntax and examples https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors**
-
 fields:
 
   selector_mode:
@@ -1762,7 +1761,15 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') %}
+              {% if 'white series' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') %}
+                {% set entities.entities = entities.entities + ['select.' + ent.split('.')[1].split('_light_1')[0] + '_led_color'] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+          effect_entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'white series' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -1773,7 +1780,15 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
+              {% if 'white series' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
+                {% set entities.entities = entities.entities + ['select.' + ent.split('.')[1].split('_light_1')[0] + '_led_color'] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+          effect_entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'white series' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -1785,7 +1800,7 @@ sequence:
         # Do not continue if we don't have at least one entity of this type
         ##################
         - condition: template
-          value_template: "{{ repeat.item.entities |count >0 }}"
+          value_template: "{{ repeat.item.entities | count >0 }}"
 
         ##################
         # LED strip color
@@ -1970,11 +1985,10 @@ sequence:
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
                       sequence:
-                        - service: light.turn_on
-                          target:
-                            entity_id: "{{ repeat.item.entities }}"
+                        - service: select.select_option
                           data:
-                            hs_color: "[{{ ((color_set[LEDcolor] / 255)*360) | round(1) }}, 100 ]"
+                            option: "{{ LEDcolor.split(' ')[-1] | capitalize }}"
+                            entity_id: "{{ repeat.item.entities }}"
 
 
         ##################
@@ -2334,17 +2348,6 @@ sequence:
                                           value: "{{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }}"
                                           manufacturer: 4655
 
-                ### Matter ###
-                ### White Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' in LEDnumber and 'all' not in LEDcolor and LEDnumber == 'all' }}"
-                      sequence:
-                        - service: light.turn_on
-                          target:
-                            entity_id: "{{ repeat.item.entities }}"
-                          data:
-                            brightness_pct: "{{ (LEDbrightness * 10) | int }}"
-
 
         ##################
         # LED strip brightness when off
@@ -2531,7 +2534,7 @@ sequence:
         - choose:
             - conditions: >-
                 {{ effect != "off" and effect != "clear effect" and color != "no change" and duration != 0 and brightness != 11 and
-                   repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and repeat.item.device_type != 'VTM31SN' and repeat.item.device_type != 'VTM35SN' }}
+                   repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
               sequence:
 
                 ### Zwave JS
@@ -2615,6 +2618,25 @@ sequence:
                                   command_type: server
                                   params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":"{{ color_set[color] }}","led_level":"{{ (brightness * 10) | int }}","led_duration":"{{ duration_values[duration] }}"}
                                   manufacturer: 4655
+
+                ### Matter ###
+                - choose:
+                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' in LEDnumber_effect and 'all' not in color }}"
+                      sequence:
+                        ###  Brightness  ###
+                        - service: light.turn_on
+                          target:
+                            entity_id: "{{ repeat.item.effect_entities }}"
+                          data:
+                            brightness_pct: "{{ (brightness * 10) | int }}"
+
+                        ### White Series only supports the 'solid' effect ###
+                        - service: light.turn_on
+                          target:
+                            entity_id: "{{ repeat.item.effect_entities }}"
+                          data:
+                            hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, 100 ]"
+
 
           default:
             ##################
@@ -2712,3 +2734,11 @@ sequence:
                               command_type: server
                               params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":0,"led_level":0,"led_duration":"{{ duration_values[duration] }}"}
                               manufacturer: 4655
+
+            ### Matter ###
+            - choose:
+                - conditions: "{{ repeat.item.call_type == 'matter' and 'all' in LEDnumber_effect }}"
+                  sequence:
+                    - service: light.turn_off
+                      data:
+                        entity_id: "{{ repeat.item.effect_entities }}"
