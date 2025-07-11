@@ -674,7 +674,7 @@ variables:
     forever: 255
     indefinitely: 255
 
-  ### Black 500 Series Dimmer ###
+  ### Black 500 Series Switch ###
   LZW30_effects:
     "off": 0
     clear effect: 0
@@ -896,7 +896,6 @@ variables:
     fast blink: 2
     slow blink: 3
 
-### Blue 800 ###
   ### Blue Series Dimmer ###
   VZM31SN_ZHA_all_effects:
     "off": 0
@@ -1143,33 +1142,6 @@ variables:
     fast blink: 0
     slow blink: 0
 
-  VTM31SN_led_effects:
-    "off": 0
-    clear effect: 0
-    aurora: 0
-    blink: 0
-    blink fast: 0
-    blink medium: 0
-    blink slow: 0
-    chase: 0
-    chase fast: 0
-    chase medium: 0
-    chase slow: 0
-    fall fast: 0
-    fall medium: 0
-    fall slow: 0
-    open close: 0
-    pulse: 0
-    rise fast: 0
-    rise medium: 0
-    rise slow: 0
-    siren fast: 0
-    siren slow: 0
-    small to big: 0
-    solid: 0 
-    fast blink: 0
-    slow blink: 0
-
   ### White Series Fan ###
   VTM35SN_all_effects:
     "off": 0
@@ -1197,34 +1169,6 @@ variables:
     solid: 0
     fast blink: 0
     slow blink: 0
-
-  VTM35SN_led_effects:
-    "off": 0
-    clear effect: 0
-    aurora: 0
-    blink: 0
-    blink fast: 0
-    blink medium: 0
-    blink slow: 0
-    chase: 0
-    chase fast: 0
-    chase medium: 0
-    chase slow: 0
-    fall fast: 0
-    fall medium: 0
-    fall slow: 0
-    open close: 0
-    pulse: 0
-    rise fast: 0
-    rise medium: 0
-    rise slow: 0
-    siren fast: 0
-    siren slow: 0
-    small to big: 0
-    solid: 0
-    fast blink: 0
-    slow blink: 0
-
 
 
   ##################
@@ -1850,7 +1794,7 @@ sequence:
             - conditions: "{{ LEDcolor != 'no change' }}"
               sequence:
 
-                ### Zwave JS
+                ### Zwave JS ###
                 ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
@@ -2020,6 +1964,17 @@ sequence:
                                               {{ color_set[LEDcolor] }}
                                             {% endif %}
                                           manufacturer: 4655
+
+                ### Matter ###
+                ### White Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                - choose:
+                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
+                      sequence:
+                        - service: light.turn_on
+                          target:
+                            entity_id: "{{ repeat.item.entities }}"
+                          data:
+                            hs_color: "[{{ ((color_set[LEDcolor] / 255)*360) | round(1) }}, 100 ]"
 
 
         ##################
@@ -2378,6 +2333,17 @@ sequence:
                                             {% endif %}
                                           value: "{{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }}"
                                           manufacturer: 4655
+
+                ### Matter ###
+                ### White Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                - choose:
+                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' in LEDnumber and 'all' not in LEDcolor and LEDnumber == 'all' }}"
+                      sequence:
+                        - service: light.turn_on
+                          target:
+                            entity_id: "{{ repeat.item.entities }}"
+                          data:
+                            brightness_pct: "{{ (LEDbrightness * 10) | int }}"
 
 
         ##################
