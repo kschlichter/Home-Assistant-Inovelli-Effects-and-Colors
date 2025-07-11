@@ -9,7 +9,7 @@
 #   - LEDcolor: (int or string) Sets color of the status LED.  If LEDcolor_off is defined and supported by the device, this is only used for "on" status.
 #       If a "color set" is used like "all unicorn", LEDnumber cannot be set to "LED {n}"; "all" LEDs must be configured or none will be.
 #   - LEDcolor_off: (Red 800 and Blue Series only; int or string) Sets color of status LED when off, for devices that support this feature.
-#       Note that the Blue Series and Red 800 Series support separate colors for on and off while the Black 500 and Red 500 Series devices do not and will ignore the variable.
+#       Note that the Blue Series and Red 800 Series support separate colors for on and off while the Black 500, Red 500, and White Series devices do not and will ignore the variable.
 #       If a "color set" is used like "all unicorn", LEDnumber cannot be set to "LED {n}"; "all" LEDs must be configured or none will be.
 #   - LEDbrightness: (float 0.0 – 10.0) Sets the brightness of the status LED.  If LEDbrightness_off is defined and supported by the device, this is only used for "on" status.
 #       LEDbrightness is multiplied by 10 or rounded off for each device, depending on whether they support 0 – 100 or 0 – 10 brightness levels.  This was done for backwards compatibility with old automations.
@@ -24,12 +24,13 @@
 
 #
 # Effects not working?
-#   Black 500 Series devices do not support effects.
+#   Black 500 and White Series devices do not support effects.
 #   Check that your device supports the effect you're selecting at https://inovelliusa.github.io/inovelli-switch-toolbox/
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 72.574s
+#   Add two spaces to lines between label: and variables: 70.591s
+#   Comment out example:
 #   Switch input_* and script variables
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
@@ -49,8 +50,8 @@ blueprint:
   source_url: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors/blob/Blueprint/blueprints/script/kschlichter/inovelli_led_blueprint.yaml
   author: "Kevin Schlichter"
   description: |
-    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
-    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
+    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", "Blue", and "White" Series switches, dimmers, and fan controllers
+    through the Zwave JS, ZHA, Zigbee2MQTT, and Matter integrations.  Devices from all series can be used together,
     and can be called by domain, label, floor, area, group, device, and entity.
 
     Syntax and examples: https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors
@@ -60,14 +61,13 @@ blueprint:
 
 #alias: Inovelli LED Settings and Effects
 #description: |
-#    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", and "Blue" Series switches, dimmers, and fan controllers
-#    through the Zwave JS, ZHA, and Zigbee2MQTT integrations.  Devices from all series can be used together,
+#    Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", "Blue", and "White" Series switches, dimmers, and fan controllers
+#    through the Zwave JS, ZHA, Zigbee2MQTT, and Matter integrations.  Devices from all series can be used together,
 #    and can be called by domain, label, floor, area, group, device, and entity.
 #
 #    **Syntax and examples https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors**
-#
 #fields:
-
+  
     selector_mode:
       name: Selector Mode
       description: |
@@ -182,6 +182,12 @@ blueprint:
             - integration: mqtt
               manufacturer: Inovelli
               model: Fan controller
+            - integration: matter
+              manufacturer: Inovelli
+              model: White Series Smart 2-1 Switch
+            - integration: matter
+              manufacturer: Inovelli
+              model: White Series Smart Fan Switch
   
     area:
       name: Area
@@ -235,6 +241,12 @@ blueprint:
             - integration: mqtt
               manufacturer: Inovelli
               model: Fan controller
+            - integration: matter
+              manufacturer: Inovelli
+              model: White Series Smart 2-1 Switch
+            - integration: matter
+              manufacturer: Inovelli
+              model: White Series Smart Fan Switch
   
     group:
       name: Group
@@ -303,6 +315,12 @@ blueprint:
             - integration: mqtt
               manufacturer: Inovelli
               model: Fan controller
+            - integration: matter
+              manufacturer: Inovelli
+              model: White Series Smart 2-1 Switch
+            - integration: matter
+              manufacturer: Inovelli
+              model: White Series Smart Fan Switch
   
     entity:
       name: Entity
@@ -655,7 +673,7 @@ variables:
     forever: 255
     indefinitely: 255
 
-  ### Black 500 Series Dimmer ###
+  ### Black 500 Series Switch ###
   LZW30_effects:
     "off": 0
     clear effect: 0
@@ -877,11 +895,10 @@ variables:
     fast blink: 2
     slow blink: 3
 
-### Blue 800 ###
   ### Blue Series Dimmer ###
   VZM31SN_ZHA_all_effects:
     "off": 0
-    "clear effect": 255
+    clear effect: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -990,7 +1007,7 @@ variables:
   ### Blue Series Fan ###
   VZM35SN_ZHA_all_effects:
     "off": 0
-    "clear effect": 255
+    clear effect: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -1096,11 +1113,67 @@ variables:
     fast blink: fast_blink
     slow blink: slow_blink
 
+  ### White Series Dimmer ###
+  VTM31SN_all_effects:
+    "off": 0
+    clear effect: 0
+    aurora: 0
+    blink: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase: 0
+    chase fast: 0
+    chase medium: 0
+    chase slow: 0
+    fall fast: 0
+    fall medium: 0
+    fall slow: 0
+    open close: 0
+    pulse: 0
+    rise fast: 0
+    rise medium: 0
+    rise slow: 0
+    siren fast: 0
+    siren slow: 0
+    small to big: 0
+    solid: 0
+    fast blink: 0
+    slow blink: 0
+
+  ### White Series Fan ###
+  VTM35SN_all_effects:
+    "off": 0
+    clear effect: 0
+    aurora: 0
+    blink: 0
+    blink fast: 0
+    blink medium: 0
+    blink slow: 0
+    chase: 0
+    chase fast: 0
+    chase medium: 0
+    chase slow: 0
+    fall fast: 0
+    fall medium: 0
+    fall slow: 0
+    open close: 0
+    pulse: 0
+    rise fast: 0
+    rise medium: 0
+    rise slow: 0
+    siren fast: 0
+    siren slow: 0
+    small to big: 0
+    solid: 0
+    fast blink: 0
+    slow blink: 0
+
 
   ##################
   # Store model names for reference and validation checks if necessary
   ##################
-  zwave_models:
+  zwave_models: #Black and Red
     - LZW30    # Black 500 Series switch
     - LZW31    # Black 500 Series dimmer
     - LZW30-SN # Red 500 Series switch
@@ -1108,7 +1181,7 @@ variables:
     - LZW36    # Red 500 Series combo_light, combo_fan
     - VZW31-SN # Red 800 series dimmer
 
-  zigbee2mqtt_models: # BLUE
+  zigbee2mqtt_models: # Blue
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer Zigbee2MQTT 1.35 and below
     - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan Zigbee2MQTT 1.35 and below
     - 2-in-1 switch + dimmer (VZM31-SN)          # Blue Series dimmer Zigbee2MQTT 1.36 and above
@@ -1116,9 +1189,13 @@ variables:
     - 2-in-1 switch + dimmer                     # Blue Series dimmer Zigbee2MQTT 2.0.0 and above
     - Fan controller                             # Blue Series fan Zigbee2MQTT 2.0.0 and above
 
-  zha_models: # BLUE
+  zha_models: # Blue
     - VZM31-SN # Blue Series dimmer
     - VZM35-SN # Blue Series fan
+
+  matter_models: # White
+    - White Series Smart 2-1 Switch # VTM31-SN
+    - White Series Smart Fan Switch # VTM35-SN ### What's the model description for the fan? 
 
   ##################
   # There's a lot of redundancy here, but it should be easy to update if parameter names change for one model and not another
@@ -1267,7 +1344,7 @@ variables:
     {% set domains_allowed = [] %}
     {% if allowed_domains == 'invalid' or allowed_domains == ['invalid'] or allowed_domains == [] or allowed_domains == '' %}
       {% set domains_allowed = ['fan', 'light', 'switch'] %}
-    {% elif typeof(allowed_domains) == 'list' %}
+    {% elif typeof(allowed_domains) == 'list' or typeof(allowed_domains) == 'Wrapper' %}
       {% set domains_allowed = allowed_domains | map('lower') | map('trim') | list %}
     {% elif typeof(allowed_domains) == 'str' %}
       {% set domains_allowed = allowed_domains.split( ',' ) | map('lower') | map('trim') | list %}
@@ -1496,7 +1573,7 @@ variables:
       {% endfor %}
       {% set all_selected_entities = selector_array.selector_list %}
     {% else %}
-      {% set all_selected_entities = selectors |flatten | unique | list %}
+      {% set all_selected_entities = selectors | flatten | unique | list %}
     {% endif %}
     {{ all_selected_entities }}
 
@@ -1676,13 +1753,54 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
+        ##################
+        # Matter
+        ##################
+        - device_type: VTM31SN
+          call_type: matter
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'white series' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') %}
+                {% set entities.entities = entities.entities + ['select.' + ent.split('.')[1].split('_light_1')[0] + '_led_color'] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+          effect_entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'white series' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+        - device_type: VTM35SN
+          call_type: matter
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'white series' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
+                {% set entities.entities = entities.entities + ['select.' + ent.split('.')[1].split('_light_1')[0] + '_led_color'] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+          effect_entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'white series' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
 
       sequence:
         ##################
         # Do not continue if we don't have at least one entity of this type
         ##################
         - condition: template
-          value_template: "{{ repeat.item.entities |count >0 }}"
+          value_template: "{{ repeat.item.entities | count >0 }}"
 
         ##################
         # LED strip color
@@ -1691,7 +1809,7 @@ sequence:
             - conditions: "{{ LEDcolor != 'no change' }}"
               sequence:
 
-                ### Zwave JS
+                ### Zwave JS ###
                 ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
@@ -1861,6 +1979,16 @@ sequence:
                                               {{ color_set[LEDcolor] }}
                                             {% endif %}
                                           manufacturer: 4655
+
+                ### Matter ###
+                ### White Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                - choose:
+                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
+                      sequence:
+                        - service: select.select_option
+                          data:
+                            option: "{{ LEDcolor.split(' ')[-1] | capitalize }}"
+                            entity_id: "{{ repeat.item.entities }}"
 
 
         ##################
@@ -2491,6 +2619,25 @@ sequence:
                                   params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":"{{ color_set[color] }}","led_level":"{{ (brightness * 10) | int }}","led_duration":"{{ duration_values[duration] }}"}
                                   manufacturer: 4655
 
+                ### Matter ###
+                - choose:
+                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' in LEDnumber_effect and 'all' not in color }}"
+                      sequence:
+                        ###  Brightness  ###
+                        - service: light.turn_on
+                          target:
+                            entity_id: "{{ repeat.item.effect_entities }}"
+                          data:
+                            brightness_pct: "{{ (brightness * 10) | int }}"
+
+                        ### White Series only supports the 'solid' effect ###
+                        - service: light.turn_on
+                          target:
+                            entity_id: "{{ repeat.item.effect_entities }}"
+                          data:
+                            hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, 100 ]"
+
+
           default:
             ##################
             # Default will be to clear the effect and set the duration to 1 second.
@@ -2587,3 +2734,11 @@ sequence:
                               command_type: server
                               params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":0,"led_level":0,"led_duration":"{{ duration_values[duration] }}"}
                               manufacturer: 4655
+
+            ### Matter ###
+            - choose:
+                - conditions: "{{ repeat.item.call_type == 'matter' and 'all' in LEDnumber_effect }}"
+                  sequence:
+                    - service: light.turn_off
+                      data:
+                        entity_id: "{{ repeat.item.effect_entities }}"
