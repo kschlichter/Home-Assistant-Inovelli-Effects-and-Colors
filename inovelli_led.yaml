@@ -169,9 +169,6 @@ fields:
             model: VZM35-SN
           - integration: mqtt
             manufacturer: Inovelli
-            model: On/off switch (VZM30-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
             model: 2-in-1 switch + dimmer (VZM31-SN)
           - integration: mqtt
             manufacturer: Inovelli
@@ -182,6 +179,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli Fan Controller (VZM35-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: On/off switch
           - integration: mqtt
             manufacturer: Inovelli
             model: 2-in-1 switch + dimmer
@@ -234,9 +234,6 @@ fields:
             model: VZM35-SN
           - integration: mqtt
             manufacturer: Inovelli
-            model: On/off switch (VZM30SN)
-          - integration: mqtt
-            manufacturer: Inovelli
             model: 2-in-1 switch + dimmer (VZM31-SN)
           - integration: mqtt
             manufacturer: Inovelli
@@ -247,6 +244,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli Fan Controller (VZM35-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: On/off switch
           - integration: mqtt
             manufacturer: Inovelli
             model: 2-in-1 switch + dimmer
@@ -314,9 +314,6 @@ fields:
             model: VZM35-SN
           - integration: mqtt
             manufacturer: Inovelli
-            model: On/off switch (VZM30SN)
-          - integration: mqtt
-            manufacturer: Inovelli
             model: 2-in-1 switch + dimmer (VZM31-SN)
           - integration: mqtt
             manufacturer: Inovelli
@@ -327,6 +324,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli Fan Controller (VZM35-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: On/off switch
           - integration: mqtt
             manufacturer: Inovelli
             model: 2-in-1 switch + dimmer
@@ -349,11 +349,27 @@ fields:
       entity:
         multiple: true
         filter:
-          - domain:
+          - integration: zwave_js
+            domain:
               - fan
               - light
               - switch
             #model: LZW36 # Device model should really be an option for entities.
+          - integration: zha
+            domain:
+              - fan
+              - light
+              - switch
+          - integration: mqtt
+            domain:
+              - fan
+              - light
+              - switch
+          - integration: matter
+            domain:
+              - fan
+              - light
+              - switch
 
   LEDnumber:
     name: LED Number
@@ -1312,7 +1328,7 @@ variables:
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer Zigbee2MQTT 1.35 and below
     - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan Zigbee2MQTT 1.35 and below
     - 2-in-1 switch + dimmer (VZM31-SN)          # Blue Series dimmer Zigbee2MQTT 1.36 and above
-    - On/off switch (VZM30SN)                    # Blue Series switch
+    - On/off switch                              # Blue Series switch
     - Fan Controller (VZM35-SN)                  # Blue Series fan Zigbee2MQTT 1.36 and above
     - 2-in-1 switch + dimmer                     # Blue Series dimmer Zigbee2MQTT 2.0.0 and above
     - Fan controller                             # Blue Series fan Zigbee2MQTT 2.0.0 and above
@@ -1877,7 +1893,7 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'VZM30-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zha') %}
-                {% set entities.entities = entities.entities + [ent] %}
+                {% set entities.entities = entities.entities + [ent] %} #                {% set entities.entities = entities.entities + [(device_attr( ent, 'identifiers') | list).0.1] %} 
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
@@ -2327,7 +2343,7 @@ sequence:
         # LED strip brightness
         ##################
         - choose:
-            - conditions: "{{ LEDbrightness is defined and LEDbrightness != 11 }} "
+            - conditions: "{{ LEDbrightness is defined and int(LEDbrightness) != 11 }} "
               sequence:
 
                 ### Zwave JS ###
@@ -2358,7 +2374,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring intensity for all LEDs ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' and 'all' in LEDcolor }}"
+                                  - conditions: "{{ int(LEDbrightness) != 11 and LEDnumber == 'all' and 'all' in LEDcolor }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -2396,7 +2412,7 @@ sequence:
                                                     { "defaultLed7IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
                                                   {% endif %}
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' or 'all' not in LEDcolor }}"
+                                  - conditions: "{{ int(LEDbrightness) != 11 and LEDnumber != 'all' or 'all' not in LEDcolor }}"
                                     sequence:
                                       - service: mqtt.publish
                                         data:
@@ -2430,7 +2446,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber == 'all' and 'all' in LEDcolor }}"
+                                  - conditions: "{{ int(LEDbrightness) != 11 and LEDnumber == 'all' and 'all' in LEDcolor }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -2472,7 +2488,7 @@ sequence:
                                                 value: "{{ iif(LEDcolor == 'all clear' and 'led' in repeat.item,101,(LEDbrightness * 10)) | int }}"
                                                 manufacturer: 4655
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ LEDbrightness != 11 and LEDnumber != 'all' or 'all' not in LEDcolor }}"
+                                  - conditions: "{{ int(LEDbrightness) != 11 and LEDnumber != 'all' or 'all' not in LEDcolor }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
@@ -2506,7 +2522,7 @@ sequence:
         # LED strip brightness when off
         ##################
         - choose:
-            - conditions: "{{ LEDbrightness_off is defined and LEDbrightness_off != 11 }} "
+            - conditions: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 }} "
               sequence:
 
                 ### Zwave JS ###
@@ -2536,7 +2552,7 @@ sequence:
                             sequence:
                               - choose:
                                   ### Configuring intensity for all LEDs ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off }}"
+                                  - conditions: "{{ int(LEDbrightness_off) != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -2574,7 +2590,7 @@ sequence:
                                                     { "defaultLed7IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
                                                   {% endif %}
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' or 'all' not in LEDcolor_off }}"
+                                  - conditions: "{{ int(LEDbrightness_off) != 11 and LEDnumber != 'all' or 'all' not in LEDcolor_off }}"
                                     sequence:
                                       - service: mqtt.publish
                                         data:
@@ -2608,7 +2624,7 @@ sequence:
                             sequence:
                               - choose:
                                     ### Configuring a color set for all LEDs ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off }}"
+                                  - conditions: "{{ int(LEDbrightness_off) != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off }}"
                                     sequence:
                                       - variables:
                                           entity: "{{ repeat.item }}"
@@ -2650,7 +2666,7 @@ sequence:
                                                 value: "{{ iif(LEDcolor_off == 'all clear' and 'led' in repeat.item,101,(LEDbrightness_off * 10)) | int }}"  
                                                 manufacturer: 4655
                                     ### Configuring just one Color ###
-                                  - conditions: "{{ LEDbrightness_off != 11 and LEDnumber != 'all' or 'all' not in LEDcolor_off }}"
+                                  - conditions: "{{ int(LEDbrightness_off) != 11 and LEDnumber != 'all' or 'all' not in LEDcolor_off }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         data:
@@ -2683,11 +2699,12 @@ sequence:
         #################
         # Effects (fully defined)
         # Calling a bulk set of parameters reduces Z-Wave traffic and writes to the switch's NVRAM, extending its life(?)
+        # Duration defaults to 0sec, so it's no longer required for this flow.
         ##################
         - choose:
             - conditions: >-
-                {{ effect != "off" and effect != "clear effect" and color != "no change" and duration != 0 and brightness != 11 and
-                   repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' }}
+                {{ effect != "off" and effect != "clear effect" and color != "no change" and int(brightness) != 11 and
+                   repeat.item.device_type != "LZW30" and repeat.item.device_type != "LZW31" }}
               sequence:
 
                 ### Zwave JS
