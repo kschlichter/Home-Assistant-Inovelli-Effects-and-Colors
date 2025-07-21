@@ -29,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 70.591s
+#   Add two spaces to lines between label: and variables: 70.625s
 #   Comment out example:
 #   Switch input_* and script variables (1 place)
 #
@@ -133,7 +133,7 @@ fields:
   floor:
     name: Floor
     description: |
-      (floor: 'downstairs,upstairs, outside') - Floor IDs containing areas with Inovelli devices.  
+      (floor: 'downstairs, upstairs, outside') - Floor IDs containing areas with Inovelli devices.  
     #required: false
     default: []
     selector:
@@ -1452,7 +1452,7 @@ variables:
   ##################
   #selector_mode:     !input selector_mode
   #input_z2m_topic:   !input z2m_topic
-  #z2m_topic:         "{{ z2m_topic | default('zigbee2mqtt') }}"
+  #z2m_topic:         "{{ input_z2m_topic | default('zigbee2mqtt') }}"
   #allowed_domains:   !input allowed_domains
   #domain:            !input domain
   #label:             !input label
