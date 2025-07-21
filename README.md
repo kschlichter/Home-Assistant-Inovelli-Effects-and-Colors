@@ -15,6 +15,7 @@
     * [LZW36 Red 500 Series Fan / Light Combo](https://help.inovelli.com/en/articles/8483467-red-series-fan-light-switch-manual)
     * [VZW31-SN Red 800 Series 2-in-1 Dimmer](https://inovelli.com/products/z-wave-800-red-series-smart-2-1-on-off-dimmer-switch)
   * Zigbee2MQTT or ZHA:
+    * [VZM30-SN Blue Series On/Off Switch](https://inovelli.com/collections/inovelli-blue-series/products/blue-series-smart-on-off-switch-w-humidity-sensor)
     * [VZM31-SN Blue Series 2-in-1 Dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
     * [VZM35-SN Blue Series 3-Speed Fan Switch](https://inovelli.com/products/blue-series-fan-switch-zigbee-3-0)
   * Matter:
