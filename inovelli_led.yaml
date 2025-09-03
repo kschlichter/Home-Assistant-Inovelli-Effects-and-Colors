@@ -2880,9 +2880,9 @@ sequence:
                                 {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
                               payload: >-
                                 {% if LEDnumber_effect == 'all' %}
-                                  {"led_effect":{"duration":"{{ duration_values[duration] }}","effect":"{{ effects }}"}}
+                                  {"led_effect":{"color":"{{ color_set['off'] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 256 / 10) | int }}" }}
                                 {% else %}
-                                  {"individual_led_effect": {"led": "{{ led_map[LEDnumber_effect]|int }}", "effect": "{{ effects }}", "duration": "{{ duration_values[duration] }}"}}
+                                  {"individual_led_effect": {"led": "{{ led_map[LEDnumber_effect]|int }}", "effect": "{{ effects }}", "color": "{{ color_set[color] }}", "level": "{{ (brightness * 256 / 10) | int }}", "duration": "{{ duration_values[duration] }}"}}
                                 {% endif %}
 
             ### ZHA ###
