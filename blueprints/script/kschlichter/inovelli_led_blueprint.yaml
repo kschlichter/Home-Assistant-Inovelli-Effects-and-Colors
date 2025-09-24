@@ -30,7 +30,7 @@
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
 #   Add two spaces to lines between label: and variables: 70.625s
-#   Comment out #example (removed)
+#   Comment out example:
 #   Switch input_* and script variables (1 place)
 #
 # Zigbee2MQTT devices: https://www.zigbee2mqtt.io/supported-devices/#v=Inovelli
@@ -133,7 +133,7 @@ blueprint:
     floor:
       name: Floor
       description: |
-        (floor: 'downstairs,upstairs, outside') - Floor IDs containing areas with Inovelli devices.  
+        (floor: 'downstairs, upstairs, outside') - Floor IDs containing areas with Inovelli devices.  
       #required: false
       default: []
       selector:
@@ -1969,7 +1969,7 @@ sequence:
         # Do not continue if we don't have at least one entity of this type
         ##################
         - condition: template
-          value_template: "{{ repeat.item.entities | count >0 }}"
+          value_template: "{{ (repeat.item.entities | count >0) or (repeat.item.effect_entities | count >0) }}"
 
         ##################
         # LED strip color
