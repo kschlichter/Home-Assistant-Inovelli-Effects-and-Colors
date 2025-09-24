@@ -1969,7 +1969,7 @@ sequence:
         # Do not continue if we don't have at least one entity of this type
         ##################
         - condition: template
-          value_template: "{{ repeat.item.entities | count >0 }}"
+          value_template: "{{ (repeat.item.entities | count >0) or (repeat.item.effect_entities | count >0) }}"
 
         ##################
         # LED strip color
