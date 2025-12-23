@@ -1847,13 +1847,13 @@ sequence:
         ##################
         # Zigbee2MQTT
         ##################
-        - device_type: VZM30SN
+        - device_type: VZM30SN 
           call_type: z2m
           effects: "{{ iif(LEDnumber_effect == 'all',VZM30SN_Z2M_all_effects[effect],VZM30SN_Z2M_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if ('On/off switch' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM30-SN')) and (ent.split('.')[0] == 'switch' or ent.split('.')[0] == 'light') and ent in integration_entities('mqtt') %}
+              {% if ('On/off switch' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM30-SN')) and ent.split('.')[0] == 'light' and ent in integration_entities('mqtt') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
