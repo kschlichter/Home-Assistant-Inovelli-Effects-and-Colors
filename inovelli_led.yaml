@@ -2068,14 +2068,14 @@ sequence:
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
                         - repeat:
-                            for_each: "{{ repeat.item.entities }}"
+                            for_each: "{{ repeat.item.entities  | select('match', domains_allowed) | list }}"
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
                                   - conditions: "{{ 'all' in LEDcolor and LEDnumber == 'all' }}"
                                     sequence:
                                       - variables:
-                                          entity: "{{ repeat.item }}"
+                                          entity: "{{ repeat.item | select('match', domains_allowed) | list }}"
                                       - repeat:
                                           for_each:
                                             - "led 1"
@@ -2259,14 +2259,14 @@ sequence:
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
                         - repeat:
-                            for_each: "{{ repeat.item.entities }}"
+                            for_each: "{{ repeat.item.entities | select('match', domains_allowed) | list }}"
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
                                   - conditions: "{{ 'all' in LEDcolor_off and LEDnumber == 'all' }}"
                                     sequence:
                                       - variables:
-                                          entity: "{{ repeat.item }}"
+                                          entity: "{{ repeat.item | select('match', domains_allowed) | list }}"
                                       - repeat:
                                           for_each:
                                             - "led 1"
@@ -2446,14 +2446,14 @@ sequence:
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
                         - repeat:
-                            for_each: "{{ repeat.item.entities }}"
+                            for_each: "{{ repeat.item.entities | select('match', domains_allowed) | list }}"
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
                                   - conditions: "{{ int(LEDbrightness) != 11 and LEDnumber == 'all' and 'all' in LEDcolor }}"
                                     sequence:
                                       - variables:
-                                          entity: "{{ repeat.item }}"
+                                          entity: "{{ repeat.item | select('match', domains_allowed) | list }}"
                                       - repeat:
                                           for_each:
                                             - "led 1"
@@ -2626,14 +2626,14 @@ sequence:
                     - conditions: "{{ repeat.item.call_type == 'zha' }}"
                       sequence:
                         - repeat:
-                            for_each: "{{ repeat.item.entities }}"
+                            for_each: "{{ repeat.item.entities | select('match', domains_allowed) | list }}"
                             sequence:
                               - choose:
                                     ### Configuring a color set for all LEDs ###
                                   - conditions: "{{ int(LEDbrightness_off) != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off }}"
                                     sequence:
                                       - variables:
-                                          entity: "{{ repeat.item }}"
+                                          entity: "{{ repeat.item | select('match', domains_allowed) | list }}"
                                       - repeat:
                                           for_each:
                                             - "led 1"
@@ -2784,7 +2784,7 @@ sequence:
                         - variables:
                             effects: "{{ repeat.item.effects }}"
                         - repeat:
-                            for_each: "{{ repeat.item.entities }} "
+                            for_each: "{{ repeat.item.entities | select('match', domains_allowed) | list }} "
                             sequence:
                               - service: zha.issue_zigbee_cluster_command
                                 continue_on_error: true
@@ -2901,7 +2901,7 @@ sequence:
                     - variables:
                         effects: "{{ repeat.item.effects }}"
                     - repeat:
-                        for_each: "{{ repeat.item.entities }} "
+                        for_each: "{{ repeat.item.entities | select('match', domains_allowed) | list }} "
                         sequence:
                           - service: zha.issue_zigbee_cluster_command
                             continue_on_error: true
