@@ -166,6 +166,9 @@ fields:
             model: VZM31-SN
           - integration: zha
             manufacturer: Inovelli
+            model: VZM32-SN
+          - integration: zha
+            manufacturer: Inovelli
             model: VZM35-SN
           - integration: mqtt
             manufacturer: Inovelli
@@ -176,6 +179,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: mmWave Zigbee Dimmer (VZM32-SN)
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli Fan Controller (VZM35-SN)
@@ -231,6 +237,9 @@ fields:
             model: VZM31-SN
           - integration: zha
             manufacturer: Inovelli
+            model: VZM32-SN
+          - integration: zha
+            manufacturer: Inovelli
             model: VZM35-SN
           - integration: mqtt
             manufacturer: Inovelli
@@ -241,6 +250,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: mmWave Zigbee Dimmer (VZM32-SN)
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli Fan Controller (VZM35-SN)
@@ -311,6 +323,9 @@ fields:
             model: VZM31-SN
           - integration: zha
             manufacturer: Inovelli
+            model: VZM32-SN
+          - integration: zha
+            manufacturer: Inovelli
             model: VZM35-SN
           - integration: mqtt
             manufacturer: Inovelli
@@ -321,6 +336,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: mmWave Zigbee Dimmer (VZM32-SN)
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli Fan Controller (VZM35-SN)
@@ -1437,6 +1455,7 @@ variables:
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer Zigbee2MQTT 1.35 and below
     - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan Zigbee2MQTT 1.35 and below
     - 2-in-1 switch + dimmer (VZM31-SN)          # Blue Series dimmer Zigbee2MQTT 1.36 and above
+    - mmWave Zigbee Dimmer (VZM32-SN)            # Blue Series mmWave dimmer
     - On/off switch                              # Blue Series switch
     - Fan Controller (VZM35-SN)                  # Blue Series fan Zigbee2MQTT 1.36 and above
     - 2-in-1 switch + dimmer                     # Blue Series dimmer Zigbee2MQTT 2.0.0 and above
@@ -1445,6 +1464,7 @@ variables:
   zha_models: # Blue
     - VZM30-SN # Blue Series switch
     - VZM31-SN # Blue Series dimmer
+    - VZM32-SN # Blue Series mmWave dimmer
     - VZM35-SN # Blue Series fan
 
   matter_models: # White
