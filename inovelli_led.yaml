@@ -1147,6 +1147,115 @@ variables:
     fast blink: fast_blink
     slow blink: slow_blink
 
+  ### Blue Series mmWave Dimmer ###
+  VZM32SN_ZHA_all_effects:
+    "off": 0
+    clear effect: 255
+    aurora: 8
+    blink: 15
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase: 5
+    chase fast: 17
+    chase medium: 5
+    chase slow: 16
+    fall fast: 11
+    fall medium: 10
+    fall slow: 9
+    open close: 6
+    pulse: 4
+    rise fast: 14
+    rise medium: 13
+    rise slow: 12
+    siren fast: 18
+    siren slow: 19
+    small to big: 7
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+  VZM32SN_ZHA_led_effects:
+    "off": 0
+    clear effect: 255
+    aurora: 8
+    blink: 2
+    blink fast: 2
+    blink medium: 2
+    blink slow: 3
+    chase: 5
+    chase fast: 5
+    chase medium: 5
+    chase slow: 5
+    fall fast: 6
+    fall medium: 6
+    fall slow: 6
+    open close: 4
+    pulse: 4
+    rise fast: 7
+    rise medium: 7
+    rise slow: 7
+    siren fast: 2
+    siren slow: 3
+    small to big: 5
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+  VZM32SN_Z2M_all_effects:
+    "off": "off"
+    clear effect: clear_effect
+    aurora: aurora
+    blink: blink
+    blink fast: fast_blink
+    blink medium: medium_blink
+    blink slow: slow_blink
+    chase: chase
+    chase fast: fast_chase
+    chase medium: chase
+    chase slow: slow_chase
+    fall fast: fast_falling
+    fall medium: medium_falling
+    fall slow: slow_falling
+    open close: open_close
+    pulse: pulse
+    rise fast: fast_rising
+    rise medium: medium_rising
+    rise slow: slow_rising
+    siren fast: fast_siren
+    siren slow: slow_siren
+    small to big: small_to_big
+    solid: solid
+    fast blink: fast_blink
+    slow blink: slow_blink
+
+  VZM32SN_Z2M_led_effects:
+    "off": "off"
+    clear effect: clear_effect
+    aurora: aurora
+    blink: fast_blink
+    blink fast: fast_blink
+    blink medium: fast_blink
+    blink slow: slow_blink
+    chase: chase
+    chase fast: chase
+    chase medium: chase
+    chase slow: chase
+    fall fast: falling
+    fall medium: falling
+    fall slow: falling
+    open close: pulse
+    pulse: pulse
+    rise fast: rising
+    rise medium: rising
+    rise slow: rising
+    siren fast: fast_blink
+    siren slow: slow_blink
+    small to big: chase
+    solid: solid
+    fast blink: fast_blink
+    slow blink: slow_blink
+
   ### Blue Series Fan ###
   VZM35SN_ZHA_all_effects:
     "off": 0
@@ -1871,6 +1980,18 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
+        - device_type: VZM32SN
+          call_type: z2m
+          effects: "{{ iif(LEDnumber_effect == 'all',VZM32SN_Z2M_all_effects[effect],VZM32SN_Z2M_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if ('mmWave Zigbee Dimmer' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM32-SN')) and ent.split('.')[0] == 'light' and ent in integration_entities('mqtt') %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
         - device_type: VZM35SN
           call_type: z2m
           effects: "{{ iif(LEDnumber_effect == 'all',VZM35SN_Z2M_all_effects[effect],VZM35SN_Z2M_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
@@ -1905,6 +2026,18 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'VZM31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zha') %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+        - device_type: VZM32SN
+          call_type: zha
+          effects: "{{ iif(LEDnumber_effect == 'all',VZM32SN_ZHA_all_effects[effect],VZM32SN_ZHA_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'VZM32-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zha') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}

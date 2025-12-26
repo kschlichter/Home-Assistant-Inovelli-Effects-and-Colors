@@ -17,6 +17,7 @@
   * Zigbee2MQTT or ZHA:
     * [VZM30-SN Blue Series On/Off Switch](https://inovelli.com/collections/inovelli-blue-series/products/blue-series-smart-on-off-switch-w-humidity-sensor)
     * [VZM31-SN Blue Series 2-in-1 Dimmer](https://inovelli.com/en-ca/products/zigbee-matter-blue-series-smart-2-1-on-off-dimmer-switch)
+    * [VZM32-SN Blue Series mmWave Presence Dimmer Switch](https://inovelli.com/collections/inovelli-blue-series/products/zigbee-blue-series-mmwave-presence-sensor-smart-dimmer-switch)
     * [VZM35-SN Blue Series 3-Speed Fan Switch](https://inovelli.com/products/blue-series-fan-switch-zigbee-3-0)
   * Matter:
     * [VTM31-SN White Series Smart 2-1 Switch](https://inovelli.com/collections/inovelli-white-series/products/thread-matter-white-series-smart-2-1-on-off-dimmer-switch)
