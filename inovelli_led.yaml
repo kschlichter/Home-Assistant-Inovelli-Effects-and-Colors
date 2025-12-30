@@ -147,11 +147,6 @@ variables:
     pink: 234
     hot pink: 234
     white: 255
-    "all clear": {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
-    "all unicorn": {'led 1':234,'led 2':234,'led 3':170,'led 4':170,'led 5':170,'led 6':85,'led 7':85,'all':0}
-    "all usa": {'led 1':170,'led 2':170,'led 3':255,'led 4':255,'led 5':0,'led 6':0,'led 7':0,'all':255}
-    "all custom on": "{{ LEDcolor_custom | default({'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}) }}"
-    "all custom off": "{{ LEDcolor_off_custom | default({'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}) }}"
 
   ### Blue Series ZHA Quirks says 1 – 7 but it seems to be 0 – 6 ###
   led_map:
@@ -163,50 +158,6 @@ variables:
     led 5: 4
     led 6: 5
     led 7: 6
-
-  duration_values:
-    "off": 0
-    0 : 0
-    1 second: 1
-    1 seconds: 1
-    2 seconds: 2
-    3 seconds: 3
-    4 seconds: 4
-    5 seconds: 5
-    6 seconds: 6
-    7 seconds: 7
-    8 seconds: 8
-    9 seconds: 9
-    10 seconds: 10
-    15 seconds: 15
-    20 seconds: 20
-    25 seconds: 25
-    30 seconds: 30
-    35 seconds: 35
-    40 seconds: 40
-    45 seconds: 45
-    50 seconds: 50
-    55 seconds: 55
-    60 seconds: 60
-    1 minute: 60
-    1 minutes: 60
-    2 minutes: 62
-    3 minutes: 63
-    4 minutes: 64
-    5 minutes: 65
-    6 minutes: 66
-    7 minutes: 67
-    8 minutes: 68
-    9 minutes: 69
-    10 minutes: 70
-    15 minutes: 75
-    30 minutes: 90
-    45 minutes: 105
-    60 minutes: 120
-    1 hour: 120
-    2 hours: 122
-    forever: 255
-    indefinitely: 255
 
   ##################
   # Store model names for reference and validation checks if necessary
@@ -221,7 +172,7 @@ variables:
   # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
   entity:          "{{ entity          | default([]) }}"
-
+  
   entities_from_entity: >-
     {% set entities_from_entity = [] %}
     {% set entity_array = namespace(entity_list=[]) %}
@@ -246,15 +197,7 @@ variables:
     {% set selectors = [ entities_from_entity ]
                          | reject('equalto', [])
                          | list %}
-    {% if selector_mode == 'all' %}
-      {% set selector_array = namespace(selector_list=selectors[0]) %}
-      {% for i in range(0,selectors|count) %}
-        {% set selector_array.selector_list = intersect(selectors[i], selector_array.selector_list) %}
-      {% endfor %}
-      {% set all_selected_entities = selector_array.selector_list %}
-    {% else %}
-      {% set all_selected_entities = selectors | flatten | unique | list %}
-    {% endif %}
+    {% set all_selected_entities = selectors | flatten | unique | list %}
     {{ all_selected_entities }}
 
 
