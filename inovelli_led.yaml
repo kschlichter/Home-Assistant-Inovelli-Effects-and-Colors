@@ -171,8 +171,20 @@ variables:
   ##################
   # Clean up inputs; filter for supported entities from provided floor, areas, groups, devices, and entities.
   ##################
+  allowed_domains: "{{ allowed_domains | default([]) }}"
   entity:          "{{ entity          | default([]) }}"
   
+  domains_allowed: >-
+    {% set domains_allowed = [] %}
+    {% if allowed_domains == 'invalid' or allowed_domains == ['invalid'] or allowed_domains == [] or allowed_domains == '' %}
+      {% set domains_allowed = ['fan', 'light', 'switch'] %}
+    {% elif typeof(allowed_domains) == 'list' or typeof(allowed_domains) == 'Wrapper' %}
+      {% set domains_allowed = allowed_domains | map('lower') | map('trim') | list %}
+    {% elif typeof(allowed_domains) == 'str' %}
+      {% set domains_allowed = allowed_domains.split( ',' ) | map('lower') | map('trim') | list %}
+    {% endif %}
+    {{ domains_allowed }}
+    
   entities_from_entity: >-
     {% set entities_from_entity = [] %}
     {% set entity_array = namespace(entity_list=[]) %}
@@ -208,8 +220,8 @@ sequence:
   # Brightness variables are set to 11 so they're skipped in the logic.  To turn the LED off, use "Off".
   ##################
   - variables:
+      allowed_domains: "{{ allowed_domains | default([]) }}"
       entity:          "{{ entity }}"
-
       LEDnumber:         "{{ LEDnumber         | default('all')          | lower }}"
       LEDcolor:          "{{ LEDcolor          | default('no change')    | lower }}"
 
