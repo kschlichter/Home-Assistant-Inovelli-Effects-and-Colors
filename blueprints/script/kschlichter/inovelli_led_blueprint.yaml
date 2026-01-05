@@ -184,6 +184,9 @@ blueprint:
               model: mmWave Zigbee Dimmer (VZM32-SN)
             - integration: mqtt
               manufacturer: Inovelli
+              model: mmWave Zigbee Dimmer
+            - integration: mqtt
+              manufacturer: Inovelli
               model: Inovelli Fan Controller (VZM35-SN)
             - integration: mqtt
               manufacturer: Inovelli
@@ -253,6 +256,9 @@ blueprint:
             - integration: mqtt
               manufacturer: Inovelli
               model: mmWave Zigbee Dimmer (VZM32-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: mmWave Zigbee Dimmer
             - integration: mqtt
               manufacturer: Inovelli
               model: Inovelli Fan Controller (VZM35-SN)
@@ -339,6 +345,9 @@ blueprint:
             - integration: mqtt
               manufacturer: Inovelli
               model: mmWave Zigbee Dimmer (VZM32-SN)
+            - integration: mqtt
+              manufacturer: Inovelli
+              model: mmWave Zigbee Dimmer
             - integration: mqtt
               manufacturer: Inovelli
               model: Inovelli Fan Controller (VZM35-SN)
@@ -1456,6 +1465,7 @@ variables:
     - Inovelli Fan Controller (VZM35-SN)         # Blue Series fan Zigbee2MQTT 1.35 and below
     - 2-in-1 switch + dimmer (VZM31-SN)          # Blue Series dimmer Zigbee2MQTT 1.36 and above
     - mmWave Zigbee Dimmer (VZM32-SN)            # Blue Series mmWave dimmer
+    - mmWave Zigbee Dimmer                       # Blue Series mmWave dimmer
     - On/off switch                              # Blue Series switch
     - Fan Controller (VZM35-SN)                  # Blue Series fan Zigbee2MQTT 1.36 and above
     - 2-in-1 switch + dimmer                     # Blue Series dimmer Zigbee2MQTT 2.0.0 and above
