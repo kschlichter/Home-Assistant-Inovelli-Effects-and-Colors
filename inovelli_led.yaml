@@ -182,9 +182,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: mmWave Zigbee Dimmer (VZM32-SN)
-          - integration: mqtt
+          - integration: mqtt 
             manufacturer: Inovelli
-￼           model: mmWave Zigbee Dimmer
+            model: mmWave Zigbee Dimmer
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli Fan Controller (VZM35-SN)
@@ -258,7 +258,7 @@ fields:
             model: mmWave Zigbee Dimmer (VZM32-SN)
           - integration: mqtt
             manufacturer: Inovelli
-￼           model: mmWave Zigbee Dimmer
+            model: mmWave Zigbee Dimmer
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli Fan Controller (VZM35-SN)
@@ -347,7 +347,10 @@ fields:
             model: mmWave Zigbee Dimmer (VZM32-SN)
           - integration: mqtt
             manufacturer: Inovelli
-￼           model: mmWave Zigbee Dimmer
+            model: mmWave Zigbee Dimmer
+          - integration: mqtt
+            manufacturer: Inovelli
+            model: mmWave Zigbee Dimmer
           - integration: mqtt
             manufacturer: Inovelli
             model: Inovelli Fan Controller (VZM35-SN)
