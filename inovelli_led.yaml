@@ -2919,7 +2919,6 @@ sequence:
                               {% if effect != 'clear effect' %}
                                 {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (repeat.item.effects * 16777216) }}
                               {% else %}
-                                {# Working around an Inovelli bug #}
                                 {{ duration_values[0] }}
                               {% endif %}
 
