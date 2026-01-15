@@ -182,7 +182,7 @@ blueprint:
             - integration: mqtt
               manufacturer: Inovelli
               model: mmWave Zigbee Dimmer (VZM32-SN)
-            - integration: mqtt 
+            - integration: mqtt
               manufacturer: Inovelli
               model: mmWave Zigbee Dimmer
             - integration: mqtt
@@ -345,9 +345,6 @@ blueprint:
             - integration: mqtt
               manufacturer: Inovelli
               model: mmWave Zigbee Dimmer (VZM32-SN)
-            - integration: mqtt
-              manufacturer: Inovelli
-              model: mmWave Zigbee Dimmer
             - integration: mqtt
               manufacturer: Inovelli
               model: mmWave Zigbee Dimmer
@@ -2008,6 +2005,18 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if ('2-in-1 switch' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM31-SN')) and ent.split('.')[0] == 'light' and ent in integration_entities('mqtt') %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+    
+        - device_type: VZM32SN
+          call_type: z2m
+          effects: "{{ iif(LEDnumber_effect == 'all',VZM32SN_Z2M_all_effects[effect],VZM32SN_Z2M_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if ('mmWave Zigbee Dimmer' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM32-SN')) and ent.split('.')[0] == 'light' and ent in integration_entities('mqtt') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
