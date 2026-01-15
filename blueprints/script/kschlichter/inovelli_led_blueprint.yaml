@@ -2044,7 +2044,7 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'VZM30-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zha') %}
-                {% set entities.entities = entities.entities + [ent] %} #                {% set entities.entities = entities.entities + [(device_attr( ent, 'identifiers') | list).0.1] %} 
+                {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
