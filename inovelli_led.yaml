@@ -29,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 70.625s
+#   Add two spaces to lines between label: and variables: 70.655s
 #   Comment out example:
 #   Switch input_* and script variables (1 place)
 #
