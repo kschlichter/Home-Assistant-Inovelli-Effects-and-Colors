@@ -29,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 70.625s
+#   Add two spaces to lines between label: and variables: 70.655s
 #   Comment out example:
 #   Switch input_* and script variables (1 place)
 #
@@ -158,6 +158,9 @@ fields:
           - integration: zwave_js
             manufacturer: Inovelli
             model: VZW31-SN
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: VZW32-SN
           - integration: zha
             manufacturer: Inovelli
             model: VZM30-SN
@@ -232,6 +235,9 @@ fields:
           - integration: zwave_js
             manufacturer: Inovelli
             model: VZW31-SN
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: VZW32-SN
           - integration: zha
             manufacturer: Inovelli
             model: VZM30-SN
@@ -321,6 +327,9 @@ fields:
           - integration: zwave_js
             manufacturer: Inovelli
             model: VZW31-SN
+          - integration: zwave_js
+            manufacturer: Inovelli
+            model: VZW32-SN
           - integration: zha
             manufacturer: Inovelli
             model: VZM30-SN
@@ -959,6 +968,61 @@ variables:
     fast blink: 2
     slow blink: 3
 
+  ### Red 800 Series mmWave Dimmer ###
+  VZW32SN_all_effects:
+    "off": 0
+    clear effect: 255
+    aurora: 8
+    blink: 15
+    blink fast: 2
+    blink medium: 15
+    blink slow: 3
+    chase: 5
+    chase fast: 17
+    chase medium: 5
+    chase slow: 16
+    fall fast: 11
+    fall medium: 10
+    fall slow: 9
+    open close: 6
+    pulse: 4
+    rise fast: 14
+    rise medium: 13
+    rise slow: 12
+    siren fast: 18
+    siren slow: 19
+    small to big: 7
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
+  VZW32SN_led_effects:
+    "off": 0
+    clear effect: 255
+    aurora: 8
+    blink: 2
+    blink fast: 2
+    blink medium: 2
+    blink slow: 3
+    chase: 5
+    chase fast: 5
+    chase medium: 5
+    chase slow: 5
+    fall fast: 6
+    fall medium: 6
+    fall slow: 6
+    open close: 4
+    pulse: 4
+    rise fast: 7
+    rise medium: 7
+    rise slow: 7
+    siren fast: 2
+    siren slow: 3
+    small to big: 5
+    solid: 1
+    fast blink: 2
+    slow blink: 3
+
   ### Blue Series Switch ###
   VZM30SN_ZHA_all_effects:
     "off": 0
@@ -1462,6 +1526,7 @@ variables:
     - LZW31-SN # Red 500 Series dimmer
     - LZW36    # Red 500 Series combo_light, combo_fan
     - VZW31-SN # Red 800 series dimmer
+    - VZW32-SN # Red 800 series mmWave dimmer
 
   zigbee2mqtt_models: # Blue
     - Inovelli 2-in-1 switch + dimmer (VZM31-SN) # Blue Series dimmer Zigbee2MQTT 1.35 and below
@@ -1587,6 +1652,52 @@ variables:
     VZW31SN_7_effect_brightness: LED7 Strip Effect - Level
     VZW31SN_7_effect_duration: LED7 Strip Effect - Duration
     VZW31SN_7_effect_effect: LED7 Strip Effect - Effect
+
+    VZW32SN_all_effect_bulk: 99
+    VZW32SN_all_effect_color: All LED Strip Effect - Color
+    VZW32SN_all_effect_brightness: All LED Strip Effect - Level
+    VZW32SN_all_effect_duration: All LED Strip Effect - Duration
+    VZW32SN_all_effect_effect: All LED Strip Effect - Effect
+    VZW32SN_all_ledcolor: Default All LED Strip Color When On
+    VZW32SN_all_ledcolor_off: Default All LED Strip Color When Off
+    VZW32SN_all_ledbrightness: Default All LED Strip Brightness When On
+    VZW32SN_all_ledbrightness_off: Default All LED Strip Brightness When Off
+
+    VZW32SN_1_effect_bulk: 64
+    VZW32SN_1_effect_color: LED1 Strip Effect - Color
+    VZW32SN_1_effect_brightness: LED1 Strip Effect - Level
+    VZW32SN_1_effect_duration: LED1 Strip Effect - Duration
+    VZW32SN_1_effect_effect: LED1 Strip Effect - Effect
+    VZW32SN_2_effect_bulk: 69
+    VZW32SN_2_effect_color: LED2 Strip Effect - Color
+    VZW32SN_2_effect_brightness: LED2 Strip Effect - Level
+    VZW32SN_2_effect_duration: LED2 Strip Effect - Duration
+    VZW32SN_2_effect_effect: LED2 Strip Effect - Effect
+    VZW32SN_3_effect_bulk: 74
+    VZW32SN_3_effect_color: LED3 Strip Effect - Color
+    VZW32SN_3_effect_brightness: LED3 Strip Effect - Level
+    VZW32SN_3_effect_duration: LED3 Strip Effect - Duration
+    VZW32SN_3_effect_effect: LED3 Strip Effect - Effect
+    VZW32SN_4_effect_bulk: 79
+    VZW32SN_4_effect_color: LED4 Strip Effect - Color
+    VZW32SN_4_effect_brightness: LED4 Strip Effect - Level
+    VZW32SN_4_effect_duration: LED4 Strip Effect - Duration
+    VZW32SN_4_effect_effect: LED4 Strip Effect - Effect
+    VZW32SN_5_effect_bulk: 84
+    VZW32SN_5_effect_color: LED5 Strip Effect - Color
+    VZW32SN_5_effect_brightness: LED5 Strip Effect - Level
+    VZW32SN_5_effect_duration: LED5 Strip Effect - Duration
+    VZW32SN_5_effect_effect: LED5 Strip Effect - Effect
+    VZW32SN_6_effect_bulk: 89
+    VZW32SN_6_effect_color: LED6 Strip Effect - Color
+    VZW32SN_6_effect_brightness: LED6 Strip Effect - Level
+    VZW32SN_6_effect_duration: LED6 Strip Effect - Duration
+    VZW32SN_6_effect_effect: LED6 Strip Effect - Effect
+    VZW32SN_7_effect_bulk: 94
+    VZW32SN_7_effect_color: LED7 Strip Effect - Color
+    VZW32SN_7_effect_brightness: LED7 Strip Effect - Level
+    VZW32SN_7_effect_duration: LED7 Strip Effect - Duration
+    VZW32SN_7_effect_effect: LED7 Strip Effect - Effect
 
 
   ##################
@@ -1986,6 +2097,18 @@ sequence:
             {% endfor %}
             {{ entities.entities }}
 
+        - device_type: VZW32SN
+          call_type: zwave_js
+          effects: "{{ iif(LEDnumber_effect == 'all',VZW32SN_all_effects[effect],VZW32SN_led_effects[effect]) }}" ### So we can pass the device-specific effect into the repeat loop ###
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'VZW32-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+                {% set entities.entities = entities.entities + [ent] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
         ##################
         # Zigbee2MQTT
         ##################
@@ -2337,8 +2460,9 @@ sequence:
 
                 ### Zwave JS ###
                 ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                ### Only Red 800 Series devices can set the LED strip color when off ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type == 'VZW31SN' and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
                       sequence:
                         - service: zwave_js.set_config_parameter
                           data:
@@ -2517,7 +2641,7 @@ sequence:
               sequence:
 
                 ### Zwave JS ###
-                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all'.  Prefer no action over partial implimentation of users' intents.  ###
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'all' in LEDnumber and 'all' not in LEDcolor and LEDnumber == 'all' }}"
                       sequence:
@@ -2699,8 +2823,9 @@ sequence:
 
                 ### Zwave JS ###
                 ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                ### Only Red 800 Series devices can set the LED strip brightness when off ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
                       sequence:
                         - service: zwave_js.set_config_parameter
                           data:
@@ -2919,7 +3044,6 @@ sequence:
                               {% if effect != 'clear effect' %}
                                 {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (repeat.item.effects * 16777216) }}
                               {% else %}
-                                {# Working around an Inovelli bug #}
                                 {{ duration_values[0] }}
                               {% endif %}
 
