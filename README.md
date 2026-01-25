@@ -75,7 +75,11 @@ As a quick start you can follow these steps:
   * Paste the contents into the yaml editor.
   * In the vertical ellipsis select “Edit in Visual Editor”
   * Click the blue, “Save Script” button in the lower right.
-  * Call it from automations by passing the parameters explained below.
+  * Click "Developer tools" in the left-hand navigation pane.
+  * Click "YAML" at the top of the page.
+  * Click "Check configuration" and then, under YAML configuration reloading, click "Scripts".
+  * Click "Actions" in the blue top bar, and select the script from the drop-down menu there.  
+  * Call it from automations by passing the parameters explained below. 
 
 ## Setting the LED indicator
 
