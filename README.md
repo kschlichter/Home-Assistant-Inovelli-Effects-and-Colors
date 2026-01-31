@@ -94,7 +94,7 @@ As a quick start you can follow these steps:
 
 ## Required for setting LED effects
 
-  All four parameters must be passed in order to cange the effect.
+  All four parameters must be passed in order to change the effect.
 
     - duration: (string) Either "Off", or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
     - effect: (string) Where older devices and individual LEDs don't support a given effect, that effect has been mapped to something that is supported.
