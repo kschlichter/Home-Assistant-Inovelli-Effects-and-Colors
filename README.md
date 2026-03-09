@@ -42,7 +42,8 @@
     * [0, 1, 3, 5, 8, 10, 13, 16, 20, 23, 26, 30, 33, 36, 40, 45, 50, 60, 70, 80, 90, 100]
   * The entity IDs for setting the LED bar brightness leves must end in `_on` and `_off`.  There's no way to discern which is which without relying on the `entity_id`.  If you rename them, make sure they end with `_on` and `_off` (e.g. `select.white_series_smart_2_1_switch_led_intensity_on`).
   * There's no option to set the LED bar to a different color when it's off than when it's on.  The `LEDcolor_off` option is ignored.
-  * 
+  * Only the colors in the list below are supported.
+    * [Red, Orange, Lemon, Lime, Green, Teal, Cyan, Aqua, Blue, Violet, Magenta, Pink, White]
 
 ## Blueprint Installation Instructions
   
