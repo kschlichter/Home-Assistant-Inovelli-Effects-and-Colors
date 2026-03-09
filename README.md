@@ -113,7 +113,7 @@ As a quick start you can follow these steps:
     - duration: (string) Either "Off", or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
     - effect: (string) Where older devices and individual LEDs don't support a given effect, that effect has been mapped to something that is supported.
     - brightness: (integer 1 – 10) Sets the brightness of the LED's effect
-    - color: (int or string) Sets color of LED effect and must be one of: "Off", Red, Orange, Lemon, Yellow, Lime, Green, Cyan, Teal, Blue, Purple, Magenta, Light Pink, Pink, Hot Pink, White
+    - color: (int or string) Sets color of LED effect and must be one of: "Off", Red, Orange, Lemon, Yellow, Lime, Green, Cyan, Teal, Aqua, Blue, Purple, Magenta, Violet, Light Pink, Pink, Hot Pink, White
         Color sets like "all usa" cannot be used with effects.  I can't think of a way to get all 7 LEDs synchronized for effects like "pulse" or "chase".
 
 
