@@ -44,6 +44,8 @@
   * There's no option to set the LED bar to a different color when it's off than when it's on.  The `LEDcolor_off` option is ignored.
   * Only the colors in the list below are supported.
     * [Red, Orange, Lemon, Lime, Green, Teal, Cyan, Aqua, Blue, Violet, Magenta, Pink, White]
+  * Not all effects are supported.  The effects supported by Red and Blue Series devices, which are not supported by the White Series, have been mapped to something I arbitrarily decided was reasonable.
+  * Effect duration is not supported by the White Series devices.  It must still be defined in order to invoke the effect—otherwise it defaults to "off"—but all effects are necessarily "forever" duration.  A second call must be made to disable the effect.  
 
 ## Blueprint Installation Instructions
   
