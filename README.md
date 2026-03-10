@@ -37,14 +37,14 @@
 
 ### Notes on White Series devices
 
-  * Speaking of quirks, with firmware 1.1.5 the device only supports LED bar brightness (`LEDbrightness` and `LEDbrightness_off`)levels from the list below.  I'll use the closest match of equal or lesser value.  Setting `LEDbrightness` to 1.3 will result in 13.  Setting it to 99 will result in 90; 100 results in 100.  I'd love to know what problem this list solves and why it couldn't be an `input_number`.
+  * With firmware 1.1.5 the device only supports LED bar brightness (`LEDbrightness` and `LEDbrightness_off`) levels from the list below.  I'll use the closest match of equal or lesser value.  Setting `LEDbrightness` to 1.3 will result in 13.  Setting it to 99 will result in 90; 100 results in 100.  I'd love to know what problem this list solves and why it couldn't be an `input_number`.
     * [0, 1, 3, 5, 8, 10, 13, 16, 20, 23, 26, 30, 33, 36, 40, 45, 50, 60, 70, 80, 90, 100]
-  * The entity IDs for setting the LED bar brightness leves must end in `_on` and `_off`.  There's no way to discern which is which without relying on the `entity_id`.  If you rename them, make sure they end with `_on` and `_off` (e.g. `select.white_series_smart_2_1_switch_led_intensity_on`).
+  * The entity IDs for setting the LED bar brightness levels must end in `_on` and `_off`.  There's no way to discern which is which without relying on the `entity_id`.  If you rename them, make sure they end with `_on` and `_off` (e.g. `select.white_series_smart_2_1_switch_led_intensity_on`).
   * There's no option to set the LED bar to a different color when it's off than when it's on.  The `LEDcolor_off` option is ignored.
-  * Only the colors in the list below are supported.
+  * Only the colors in the list below are supported; not the full 256 colorset. 
     * [Red, Orange, Lemon, Lime, Green, Teal, Cyan, Aqua, Blue, Violet, Magenta, Pink, White]
   * Not all effects are supported.  The effects supported by Red and Blue Series devices, which are not supported by the White Series, have been mapped to something I arbitrarily decided was reasonable.
-  * Effect duration is not supported by the White Series devices.  It must still be defined in order to invoke the effect—otherwise it defaults to "off"—but all effects are necessarily "forever" duration.  A second call must be made to disable the effect.  
+  * Effect duration is not supported by the White Series devices.  It must still be defined in order to invoke the effect—otherwise it defaults to "off"—but all effects are necessarily "forever" duration.  A second call must be made to disable the effect.  You can see examples for clearing effects further down in this document. 
 
 ## Blueprint Installation Instructions
   
