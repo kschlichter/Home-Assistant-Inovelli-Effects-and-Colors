@@ -37,7 +37,6 @@
 
 ### Notes on White Series devices
 
-  * **Breaking change:** this only supports White Series devices with firmware 1.1.5 and above.  Inovelli devices in general have a lot of quirks.  Things change with updates to Z2M, ZHA, or Z-Wave JS and also between firmware versions.  As much as possible, I try to work around those nuances to keep the UI and behavior consistent.  The White Series devices have changed significantly with firmware 1.1.5 and I can't find a way to reliably detect which firmware a device has.  I'm assuming firmware 1.1.5 and this script will not work with devices on earlier firmware.
   * Speaking of quirks, with firmware 1.1.5 the device only supports LED bar brightness (`LEDbrightness` and `LEDbrightness_off`)levels from the list below.  I'll use the closest match of equal or lesser value.  Setting `LEDbrightness` to 1.3 will result in 13.  Setting it to 99 will result in 90; 100 results in 100.  I'd love to know what problem this list solves and why it couldn't be an `input_number`.
     * [0, 1, 3, 5, 8, 10, 13, 16, 20, 23, 26, 30, 33, 36, 40, 45, 50, 60, 70, 80, 90, 100]
   * The entity IDs for setting the LED bar brightness leves must end in `_on` and `_off`.  There's no way to discern which is which without relying on the `entity_id`.  If you rename them, make sure they end with `_on` and `_off` (e.g. `select.white_series_smart_2_1_switch_led_intensity_on`).
