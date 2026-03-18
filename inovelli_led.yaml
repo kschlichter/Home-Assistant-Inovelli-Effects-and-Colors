@@ -24,7 +24,7 @@
 
 #
 # Effects not working?
-#   Black 500 and White Series devices do not support effects.
+#   Black 500 and White Series devices with firmware <1.1.5 do not support effects.
 #   Check that your device supports the effect you're selecting at https://inovelliusa.github.io/inovelli-switch-toolbox/
 #
 # Convert to blueprint:
