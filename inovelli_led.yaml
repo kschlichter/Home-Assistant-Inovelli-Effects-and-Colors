@@ -2320,8 +2320,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
                 {% for led_bar in device_entities(device_id(ent)) %}
                   {% if 'red' in state_attr(led_bar,'options') | lower and led_bar not in entities.entities %}
                     {% set entities.entities = entities.entities + [led_bar] %}
@@ -2334,8 +2333,7 @@ sequence:
           brightness_on_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
                 {% for brightness_on in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_on,'options') | lower and brightness_on.split('_')[-1] == 'on' and brightness_on not in entities.entities %}
                     {% set entities.entities = entities.entities + [brightness_on] %}
@@ -2357,8 +2355,7 @@ sequence:
           brightness_off_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
                 {% for brightness_off in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_off,'options') | lower and brightness_off.split('_')[-1] == 'off' and brightness_off not in entities.entities %}
                     {% set entities.entities = entities.entities + [brightness_off] %}
@@ -2380,8 +2377,7 @@ sequence:
           effect_color_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for effect_color in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
-                    device_attr(device_id(effect_color), 'sw_version') >= '1.1.0' %}
+              {% if 'inovelli on/off switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') %}
                 {% set entities.entities = entities.entities + [effect_color] %}
               {% endif %}
             {% endfor %}
@@ -2390,8 +2386,7 @@ sequence:
           effect_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
                 {% for effect in device_entities(device_id(ent)) %}
                   {% if 'solid' in state_attr(effect,'options')|lower and effect not in entities.entities %}
                     {% set entities.entities = entities.entities + [effect] %}
@@ -2513,6 +2508,7 @@ sequence:
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
+
 
         - device_type: VTM35SN
           call_type: matter
