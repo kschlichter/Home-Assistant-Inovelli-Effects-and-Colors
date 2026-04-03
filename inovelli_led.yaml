@@ -202,6 +202,9 @@ fields:
             model: Fan controller
           - integration: matter
             manufacturer: Inovelli
+            model: White Series On/Off Switch
+          - integration: matter
+            manufacturer: Inovelli
             model: White Series Smart 2-1 Switch
           - integration: matter
             manufacturer: Inovelli
@@ -277,6 +280,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Fan controller
+          - integration: matter
+            manufacturer: Inovelli
+            model: White Series On/Off Switch
           - integration: matter
             manufacturer: Inovelli
             model: White Series Smart 2-1 Switch
@@ -372,6 +378,9 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: Fan controller
+          - integration: matter
+            manufacturer: Inovelli
+            model: White Series On/Off Switch
           - integration: matter
             manufacturer: Inovelli
             model: White Series Smart 2-1 Switch
@@ -1509,6 +1518,54 @@ variables:
     fast blink: fast_blink
     slow blink: slow_blink
 
+  ### White Series Switch ###
+  VTM30SN_all_effects:
+    "off": 0
+    clear effect: 0
+    aurora: "Middle Chase"
+    blink: "Middle Blink"
+    blink fast: "Fast Blink"
+    blink medium: "Middle Blink"
+    blink slow: "Slow Blink"
+    chase: "Middle Chase"
+    chase fast: "Fast Chase"
+    chase medium: "Middle Chase"
+    chase slow: "Slow Chase" 
+    fall fast: "Fast Falling"
+    fall medium: "Middle Falling"
+    fall slow: "Slow Falling"
+    open close: "Open Close"
+    pulse: "Middle Blink"
+    rise fast: "Fast Rising"
+    rise medium: "Middle Rising"
+    rise slow: "Slow Rising"
+    siren fast: "Fast Siren"
+    siren slow: "Slow Siren"
+    small to big: "Small To Big" 
+    solid: Solid
+    fast blink: "Fast Blink"
+    slow blink: "Slow Blink"
+              
+  VTM30SN_colors:
+    red: Red
+    orange: Orange
+    lemon: Lemon
+    yellow: Lemon
+    lime: Lime
+    green: Green
+    cyan: Cyan
+    teal: Teal
+    aqua: Aqua
+    blue: Blue
+    purple: Magenta
+    violet: Violet
+    magenta: Magenta
+    light pink: Pink
+    pink: Pink
+    hot pink: Pink
+    white: White
+    "off": White
+
   ### White Series Dimmer ###
   VTM31SN_all_effects:
     "off": 0
@@ -1616,7 +1673,10 @@ variables:
     - VZM35-SN # Blue Series fan
 
   matter_models: # White
-    - White Series Smart 2-1 Switch # VTM31-SN
+    - Inovelli On/Off Switch # VTM30-SN ### Confirmed on FW 1.0.4R3
+    - Inovelli Smart 2-1 Switch # VTM31-SN # Confirmed on FW 1.0.5, should match all below 1.1.5
+    - Inovelli Smart Fan Switch # VTM35-SN ### Needs confirmation for fw <1.1.5
+    - White Series Smart 2-1 Switch # VTM31-SN # Confirmed FW 1.1.5 and above 
     - White Series Smart Fan Switch # VTM35-SN ### What's the model description for the fan? 
 
 
@@ -2252,6 +2312,91 @@ sequence:
         ##################
         # Matter
         ##################
+        - device_type: VTM30SN-104
+          call_type: matter
+
+          effects: "{{ VTM30SN_all_effects[effect] }}"
+
+          entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
+                {% for led_bar in device_entities(device_id(ent)) %}
+                  {% if 'red' in state_attr(led_bar,'options') | lower and led_bar not in entities.entities %}
+                    {% set entities.entities = entities.entities + [led_bar] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+          brightness_on_entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
+                {% for brightness_on in device_entities(device_id(ent)) %}
+                  {% if '100' in state_attr(brightness_on,'options') | lower and brightness_on.split('_')[-1] == 'on' and brightness_on not in entities.entities %}
+                    {% set entities.entities = entities.entities + [brightness_on] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+          brightness_on_level: >-
+            {% set brightness = namespace(value=[0]) %}
+            {% for num in [0, 1, 3, 5, 8, 10, 13, 16, 20, 23, 26, 30, 33, 36, 40, 45, 50, 60, 70, 80, 90, 100] %}
+              {% if int(num,default=0) <= ((LEDbrightness | float) *10 | int) %}
+                {% set brightness.value = num %}
+              {% endif %}
+            {% endfor %}
+            {{ brightness.value }}
+
+          brightness_off_entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
+                {% for brightness_off in device_entities(device_id(ent)) %}
+                  {% if '100' in state_attr(brightness_off,'options') | lower and brightness_off.split('_')[-1] == 'off' and brightness_off not in entities.entities %}
+                    {% set entities.entities = entities.entities + [brightness_off] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+          brightness_off_level: >-
+            {% set brightness = namespace(value=[0]) %}
+            {% for num in [0, 1, 3, 5, 8, 10, 13, 16, 20, 23, 26, 30, 33, 36, 40, 45, 50, 60, 70, 80, 90, 100] %}
+              {% if int(num,default=0) <= ((LEDbrightness_off | float) *10 | int) %}
+                {% set brightness.value = num %}
+              {% endif %}
+            {% endfor %}
+            {{ brightness.value }}
+
+          effect_color_entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for effect_color in all_selected_entities %}
+              {% if 'inovelli on/off switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') %}
+                {% set entities.entities = entities.entities + [effect_color] %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+          effect_entities: >-
+            {% set entities = namespace(entities=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
+                {% for effect in device_entities(device_id(ent)) %}
+                  {% if 'solid' in state_attr(effect,'options')|lower and effect not in entities.entities %}
+                    {% set entities.entities = entities.entities + [effect] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+            {{ entities.entities }}
+
+
         - device_type: VTM31SN-115
           call_type: matter
 
@@ -2260,7 +2405,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
                     device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
                 {% for led_bar in device_entities(device_id(ent)) %}
                   {% if 'red' in state_attr(led_bar,'options') | lower and led_bar not in entities.entities %}
@@ -2274,7 +2419,7 @@ sequence:
           brightness_on_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
                     device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
                 {% for brightness_on in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_on,'options') | lower and brightness_on.split('_')[-1] == 'on' and brightness_on not in entities.entities %}
@@ -2297,7 +2442,7 @@ sequence:
           brightness_off_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
                     device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
                 {% for brightness_off in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_off,'options') | lower and brightness_off.split('_')[-1] == 'off' and brightness_off not in entities.entities %}
@@ -2320,7 +2465,7 @@ sequence:
           effect_color_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for effect_color in all_selected_entities %}
-              {% if 'white series' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
+              {% if 'white series smart 2-1 switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
                     device_attr(device_id(effect_color), 'sw_version') >= '1.1.0' %}
                 {% set entities.entities = entities.entities + [effect_color] %}
               {% endif %}
@@ -2330,7 +2475,7 @@ sequence:
           effect_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
                     device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
                 {% for effect in device_entities(device_id(ent)) %}
                   {% if 'solid' in state_attr(effect,'options')|lower and effect not in entities.entities %}
@@ -2347,7 +2492,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') and
                     device_attr(device_id(ent), 'sw_version') < '1.1.0' %}
                 {% set entities.entities = entities.entities + ['select.' + ent.split('.')[1].split('_light_1')[0] + '_led_color'] %}
               {% endif %}
@@ -2357,19 +2502,20 @@ sequence:
           effect_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') and
                     device_attr(device_id(ent), 'sw_version') < '1.1.0' %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
             {{ entities.entities }}
 
+
         - device_type: VTM35SN
           call_type: matter
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
+              {% if 'white series smart fan switch' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
                 {% set entities.entities = entities.entities + ['select.' + ent.split('.')[1].split('_light_1')[0] + '_led_color'] %}
               {% endif %}
             {% endfor %}
@@ -2378,7 +2524,7 @@ sequence:
           effect_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
+              {% if 'white series smart fan switch' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2575,6 +2721,13 @@ sequence:
                 ### Matter ###
                 ### White Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
                 - choose:
+                    ### VTM30-SN FW 1.0.4r3
+                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM30SN-104' }}"
+                      sequence:
+                        - service: select.select_option
+                          data:
+                            option: "{{ VTM30SN_colors[LEDcolor] | capitalize }}"
+                            entity_id: "{{ repeat.item.entities }}"
                     ### VTM31-SN FW >= 1.1.0
                     - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-115' }}"
                       sequence:
@@ -2958,6 +3111,12 @@ sequence:
 
                 ### Matter ###
                 - choose:
+                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM30SN-104' }}"
+                      sequence:
+                        - service: select.select_option
+                          data:
+                            option: "{{ iif(LEDcolor == 'off','0',int(repeat.item.brightness_on_level)) }}"
+                            entity_id: "{{ repeat.item.brightness_on_entities }}"
                     - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-115' }}"
                       sequence:
                         - service: select.select_option
@@ -3148,6 +3307,13 @@ sequence:
 
                 ### Matter ###
                 - choose:
+                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor_off and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-104' }}"
+                      sequence:
+                        - service: select.select_option
+                          data:
+                            option: "{{ iif(LEDcolor_off == 'off','0',int(repeat.item.brightness_off_level)) }}"
+                            entity_id: "{{ repeat.item.brightness_off_entities }}"
+
                     - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor_off and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-115' }}"
                       sequence:
                         - service: select.select_option
@@ -3252,6 +3418,23 @@ sequence:
 
                 ### Matter ###
                 - choose:
+                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' in LEDnumber_effect and 'all' not in color and repeat.item.device_type == 'VTM30SN-104' }}"
+                      sequence:
+
+                        ###  Effect color and brightness  ###
+                        - service: light.turn_on
+                          target:
+                            entity_id: "{{ repeat.item.effect_color_entities }}"
+                          data:
+                            brightness_pct: "{{ (brightness * 10) | int }}"
+                            hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, 100 ]"
+                          
+                        ### Effect type ###
+                        - service: select.select_option
+                          data:
+                            option: "{{ repeat.item.effects }}"
+                            entity_id: "{{ repeat.item.effect_entities }}"
+
                     - conditions: "{{ repeat.item.call_type == 'matter' and 'all' in LEDnumber_effect and 'all' not in color and repeat.item.device_type == 'VTM31SN-115' }}"
                       sequence:
 
@@ -3379,6 +3562,11 @@ sequence:
 
             ### Matter ###
             - choose:
+                - conditions: "{{ repeat.item.call_type == 'matter' and repeat.item.device_type == 'VTM30SN-104' }}"
+                  sequence:
+                    - service: light.turn_off
+                      data:
+                        entity_id: "{{ repeat.item.effect_color_entities }}"
                 - conditions: "{{ repeat.item.call_type == 'matter' and repeat.item.device_type == 'VTM31SN-115' }}"
                   sequence:
                     - service: light.turn_off
