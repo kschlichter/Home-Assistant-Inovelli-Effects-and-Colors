@@ -2376,10 +2376,19 @@ sequence:
 
           effect_color_entities: >-
             {% set entities = namespace(entities=[]) %}
-            {% for effect_color in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') %}
-                {% set entities.entities = entities.entities + [effect_color] %}
+            {% set device = namespace(device=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if device_id(ent) not in device.device %}
+                {% set device.device = device.device + [device_id(ent)] %}
               {% endif %}
+            {% endfor %}
+            {% for device in device.device %}
+              {% for effect_color in device_entities(device) %}
+                {% if 'inovelli on/off switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
+                      device_attr(device_id(effect_color), 'sw_version') >= '1.1.0' %}
+                  {% set entities.entities = entities.entities + [effect_color] %}
+                {% endif %}
+              {% endfor %}
             {% endfor %}
             {{ entities.entities }}
 
@@ -2464,11 +2473,19 @@ sequence:
 
           effect_color_entities: >-
             {% set entities = namespace(entities=[]) %}
-            {% for effect_color in all_selected_entities %}
-              {% if 'white series smart 2-1 switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
-                    device_attr(device_id(effect_color), 'sw_version') >= '1.1.0' %}
-                {% set entities.entities = entities.entities + [effect_color] %}
+            {% set device = namespace(device=[]) %}
+            {% for ent in all_selected_entities %}
+              {% if device_id(ent) not in device.device %}
+                {% set device.device = device.device + [device_id(ent)] %}
               {% endif %}
+            {% endfor %}
+            {% for device in device.device %}
+              {% for effect_color in device_entities(device) %}
+                {% if 'white series smart 2-1 switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
+                      device_attr(device_id(effect_color), 'sw_version') >= '1.1.0' %}
+                  {% set entities.entities = entities.entities + [effect_color] %}
+                {% endif %}
+              {% endfor %}
             {% endfor %}
             {{ entities.entities }}
 
@@ -3444,7 +3461,7 @@ sequence:
                             entity_id: "{{ repeat.item.effect_color_entities }}"
                           data:
                             brightness_pct: "{{ (brightness * 10) | int }}"
-                            hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, 100 ]"
+                            hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, {{ iif(color == 'white',0,100) }} ]"
 
                         ### Effect type ###
                         - service: select.select_option
