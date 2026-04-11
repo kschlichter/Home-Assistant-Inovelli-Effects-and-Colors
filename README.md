@@ -21,7 +21,8 @@
     * [VZM32-SN Blue Series mmWave Presence Dimmer Switch](https://inovelli.com/collections/inovelli-blue-series/products/zigbee-blue-series-mmwave-presence-sensor-smart-dimmer-switch)
     * [VZM35-SN Blue Series 3-Speed Fan Switch](https://inovelli.com/products/blue-series-fan-switch-zigbee-3-0)
   * Matter:
-    * [VTM31-SN White Series Smart 2-1 Switch](https://inovelli.com/collections/inovelli-white-series/products/thread-matter-white-series-smart-2-1-on-off-dimmer-switch)
+    * [VTM30-SN White Series Smart On/Off Switch](https://inovelli.com/collections/inovelli-white-series/products/thread-matter-white-series-smart-on-off-switch-w-humidity)
+    * [VTM31-SN White Series Smart 2-1 Dimmer](https://inovelli.com/collections/inovelli-white-series/products/thread-matter-white-series-smart-2-1-on-off-dimmer-switch)
     * [VTM35-SN White Series Smart Fan Switch](https://inovelli.com/collections/inovelli-white-series/products/thread-matter-white-series-smart-fan-switch-3-speed-ceiling-on-off-exhaust)
 
   This is a complete rewrite of the work done by BrianHanifin on post: https://community.home-assistant.io/t/inovelli-z-wave-red-series-notification-led/165483
