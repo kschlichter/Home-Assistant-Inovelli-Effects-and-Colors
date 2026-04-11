@@ -29,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 71.670s
+#   Add two spaces to lines between label: and variables: 71.688s
 #   Comment out example:
 #   Switch input_* and script variables (1 place)
 #
@@ -205,6 +205,9 @@ fields:
             model: White Series On/Off Switch
           - integration: matter
             manufacturer: Inovelli
+            model: Inovelli On/Off Switch
+          - integration: matter
+            manufacturer: Inovelli
             model: White Series Smart 2-1 Switch
           - integration: matter
             manufacturer: Inovelli
@@ -283,6 +286,9 @@ fields:
           - integration: matter
             manufacturer: Inovelli
             model: White Series On/Off Switch
+          - integration: matter
+            manufacturer: Inovelli
+            model: Inovelli On/Off Switch
           - integration: matter
             manufacturer: Inovelli
             model: White Series Smart 2-1 Switch
@@ -381,6 +387,9 @@ fields:
           - integration: matter
             manufacturer: Inovelli
             model: White Series On/Off Switch
+          - integration: matter
+            manufacturer: Inovelli
+            model: Inovelli On/Off Switch
           - integration: matter
             manufacturer: Inovelli
             model: White Series Smart 2-1 Switch
@@ -1674,6 +1683,7 @@ variables:
 
   matter_models: # White
     - Inovelli On/Off Switch # VTM30-SN ### Confirmed on FW 1.0.4R3
+    - White Series On/Off Switch # Anticipating a name change with 1.1.5 FW?
     - Inovelli Smart 2-1 Switch # VTM31-SN # Confirmed on FW 1.0.5, should match all below 1.1.5
     - Inovelli Smart Fan Switch # VTM35-SN ### Needs confirmation for fw <1.1.5
     - White Series Smart 2-1 Switch # VTM31-SN # Confirmed FW 1.1.5 and above 
