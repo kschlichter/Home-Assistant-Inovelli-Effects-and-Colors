@@ -37,10 +37,10 @@
 # ZHA quirks: https://github.com/zigpy/zha-device-handlers/blob/dev/zhaquirks/inovelli/__init__.py#L199
 # Z-Wave Config DB: https://devices.zwave-js.io/?jumpTo=0x031e:0x0001:0x0001:0.0
 # Inovelli Toolbox: https://inovelliusa.github.io/inovelli-switch-toolbox/
-# Caculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
+# Calculations: https://docs.google.com/spreadsheets/d/14wTP4OL4hkDK3Et5kYL4fyxPIK_R9JR3cgFxSa6dhyw/edit?usp=sharing
 ############
 
-mode: parallel
+mode: queued
 max: 100 # Default max is 10, which might be an issue if you have a lot of switches and you're calling the script per entity for some goofy reason.
 
 
@@ -59,13 +59,14 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 #    min_version: 2025.04.0
 #  input:
 
-alias: Inovelli LED Settings and Effects
+alias: Inovelli LED Settings and Effects Reordered
 description: |
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", "Blue", and "White" Series switches, dimmers, and fan controllers
     through the Zwave JS, ZHA, Zigbee2MQTT, and Matter integrations.  Devices from all series can be used together,
     and can be called by domain, label, floor, area, group, device, and entity.
 
     **Syntax and examples https://github.com/kschlichter/Home-Assistant-Inovelli-Effects-and-Colors**
+
 fields:
 
   selector_mode:
@@ -185,7 +186,7 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: mmWave Zigbee Dimmer (VZM32-SN)
-          - integration: mqtt 
+          - integration: mqtt
             manufacturer: Inovelli
             model: mmWave Zigbee Dimmer
           - integration: mqtt
@@ -366,9 +367,6 @@ fields:
           - integration: mqtt
             manufacturer: Inovelli
             model: mmWave Zigbee Dimmer (VZM32-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: mmWave Zigbee Dimmer
           - integration: mqtt
             manufacturer: Inovelli
             model: mmWave Zigbee Dimmer
@@ -606,7 +604,7 @@ fields:
     name: Effect Brightness
     description: |
       (brightness: "8") - Sets the brightness of the LED's effect.  0 means off.
-    default: '11'
+    default: 11
     selector:
       number:
         min: 0
@@ -1650,7 +1648,6 @@ variables:
     solid: 0
     fast blink: 0
     slow blink: 0
-  
 
   ##################
   # Store model names for reference and validation checks if necessary
@@ -2100,18 +2097,18 @@ sequence:
       device:              "{{ device }}"
       entity:              "{{ entity }}"
 
-      LEDnumber:           "{{ LEDnumber         | default('all')          | lower }}"
-      LEDcolor:            "{{ LEDcolor          | default('no change')    | lower }}"
-      LEDcolor_custom:     "{{ LEDcolor_custom   | default('')             | lower }}"
-      LEDcolor_off:        "{{ LEDcolor_off      | default('no change')    | lower }}"
-      LEDcolor_custom_off: "{{ LEDcolor_custom   | default('')             | lower }}"
-      LEDbrightness:       "{{ LEDbrightness     | default(11)             | float }}"
-      LEDbrightness_off:   "{{ LEDbrightness_off | default(11)             | float }}"
-      LEDnumber_effect:    "{{ LEDnumber_effect  | default('all')          | lower }}"
-      effect:              "{{ effect            | default('clear effect') | lower }}"
-      brightness:          "{{ brightness        | default(11)             | float }}"
-      color:               "{{ color             | default('no change')    | lower }}"
-      duration:            "{{ duration          | default(0)              | lower }}"
+      LEDnumber:           "{{ LEDnumber             | default('all')          | lower }}"
+      LEDcolor:            "{{ LEDcolor              | default('no change')    | lower }}"
+      LEDcolor_custom:     "{{ LEDcolor_custom       | default('')             | lower }}"
+      LEDcolor_off:        "{{ LEDcolor_off          | default('no change')    | lower }}"
+      LEDcolor_off_custom: "{{ LEDcolor_off_custom   | default('')             | lower }}"
+      LEDbrightness:       "{{ LEDbrightness         | default(11)             | float }}"
+      LEDbrightness_off:   "{{ LEDbrightness_off     | default(11)             | float }}"
+      LEDnumber_effect:    "{{ LEDnumber_effect      | default('all')          | lower }}"
+      effect:              "{{ effect                | default('clear effect') | lower }}"
+      brightness:          "{{ brightness            | default(11)             | float }}"
+      color:               "{{ color                 | default('no change')    | lower }}"
+      duration:            "{{ duration              | default(0)              | lower }}"
 
 
   ##################
@@ -2354,7 +2351,7 @@ sequence:
             {{ entities.entities }}
 
           brightness_on_level: >-
-            {% set brightness = namespace(value=[0]) %}
+            {% set brightness = namespace(value=0) %}
             {% for num in [0, 1, 3, 5, 8, 10, 13, 16, 20, 23, 26, 30, 33, 36, 40, 45, 50, 60, 70, 80, 90, 100] %}
               {% if int(num,default=0) <= ((LEDbrightness | float) *10 | int) %}
                 {% set brightness.value = num %}
@@ -2376,7 +2373,7 @@ sequence:
             {{ entities.entities }}
 
           brightness_off_level: >-
-            {% set brightness = namespace(value=[0]) %}
+            {% set brightness = namespace(value=0) %}
             {% for num in [0, 1, 3, 5, 8, 10, 13, 16, 20, 23, 26, 30, 33, 36, 40, 45, 50, 60, 70, 80, 90, 100] %}
               {% if int(num,default=0) <= ((LEDbrightness_off | float) *10 | int) %}
                 {% set brightness.value = num %}
@@ -2395,7 +2392,7 @@ sequence:
             {% for device in device.device %}
               {% for effect_color in device_entities(device) %}
                 {% if 'inovelli on/off switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
-                      device_attr(device_id(effect_color), 'sw_version') >= '1.1.0' %}
+                      device_attr(device_id(effect_color), 'sw_version') <= version('1.1.0') %}
                   {% set entities.entities = entities.entities + [effect_color] %}
                 {% endif %}
               {% endfor %}
@@ -2425,7 +2422,7 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
+                    device_attr(device_id(ent), 'sw_version') >= version('1.1.0') %}
                 {% for led_bar in device_entities(device_id(ent)) %}
                   {% if 'red' in state_attr(led_bar,'options') | lower and led_bar not in entities.entities %}
                     {% set entities.entities = entities.entities + [led_bar] %}
@@ -2439,7 +2436,7 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
+                    device_attr(device_id(ent), 'sw_version') >= version('1.1.0') %}
                 {% for brightness_on in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_on,'options') | lower and brightness_on.split('_')[-1] == 'on' and brightness_on not in entities.entities %}
                     {% set entities.entities = entities.entities + [brightness_on] %}
@@ -2450,7 +2447,7 @@ sequence:
             {{ entities.entities }}
 
           brightness_on_level: >-
-            {% set brightness = namespace(value=[0]) %}
+            {% set brightness = namespace(value=0) %}
             {% for num in [0, 1, 3, 5, 8, 10, 13, 16, 20, 23, 26, 30, 33, 36, 40, 45, 50, 60, 70, 80, 90, 100] %}
               {% if int(num,default=0) <= ((LEDbrightness | float) *10 | int) %}
                 {% set brightness.value = num %}
@@ -2462,7 +2459,7 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
+                    device_attr(device_id(ent), 'sw_version') >= version('1.1.0') %}
                 {% for brightness_off in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_off,'options') | lower and brightness_off.split('_')[-1] == 'off' and brightness_off not in entities.entities %}
                     {% set entities.entities = entities.entities + [brightness_off] %}
@@ -2473,7 +2470,7 @@ sequence:
             {{ entities.entities }}
 
           brightness_off_level: >-
-            {% set brightness = namespace(value=[0]) %}
+            {% set brightness = namespace(value=0) %}
             {% for num in [0, 1, 3, 5, 8, 10, 13, 16, 20, 23, 26, 30, 33, 36, 40, 45, 50, 60, 70, 80, 90, 100] %}
               {% if int(num,default=0) <= ((LEDbrightness_off | float) *10 | int) %}
                 {% set brightness.value = num %}
@@ -2489,10 +2486,10 @@ sequence:
                 {% set device.device = device.device + [device_id(ent)] %}
               {% endif %}
             {% endfor %}
-            {% for device in device.device %}
-              {% for effect_color in device_entities(device) %}
+            {% for dev in device.device %}
+              {% for effect_color in device_entities(dev) %}
                 {% if 'white series smart 2-1 switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
-                      device_attr(device_id(effect_color), 'sw_version') >= '1.1.0' %}
+                      device_attr(device_id(effect_color), 'sw_version') >= version('1.1.0') %}
                   {% set entities.entities = entities.entities + [effect_color] %}
                 {% endif %}
               {% endfor %}
@@ -2503,7 +2500,7 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') >= '1.1.0' %}
+                    device_attr(device_id(ent), 'sw_version') >= version('1.1.0') %}
                 {% for effect in device_entities(device_id(ent)) %}
                   {% if 'solid' in state_attr(effect,'options')|lower and effect not in entities.entities %}
                     {% set entities.entities = entities.entities + [effect] %}
@@ -2520,7 +2517,7 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') < '1.1.0' %}
+                    device_attr(device_id(ent), 'sw_version') < version('1.1.0') %}
                 {% set entities.entities = entities.entities + ['select.' + ent.split('.')[1].split('_light_1')[0] + '_led_color'] %}
               {% endif %}
             {% endfor %}
@@ -2530,7 +2527,7 @@ sequence:
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
               {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') and
-                    device_attr(device_id(ent), 'sw_version') < '1.1.0' %}
+                    device_attr(device_id(ent), 'sw_version') < version('1.1.0') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2566,31 +2563,208 @@ sequence:
           value_template: "{{ (repeat.item.entities | count >0) or (repeat.item.effect_entities | count >0) }}"
 
         ##################
-        # LED strip color
+        # Zwave JS
         ##################
         - choose:
-            - conditions: "{{ LEDcolor != 'no change' }}"
+            - conditions: "{{ repeat.item.call_type == 'zwave_js' }}"
               sequence:
-
-                ### Zwave JS ###
+                ### LED strip color ###
                 ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
-                      sequence:
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDcolor != 'no change' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
+                  then:
+                    - service: zwave_js.set_config_parameter
+                      data:
+                        entity_id: "{{ repeat.item.entities }}"
+                        parameter: >
+                          {% set effect_param = repeat.item.device_type + '_all' + '_ledcolor' %}
+                          {{ parameters[effect_param] }}
+                        value: "{{ color_set[LEDcolor] }}"                  
+                            
+                            
+
+                ### LED strip color when off ###
+                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                ### Only Red 800 Series devices can set the LED strip color when off ###
+                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDcolor_off != 'no change' and 'VZW' in repeat.item.device_type and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
+                  then:
                         - service: zwave_js.set_config_parameter
                           data:
                             entity_id: "{{ repeat.item.entities }}"
                             parameter: >
-                              {% set effect_param = repeat.item.device_type + '_all' + '_ledcolor' %}
+                              {% set effect_param = repeat.item.device_type + '_all' + '_ledcolor_off' %}
                               {{ parameters[effect_param] }}
-                            value: "{{ color_set[LEDcolor] }} "
-
-                ### Zigbee2mqtt ###
+                            value: "{{ color_set[LEDcolor_off] }}"
+                            
+                ### LED strip brightness ###
+                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all'.  Prefer no action over partial implementation of users' intents.  ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness is defined and int(LEDbrightness) != 11 and 'all' not in LEDcolor and LEDnumber == 'all' }}"
+                  then:
+                        - service: zwave_js.set_config_parameter
+                          data:
+                            entity_id: "{{ repeat.item.entities }}"
+                            parameter: >-
+                              {% set effect_param = repeat.item.device_type + '_all' + '_ledbrightness' %}
+                              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
+                            value: >-
+                              {% if 'LZW' in repeat.item.device_type %}
+                                {{ LEDbrightness | round(0) | int  }}
+                              {% else %}
+                                {{ (LEDbrightness * 10) | int }}
+                              {% endif %}                            
+                            
+                ### LED strip brightness when off ###
+                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                ### Only Red 800 Series devices can set the LED strip brightness when off ###
+                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all'.  Prefer no action over partial implementation of users' intents.  ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 and 'VZW' in repeat.item.device_type and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
+                  then:
+                        - service: zwave_js.set_config_parameter
+                          data:
+                            entity_id: "{{ repeat.item.entities }}"
+                            parameter: >-
+                              {% set effect_param = repeat.item.device_type + '_all' + '_ledbrightness_off' %}
+                              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
+                            value: >-
+                              {% if 'LZW' in repeat.item.device_type %}
+                                {{ LEDbrightness_off | round(0) | int  }}
+                              {% else %}
+                                {{ (LEDbrightness_off * 10) | int }}
+                              {% endif %} 
+                            
+        ##################
+        # Effects (fully defined)
+        # Calling a bulk set of parameters reduces Z-Wave traffic and writes to the switch's NVRAM, extending its life(?)
+        # Red Series can't set individual LEDs so we'll filter out color sets and force 'all'.  Prefer no action over partial implementation of users' intents.
+        ##################
+        - choose:
+            - conditions: >-
+                {{ effect != "off" and 
+                   effect != "clear effect" and 
+                   color != "no change" and 
+                   int(brightness) != 11 and 
+                   duration != 'off' and 
+                   duration != 0 and
+                   repeat.item.device_type != "LZW30" and 
+                   repeat.item.device_type != "LZW31" and 
+                   repeat.item.call_type == 'zwave_js' }}
+              sequence:
+                ### Red 500 Series ###
                 - choose:
-                    - conditions: "{{ repeat.item.call_type == 'z2m' }}"
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' not in repeat.item.device_type and 
+                                      repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 
+                                      'all' in LEDnumber_effect }}"
                       sequence:
+                        - service: zwave_js.bulk_set_partial_config_parameters
+                          data:
+                            entity_id: "{{ repeat.item.entities }}"
+                            parameter: >-
+                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_bulk' %}
+                              {{ parameters[bulk_param] }}
+                            value: >-
+                              {% if repeat.item.device_type == "LZW30SN" %}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW30SN_effects[effect] * 16777216) }}
+                              {% elif repeat.item.device_type == "LZW31SN" %}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW31SN_effects[effect] * 16777216) }}
+                              {% elif repeat.item.device_type == "LZW36_light" %}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_light_effects[effect] * 16777216) }}
+                              {% elif repeat.item.device_type == "LZW36_fan" %}
+                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
+                              {% endif %}
+
+                ### Red 800 Series ###
+                - choose:
+                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type }}"
+                      sequence:
+                        - service: zwave_js.bulk_set_partial_config_parameters
+                          data:
+                            entity_id: "{{ repeat.item.entities }}"
+                            parameter: >-
+                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_bulk' %}
+                              {{ parameters[bulk_param] }}
+                            value: >-
+                              {% if effect != 'clear effect' %}
+                                {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (repeat.item.effects * 16777216) }}
+                              {% else %}
+                                {{ duration_values[0] }}
+                              {% endif %}
+          default:
+            ##################
+            # Default will be to clear the effect and set the duration to 1 second.
+            # This way, "forever" effects can be set, then easily cleared.
+            # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
+            # Setting only the effect to "off" turned the LED off on LZW36 fan / light combos for the duration (which could be "forever").
+            #    This way it turns off for 1 sec before it returns to its default state, but until the min value for effect changes to 0 in the DB, that's the best I can do.
+            ##################
+            - choose:
+
+                ### Red 500 Series ###
+                - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber_effect }}"
+                  sequence:
+                    - variables:
+                        effects: "{{ repeat.item.effects }}"
+                    - service: zwave_js.set_config_parameter
+                      data:
+                        entity_id: "{{ repeat.item.entities }}"
+                        parameter: >-
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_effect' %}
+                          {{ parameters[effect_param] }}
+                        value: >-
+                          {% if repeat.item.device_type == "LZW30SN" %}
+                            0
+                          {% else %}
+                            {{ effects }}
+                          {% endif %}
+                    - service: zwave_js.set_config_parameter
+                      data:
+                        entity_id: "{{ repeat.item.entities }}"
+                        parameter: >-
+                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_duration' %}
+                          {{ parameters[effect_param] }}
+                        value: "{{ duration_values[duration] }}"
+
+                ### Red 800 Series ###
+                - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type }}"
+                  sequence:
+                    - variables:
+                        effects: "{{ repeat.item.effects }}"
+                    - service: zwave_js.set_config_parameter
+                      data:
+                        entity_id: "{{ repeat.item.entities }}"
+                        parameter: >-
+                          {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_effect' %}
+                          {{ parameters[bulk_param] }}
+                        value: "{{ effects }}"
+                    - service: zwave_js.set_config_parameter
+                      data:
+                        entity_id: "{{ repeat.item.entities }}"
+                        parameter: >-
+                          {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_duration' %}
+                          {{ parameters[bulk_param] }}
+                        value: "{{ duration_values[duration] }}"
+
+
+        ##################
+        # Zigbee2MQTT
+        ################## 
+        - choose:
+            - conditions: "{{ repeat.item.call_type == 'z2m' }}"
+              sequence:
+                ### LED strip color ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDcolor != 'no change' }}"
+                  then:
                         - repeat:
-                            for_each: "{{ repeat.item.entities }} "
+                            for_each: "{{ repeat.item.entities }}"
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
@@ -2612,7 +2786,7 @@ sequence:
                                             - service: mqtt.publish
                                               data:
                                                 topic: >-
-                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
+                                                  {{ z2m_topic }}/{{ (device_attr(entity, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
                                                 payload: >-
                                                   {% if repeat.item == 'all' %}
                                                     { "ledColorWhenOn": {{ color_set[LEDcolor][repeat.item] }} }
@@ -2637,7 +2811,7 @@ sequence:
                                       - service: mqtt.publish
                                         data:
                                           topic: >-
-                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
+                                            {{ z2m_topic }}/{{ (device_attr(repeat.item, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
                                           payload: >-
                                             {% if LEDnumber == 'all' %}
                                               { "ledColorWhenOn": {{ color_set[LEDcolor] if 'led' not in LEDnumber and LEDcolor != 'off' else 255 }} }
@@ -2657,10 +2831,291 @@ sequence:
                                               { "defaultLed7ColorWhenOn": {{ color_set[LEDcolor] if 'led' in LEDnumber and LEDcolor != 'off' else 255 }} }
                                             {% endif %}
 
-                ### ZHA ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zha' }}"
-                      sequence:
+                ### LED strip color when off ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDcolor_off != 'no change' }}"
+                  then:
+                        - repeat:
+                            for_each: "{{ repeat.item.entities }}"
+                            sequence:
+                              - choose:
+                                  ### Configuring a color set for all LEDs ###
+                                  - conditions: "{{ 'all' in LEDcolor_off and LEDnumber == 'all' }}"
+                                    sequence:
+                                      - variables:
+                                          entity: "{{ repeat.item }}"
+                                      - repeat:
+                                          for_each:
+                                            - "led 1"
+                                            - "led 2"
+                                            - "led 3"
+                                            - "led 4"
+                                            - "led 5"
+                                            - "led 6"
+                                            - "led 7"
+                                            - "all"
+                                          sequence:
+                                            - service: mqtt.publish
+                                              data:
+                                                topic: >-
+                                                  {{ z2m_topic }}/{{ (device_attr(entity, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
+                                                payload: >-
+                                                  {% if repeat.item == 'all' %}
+                                                    { "ledColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 1' %}
+                                                    { "defaultLed1ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 2' %}
+                                                    { "defaultLed2ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 3' %}
+                                                    { "defaultLed3ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 4' %}
+                                                    { "defaultLed4ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 5' %}
+                                                    { "defaultLed5ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 6' %}
+                                                    { "defaultLed6ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% elif repeat.item == 'led 7' %}
+                                                    { "defaultLed7ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
+                                                  {% endif %}
+                                  ### Configuring just one LED or the full bar ###
+                                  - conditions: "{{ 'all' not in LEDcolor_off and LEDcolor_off != 'no change' }}"
+                                    sequence:
+                                      - service: mqtt.publish
+                                        data:
+                                          topic: >-
+                                            {{ z2m_topic }}/{{ (device_attr(repeat.item, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
+                                          payload: >-
+                                            {% if LEDnumber == 'all' %}
+                                              { "ledColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 1' %}
+                                              { "defaultLed1ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 2' %}
+                                              { "defaultLed2ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 3' %}
+                                              { "defaultLed3ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 4' %}
+                                              { "defaultLed4ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 5' %}
+                                              { "defaultLed5ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 6' %}
+                                              { "defaultLed6ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% elif LEDnumber == 'led 7' %}
+                                              { "defaultLed7ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
+                                            {% endif %}
+                                            
+                ### LED strip brightness ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness is defined and int(LEDbrightness) != 11 }}"
+                  then:
+                        - repeat:
+                            for_each: |
+                              {{ repeat.item.entities }}
+                            sequence:
+                              - choose:
+                                  ### Configuring intensity for all LEDs ###
+                                  - conditions: "{{ int(LEDbrightness) != 11 and LEDnumber == 'all' and 'all' in LEDcolor }}"
+                                    sequence:
+                                      - variables:
+                                          entity: "{{ repeat.item }}"
+                                      - repeat:
+                                          for_each:
+                                            - "led 1"
+                                            - "led 2"
+                                            - "led 3"
+                                            - "led 4"
+                                            - "led 5"
+                                            - "led 6"
+                                            - "led 7"
+                                            - "all"
+                                          sequence:
+                                            - service: mqtt.publish
+                                              data:
+                                                topic: >-
+                                                  {{ z2m_topic }}/{{ (device_attr(entity, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
+                                                payload: >-
+                                                  {% if repeat.item == 'all' %}
+                                                    { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                                  {% elif repeat.item == 'led 1' and 'all' in LEDcolor %}
+                                                    { "defaultLed1IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 2' and 'all' in LEDcolor %}
+                                                    { "defaultLed2IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 3' and 'all' in LEDcolor %}
+                                                    { "defaultLed3IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 4' and 'all' in LEDcolor %}
+                                                    { "defaultLed4IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 5' and 'all' in LEDcolor %}
+                                                    { "defaultLed5IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 6' and 'all' in LEDcolor %}
+                                                    { "defaultLed6IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 7' and 'all' in LEDcolor %}
+                                                    { "defaultLed7IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                                  {% endif %}
+                                  ### Configuring just one LED or the full bar ###
+                                  - conditions: "{{ (int(LEDbrightness) != 11 and LEDnumber != 'all') or 'all' not in LEDcolor }}"
+                                    sequence:
+                                      - service: mqtt.publish
+                                        data:
+                                          topic: >-
+                                            {{ z2m_topic }}/{{ (device_attr(repeat.item, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
+                                          payload: >-
+                                            {% if LEDnumber == 'all' %}
+                                              { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
+                                            {% elif LEDnumber == 'led 1' %}
+                                              { "defaultLed1IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 2' %}
+                                              { "defaultLed2IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 3' %}
+                                              { "defaultLed3IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 4' %}
+                                              { "defaultLed4IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 5' %}
+                                              { "defaultLed5IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 6' %}
+                                              { "defaultLed6IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 7' %}
+                                              { "defaultLed7IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
+                                            {% endif %} 
+                                            
+                ### LED strip brightness when off ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 }}"
+                  then:
+                        - repeat:
+                            for_each: "{{ repeat.item.entities }}"
+                            sequence:
+                              - choose:
+                                  ### Configuring intensity for all LEDs ###
+                                  - conditions: "{{ int(LEDbrightness_off) != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off }}"
+                                    sequence:
+                                      - variables:
+                                          entity: "{{ repeat.item }}"
+                                      - repeat:
+                                          for_each:
+                                            - "led 1"
+                                            - "led 2"
+                                            - "led 3"
+                                            - "led 4"
+                                            - "led 5"
+                                            - "led 6"
+                                            - "led 7"
+                                            - "all"
+                                          sequence:
+                                            - service: mqtt.publish
+                                              data:
+                                                topic: >-
+                                                  {{ z2m_topic }}/{{ (device_attr(entity, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
+                                                payload: >-
+                                                  {% if repeat.item == 'all' %}
+                                                    { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                                  {% elif repeat.item == 'led 1' and 'all' in LEDcolor_off %}
+                                                    { "defaultLed1IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 2' and 'all' in LEDcolor_off %}
+                                                    { "defaultLed2IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 3' and 'all' in LEDcolor_off %}
+                                                    { "defaultLed3IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 4' and 'all' in LEDcolor_off %}
+                                                    { "defaultLed4IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 5' and 'all' in LEDcolor_off %}
+                                                    { "defaultLed5IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 6' and 'all' in LEDcolor_off %}
+                                                    { "defaultLed6IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                                  {% elif repeat.item == 'led 7' and 'all' in LEDcolor_off %}
+                                                    { "defaultLed7IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                                  {% endif %}
+                                  ### Configuring just one LED or the full bar ###
+                                  - conditions: "{{ (int(LEDbrightness_off) != 11 and LEDnumber != 'all') or 'all' not in LEDcolor_off }}"
+                                    sequence:
+                                      - service: mqtt.publish
+                                        data:
+                                          topic: >-
+                                            {{ z2m_topic }}/{{ (device_attr(repeat.item, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
+                                          payload: >-
+                                            {% if LEDnumber == 'all' %}
+                                              { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
+                                            {% elif LEDnumber == 'led 1' %}
+                                              { "defaultLed1IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 2' %}
+                                              { "defaultLed2IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 3' %}
+                                              { "defaultLed3IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 4' %}
+                                              { "defaultLed4IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 5' %}
+                                              { "defaultLed5IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 6' %}
+                                              { "defaultLed6IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                            {% elif LEDnumber == 'led 7' %}
+                                              { "defaultLed7IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
+                                            {% endif %}  
+
+        ##################
+        # Effects (fully defined)
+        ##################
+        - choose:
+            - conditions: >-
+                {{ effect != "off" and 
+                effect != "clear effect" and 
+                color != "no change" and 
+                int(brightness) != 11 and 
+                duration != 'off' and 
+                duration != 0 and 
+                repeat.item.call_type == 'z2m' }}
+              sequence:
+                - variables:
+                    effects: "{{ repeat.item.effects }}"
+                - repeat:
+                    for_each: "{{ repeat.item.entities }}"
+                    sequence:
+                      - service: mqtt.publish
+                        data:
+                          topic: >-
+                            {{ z2m_topic }}/{{ (device_attr(repeat.item, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
+                          payload: >-
+                            {% if LEDnumber_effect == 'all' %}
+                              {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 10) | int }}" }}
+                            {% else %}
+                              {"individual_led_effect": {"led": "{{ led_map[LEDnumber_effect]|int }}", "effect": "{{ effects }}", "color": "{{ color_set[color] }}", "level": "{{ (brightness * 10) | int }}", "duration": "{{ duration_values[duration] }}"}}
+                            {% endif %}
+          default:
+            ##################
+            # Default will be to clear the effect and set the duration to 1 second.
+            # This way, "forever" effects can be set, then easily cleared.
+            # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
+            ##################
+            - choose:
+                - conditions: "{{ repeat.item.call_type == 'z2m' }}"
+                  sequence:
+                    - variables:
+                        effects: "{{ repeat.item.effects }}"
+                    - repeat:
+                        for_each: "{{ repeat.item.entities }}"
+                        sequence:
+                          - service: mqtt.publish
+                            data:
+                              topic: >-
+                                {{ z2m_topic }}/{{ (device_attr(repeat.item, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
+                              payload: >-
+                                {% if LEDnumber_effect == 'all' %}
+                                  {"led_effect":{"color":"{{ color_set['off'] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 10) | int }}" }}
+                                {% else %}
+                                  {"individual_led_effect": {"led": "{{ led_map[LEDnumber_effect]|int }}", "effect": "{{ effects }}", "color": "{{ color_set[color] }}", "level": "{{ (brightness * 10) | int }}", "duration": "{{ duration_values[duration] }}"}}
+                                {% endif %}
+
+                              
+        ##################
+        # Zigbee Home Automation ZHA
+        ################## 
+        - choose:
+            - conditions: "{{ repeat.item.call_type == 'zha' }}"
+              sequence:
+                ### LED strip color ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDcolor != 'no change' }}"
+                  then:
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
@@ -2745,129 +3200,11 @@ sequence:
                                             {% endif %}
                                           manufacturer: 4655
 
-                ### Matter ###
-                ### White Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
-                - choose:
-                    ### VTM30-SN FW 1.0.4r3
-                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM30SN-104' }}"
-                      sequence:
-                        - service: select.select_option
-                          data:
-                            option: "{{ VTM30SN_colors[LEDcolor] | capitalize }}"
-                            entity_id: "{{ repeat.item.entities }}"
-                    ### VTM31-SN FW >= 1.1.0
-                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-115' }}"
-                      sequence:
-                        - service: select.select_option
-                          data:
-                            option: "{{ VTM31SN_colors[LEDcolor] | capitalize }}"
-                            entity_id: "{{ repeat.item.entities }}"
-                    ### VTM31-SN FW < 1.0.5 and VTM35-SN
-                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type != 'VTM31SN-115' }}"
-                      sequence:
-                        - service: select.select_option
-                          data:
-                            option: "{{ LEDcolor.split(' ')[-1] | capitalize }}"
-                            entity_id: "{{ repeat.item.entities }}"
-
-
-        ##################
-        # LED strip color when off
-        ##################
-        - choose:
-            - conditions: "{{ LEDcolor_off != 'no change' }}"
-              sequence:
-
-                ### Zwave JS ###
-                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
-                ### Only Red 800 Series devices can set the LED strip color when off ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
-                      sequence:
-                        - service: zwave_js.set_config_parameter
-                          data:
-                            entity_id: "{{ repeat.item.entities }}"
-                            parameter: >
-                              {% set effect_param = repeat.item.device_type + '_all' + '_ledcolor_off' %}
-                              {{ parameters[effect_param] }}
-                            value: "{{ color_set[LEDcolor_off] }} "
-
-                ### Zigbee2mqtt ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'z2m' }}"
-                      sequence:
-                        - repeat:
-                            for_each: "{{ repeat.item.entities }} "
-                            sequence:
-                              - choose:
-                                  ### Configuring a color set for all LEDs ###
-                                  - conditions: "{{ 'all' in LEDcolor_off and LEDnumber == 'all' }}"
-                                    sequence:
-                                      - variables:
-                                          entity: "{{ repeat.item }}"
-                                      - repeat:
-                                          for_each:
-                                            - "led 1"
-                                            - "led 2"
-                                            - "led 3"
-                                            - "led 4"
-                                            - "led 5"
-                                            - "led 6"
-                                            - "led 7"
-                                            - "all"
-                                          sequence:
-                                            - service: mqtt.publish
-                                              data:
-                                                topic: >-
-                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
-                                                payload: >-
-                                                  {% if repeat.item == 'all' %}
-                                                    { "ledColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
-                                                  {% elif repeat.item == 'led 1' %}
-                                                    { "defaultLed1ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
-                                                  {% elif repeat.item == 'led 2' %}
-                                                    { "defaultLed2ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
-                                                  {% elif repeat.item == 'led 3' %}
-                                                    { "defaultLed3ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
-                                                  {% elif repeat.item == 'led 4' %}
-                                                    { "defaultLed4ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
-                                                  {% elif repeat.item == 'led 5' %}
-                                                    { "defaultLed5ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
-                                                  {% elif repeat.item == 'led 6' %}
-                                                    { "defaultLed6ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
-                                                  {% elif repeat.item == 'led 7' %}
-                                                    { "defaultLed7ColorWhenOff": {{ color_set[LEDcolor_off][repeat.item] }} }
-                                                  {% endif %}
-                                  ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ 'all' not in LEDcolor_off and LEDcolor_off != 'no change' }}"
-                                    sequence:
-                                      - service: mqtt.publish
-                                        data:
-                                          topic: >-
-                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
-                                          payload: >-
-                                            {% if LEDnumber == 'all' %}
-                                              { "ledColorWhenOff": {{ color_set[LEDcolor_off] if 'led' not in LEDnumber and LEDcolor_off != 'off' else 255 }} }
-                                            {% elif LEDnumber == 'led 1' %}
-                                              { "defaultLed1ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
-                                            {% elif LEDnumber == 'led 2' %}
-                                              { "defaultLed2ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
-                                            {% elif LEDnumber == 'led 3' %}
-                                              { "defaultLed3ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
-                                            {% elif LEDnumber == 'led 4' %}
-                                              { "defaultLed4ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
-                                            {% elif LEDnumber == 'led 5' %}
-                                              { "defaultLed5ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
-                                            {% elif LEDnumber == 'led 6' %}
-                                              { "defaultLed6ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
-                                            {% elif LEDnumber == 'led 7' %}
-                                              { "defaultLed7ColorWhenOff": {{ color_set[LEDcolor_off] if 'led' in LEDnumber and LEDcolor_off != 'off' else 255 }} }
-                                            {% endif %}
-
-                ### ZHA ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zha' }}"
-                      sequence:
+                ### LED strip color when off ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDcolor_off != 'no change' }}"
+                  then:
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
@@ -2951,113 +3288,12 @@ sequence:
                                               {{ color_set[LEDcolor_off] }}
                                             {% endif %}
                                           manufacturer: 4655
-
-                ### Matter ###
-                ### Not supported ###
-
-
-        ##################
-        # LED strip brightness
-        ##################
-        - choose:
-            - conditions: "{{ LEDbrightness is defined and int(LEDbrightness) != 11 }} "
-              sequence:
-
-                ### Zwave JS ###
-                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all'.  Prefer no action over partial implimentation of users' intents.  ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'all' not in LEDcolor and LEDnumber == 'all' }}"
-                      sequence:
-                        - service: zwave_js.set_config_parameter
-                          data:
-                            entity_id: "{{ repeat.item.entities }}"
-                            parameter: >-
-                              {% set effect_param = repeat.item.device_type + '_all' + '_ledbrightness' %}
-                              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
-                            value: >-
-                              {% if 'LZW' in repeat.item.device_type %}
-                                {{ LEDbrightness | round(0) | int  }}
-                              {% else %}
-                                {{ (LEDbrightness * 10) | int }}
-                              {% endif %}
-
-                ### Zigbee2mqtt ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'z2m' }}"
-                      sequence:
-                        - repeat:
-                            for_each: |
-                              {{ repeat.item.entities }}
-                            sequence:
-                              - choose:
-                                  ### Configuring intensity for all LEDs ###
-                                  - conditions: "{{ int(LEDbrightness) != 11 and LEDnumber == 'all' and 'all' in LEDcolor }}"
-                                    sequence:
-                                      - variables:
-                                          entity: "{{ repeat.item }}"
-                                      - repeat:
-                                          for_each:
-                                            - "led 1"
-                                            - "led 2"
-                                            - "led 3"
-                                            - "led 4"
-                                            - "led 5"
-                                            - "led 6"
-                                            - "led 7"
-                                            - "all"
-                                          sequence:
-                                            - service: mqtt.publish
-                                              data:
-                                                topic: >-
-                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
-                                                payload: >-
-                                                  {% if repeat.item == 'all' %}
-                                                    { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
-                                                  {% elif repeat.item == 'led 1' and 'all' in LEDcolor %}
-                                                    { "defaultLed1IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 2' and 'all' in LEDcolor %}
-                                                    { "defaultLed2IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 3' and 'all' in LEDcolor %}
-                                                    { "defaultLed3IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 4' and 'all' in LEDcolor %}
-                                                    { "defaultLed4IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 5' and 'all' in LEDcolor %}
-                                                    { "defaultLed5IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 6' and 'all' in LEDcolor %}
-                                                    { "defaultLed6IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 7' and 'all' in LEDcolor %}
-                                                    { "defaultLed7IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                                  {% endif %}
-                                  ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ int(LEDbrightness) != 11 and LEDnumber != 'all' or 'all' not in LEDcolor }}"
-                                    sequence:
-                                      - service: mqtt.publish
-                                        data:
-                                          topic: >-
-                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
-                                          payload: >-
-                                            {% if LEDnumber == 'all' %}
-                                              { "ledIntensityWhenOn": {{ (LEDbrightness * 10) | int }} }
-                                            {% elif LEDnumber == 'led 1' %}
-                                              { "defaultLed1IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 2' %}
-                                              { "defaultLed2IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 3' %}
-                                              { "defaultLed3IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 4' %}
-                                              { "defaultLed4IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 5' %}
-                                              { "defaultLed5IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 6' %}
-                                              { "defaultLed6IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 7' %}
-                                              { "defaultLed7IntensityWhenOn": {{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }} }
-                                            {% endif %}
-
-                ### ZHA ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zha' }}"
-                      sequence:
+                                          
+                ### LED strip brightness ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness is defined and int(LEDbrightness) != 11 }}"
+                  then:
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
@@ -3106,7 +3342,7 @@ sequence:
                                                 value: "{{ iif(LEDcolor == 'all clear' and 'led' in repeat.item,101,(LEDbrightness * 10)) | int }}"
                                                 manufacturer: 4655
                                   ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ int(LEDbrightness) != 11 and LEDnumber != 'all' or 'all' not in LEDcolor }}"
+                                  - conditions: "{{ (int(LEDbrightness) != 11 and LEDnumber != 'all') or 'all' not in LEDcolor }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         continue_on_error: true
@@ -3134,126 +3370,13 @@ sequence:
                                               {{ 0x005c |int }}
                                             {% endif %}
                                           value: "{{ iif(LEDcolor == 'all clear',101,(LEDbrightness * 10)) | int }}"
-                                          manufacturer: 4655
-
-                ### Matter ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM30SN-104' }}"
-                      sequence:
-                        - service: select.select_option
-                          data:
-                            option: "{{ iif(LEDcolor == 'off','0',int(repeat.item.brightness_on_level)) }}"
-                            entity_id: "{{ repeat.item.brightness_on_entities }}"
-                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-115' }}"
-                      sequence:
-                        - service: select.select_option
-                          data:
-                            option: "{{ iif(LEDcolor == 'off','0',int(repeat.item.brightness_on_level)) }}"
-                            entity_id: "{{ repeat.item.brightness_on_entities }}"
-
-
-        ##################
-        # LED strip brightness when off
-        ##################
-        - choose:
-            - conditions: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 }} "
-              sequence:
-
-                ### Zwave JS ###
-                ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
-                ### Only Red 800 Series devices can set the LED strip brightness when off ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
-                      sequence:
-                        - service: zwave_js.set_config_parameter
-                          data:
-                            entity_id: "{{ repeat.item.entities }}"
-                            parameter: >-
-                              {% set effect_param = repeat.item.device_type + '_all' + '_ledbrightness_off' %}
-                              {{ "off" if parameters[effect_param] == 0 else parameters[effect_param] }}
-                            value: >-
-                              {% if 'LZW' in repeat.item.device_type %}
-                                {{ LEDbrightness_off | round(0) | int  }}
-                              {% else %}
-                                {{ (LEDbrightness_off * 10) | int }}
-                              {% endif %}
-
-                ### Zigbee2mqtt ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'z2m' }}"
-                      sequence:
-                        - repeat:
-                            for_each: "{{ repeat.item.entities }} "
-                            sequence:
-                              - choose:
-                                  ### Configuring intensity for all LEDs ###
-                                  - conditions: "{{ int(LEDbrightness_off) != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off }}"
-                                    sequence:
-                                      - variables:
-                                          entity: "{{ repeat.item }}"
-                                      - repeat:
-                                          for_each:
-                                            - "led 1"
-                                            - "led 2"
-                                            - "led 3"
-                                            - "led 4"
-                                            - "led 5"
-                                            - "led 6"
-                                            - "led 7"
-                                            - "all"
-                                          sequence:
-                                            - service: mqtt.publish
-                                              data:
-                                                topic: >-
-                                                  {{ z2m_topic }}/{{ states[entity].attributes.friendly_name }}/set
-                                                payload: >-
-                                                  {% if repeat.item == 'all' %}
-                                                    { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
-                                                  {% elif repeat.item == 'led 1' and 'all' in LEDcolor_off %}
-                                                    { "defaultLed1IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 2' and 'all' in LEDcolor_off %}
-                                                    { "defaultLed2IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 3' and 'all' in LEDcolor_off %}
-                                                    { "defaultLed3IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 4' and 'all' in LEDcolor_off %}
-                                                    { "defaultLed4IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 5' and 'all' in LEDcolor_off %}
-                                                    { "defaultLed5IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 6' and 'all' in LEDcolor_off %}
-                                                    { "defaultLed6IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                                  {% elif repeat.item == 'led 7' and 'all' in LEDcolor_off %}
-                                                    { "defaultLed7IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                                  {% endif %}
-                                  ### Configuring just one LED or the full bar ###
-                                  - conditions: "{{ int(LEDbrightness_off) != 11 and LEDnumber != 'all' or 'all' not in LEDcolor_off }}"
-                                    sequence:
-                                      - service: mqtt.publish
-                                        data:
-                                          topic: >-
-                                            {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
-                                          payload: >-
-                                            {% if LEDnumber == 'all' %}
-                                              { "ledIntensityWhenOff": {{ (LEDbrightness_off * 10) | int }} }
-                                            {% elif LEDnumber == 'led 1' %}
-                                              { "defaultLed1IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 2' %}
-                                              { "defaultLed2IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 3' %}
-                                              { "defaultLed3IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 4' %}
-                                              { "defaultLed4IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 5' %}
-                                              { "defaultLed5IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 6' %}
-                                              { "defaultLed6IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                            {% elif LEDnumber == 'led 7' %}
-                                              { "defaultLed7IntensityWhenOff": {{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }} }
-                                            {% endif %}
-
-                ### ZHA ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zha' }}"
-                      sequence:
+                                          manufacturer: 4655    
+                                          
+                ### LED strip brightness when off ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 }}"
+                  then:
                         - repeat:
                             for_each: "{{ repeat.item.entities }}"
                             sequence:
@@ -3302,7 +3425,7 @@ sequence:
                                                 value: "{{ iif(LEDcolor_off == 'all clear' and 'led' in repeat.item,101,(LEDbrightness_off * 10)) | int }}"  
                                                 manufacturer: 4655
                                     ### Configuring just one Color ###
-                                  - conditions: "{{ int(LEDbrightness_off) != 11 and LEDnumber != 'all' or 'all' not in LEDcolor_off }}"
+                                  - conditions: "{{ (int(LEDbrightness_off) != 11 and LEDnumber != 'all') or 'all' not in LEDcolor_off }}"
                                     sequence:
                                       - service: zha.set_zigbee_cluster_attribute
                                         continue_on_error: true
@@ -3330,120 +3453,154 @@ sequence:
                                               {{ 0x005d |int }}
                                             {% endif %}
                                           value: "{{ iif(LEDcolor_off == 'all clear',101,(LEDbrightness_off * 10)) | int }}"
-                                          manufacturer: 4655
+                                          manufacturer: 4655    
+                                          
 
-                ### Matter ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor_off and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-104' }}"
-                      sequence:
-                        - service: select.select_option
-                          data:
-                            option: "{{ iif(LEDcolor_off == 'off','0',int(repeat.item.brightness_off_level)) }}"
-                            entity_id: "{{ repeat.item.brightness_off_entities }}"
-
-                    - conditions: "{{ repeat.item.call_type == 'matter' and 'all' not in LEDcolor_off and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-115' }}"
-                      sequence:
-                        - service: select.select_option
-                          data:
-                            option: "{{ iif(LEDcolor_off == 'off','0',int(repeat.item.brightness_off_level)) }}"
-                            entity_id: "{{ repeat.item.brightness_off_entities }}"
-
-
-
-        #################
+        ##################
         # Effects (fully defined)
-        # Calling a bulk set of parameters reduces Z-Wave traffic and writes to the switch's NVRAM, extending its life(?)
-        # Duration defaults to 0sec, so it's no longer required for this flow.
         ##################
         - choose:
             - conditions: >-
-                {{ effect != "off" and effect != "clear effect" and color != "no change" and int(brightness) != 11 and duration != 'off' and duration != 0 and 
-                   repeat.item.device_type != "LZW30" and repeat.item.device_type != "LZW31" }}
+                {{ effect != "off" and
+                effect != "clear effect" and
+                color != "no change" and
+                int(brightness) != 11 and
+                duration != 'off' and
+                duration != 0 and
+                repeat.item.call_type == 'zha' }}
               sequence:
+                - variables:
+                    effects: "{{ repeat.item.effects }}"
+                - repeat:
+                    for_each: "{{ repeat.item.entities }}"
+                    sequence:
+                      - service: zha.issue_zigbee_cluster_command
+                        continue_on_error: true
+                        data:
+                          ieee: "{{ (device_attr(repeat.item, 'identifiers')|list).0.1 }}"
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          cluster_type: in
+                          command: "{{ iif('all' in LEDnumber_effect,1,3) }}"
+                          command_type: server
+                          params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":"{{ color_set[color] }}","led_level":"{{ (brightness * 10) | int }}","led_duration":"{{ duration_values[duration] }}"}
+                          manufacturer: 4655
+          default:
+            ##################
+            # Default will be to clear the effect and set the duration to 1 second.
+            # This way, "forever" effects can be set, then easily cleared.
+            # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
+            ##################
+            - choose:
+                - conditions: "{{ repeat.item.call_type == 'zha' }}"
+                  sequence:
+                    - variables:
+                        effects: "{{ repeat.item.effects }}"
+                    - repeat:
+                        for_each: "{{ repeat.item.entities }}"
+                        sequence:
+                          - service: zha.issue_zigbee_cluster_command
+                            continue_on_error: true
+                            data:
+                              ieee: "{{ (device_attr(repeat.item, 'identifiers')|list).0.1 }}"
+                              endpoint_id: 1
+                              cluster_id: 64561
+                              cluster_type: in
+                              command: "{{ iif('all' in LEDnumber_effect,1,3) }}"
+                              command_type: server
+                              params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":0,"led_level":0,"led_duration":"{{ duration_values[duration] }}"}
+                              manufacturer: 4655
 
-                ### Zwave JS
-                ### Red 500 Series ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' not in repeat.item.device_type and 
-                                      repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 
-                                      'all' in LEDnumber_effect }}"
-                      sequence:
-                        - service: zwave_js.bulk_set_partial_config_parameters
+
+        ##################
+        # Matter
+        ################## 
+        - choose:
+            - conditions: "{{ repeat.item.call_type == 'matter' }}"
+              sequence:
+                ### LED strip color ###
+                ### White Series can't set individual LEDs so we'll filter out color sets and force 'all' ###
+                ### VTM30-SN FW 1.0.4r3
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDcolor != 'no change' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM30SN-104' }}"
+                  then:
+                        - service: select.select_option
                           data:
+                            option: "{{ VTM30SN_colors[LEDcolor] | capitalize }}"
                             entity_id: "{{ repeat.item.entities }}"
-                            parameter: >-
-                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_bulk' %}
-                              {{ parameters[bulk_param] }}
-                            value: >-
-                              {% if repeat.item.device_type == "LZW30SN" %}
-                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW30SN_effects[effect] * 16777216) }}
-                              {% elif repeat.item.device_type == "LZW31SN" %}
-                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW31SN_effects[effect] * 16777216) }}
-                              {% elif repeat.item.device_type == "LZW36_light" %}
-                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_light_effects[effect] * 16777216) }}
-                              {% elif repeat.item.device_type == "LZW36_fan" %}
-                                {{ color_set[color] + ((brightness | round(0) | int) * 256) + (duration_values[duration] * 65536) + (LZW36_fan_effects[effect] * 16777216) }}
-                              {% endif %}
-
-                ### Red 800 Series ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type }}"
-                      sequence:
-                        - service: zwave_js.bulk_set_partial_config_parameters
+                ### VTM31-SN FW >= 1.1.0
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDcolor != 'no change' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-115' }}"
+                  then:
+                        - service: select.select_option
                           data:
+                            option: "{{ VTM31SN_colors[LEDcolor] | capitalize }}"
                             entity_id: "{{ repeat.item.entities }}"
-                            parameter: >-
-                              {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_bulk' %}
-                              {{ parameters[bulk_param] }}
-                            value: >-
-                              {% if effect != 'clear effect' %}
-                                {{ (color_set[color] * 65536) + (brightness * 10 * 256) + (duration_values[duration]) + (repeat.item.effects * 16777216) }}
-                              {% else %}
-                                {{ duration_values[0] }}
-                              {% endif %}
+                ### VTM31-SN FW < 1.0.5 and VTM35-SN
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDcolor != 'no change' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type != 'VTM31SN-115' }}"
+                  then:
+                        - service: select.select_option
+                          data:
+                            option: "{{ LEDcolor.split(' ')[-1] | capitalize }}"
+                            entity_id: "{{ repeat.item.entities }}"
 
-                ### Zigbee2mqtt ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'z2m' }}"
-                      sequence:
-                        - variables:
-                            effects: "{{ repeat.item.effects }}"
-                        - repeat:
-                            for_each: "{{ repeat.item.entities }}"
-                            sequence:
-                              - service: mqtt.publish
-                                data:
-                                  topic: >-
-                                    {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
-                                  payload: >-
-                                    {% if LEDnumber_effect == 'all' %}
-                                      {"led_effect":{"color":"{{ color_set[color] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 256 / 10) | int }}" }}
-                                    {% else %}
-                                      {"individual_led_effect": {"led": "{{ led_map[LEDnumber_effect]|int }}", "effect": "{{ effects }}", "color": "{{ color_set[color] }}", "level": "{{ (brightness * 256 / 10) | int }}", "duration": "{{ duration_values[duration] }}"}}
-                                    {% endif %}
 
-                ### ZHA ###
-                - choose:
-                    - conditions: "{{ repeat.item.call_type == 'zha' }}"
-                      sequence:
-                        - variables:
-                            effects: "{{ repeat.item.effects }}"
-                        - repeat:
-                            for_each: "{{ repeat.item.entities }} "
-                            sequence:
-                              - service: zha.issue_zigbee_cluster_command
-                                continue_on_error: true
-                                data:
-                                  ieee: "{{ (device_attr(repeat.item, 'identifiers')|list).0.1 }}"
-                                  endpoint_id: 1
-                                  cluster_id: 64561
-                                  cluster_type: in
-                                  command: "{{ iif('all' in LEDnumber_effect,1,3) }}"
-                                  command_type: server
-                                  params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":"{{ color_set[color] }}","led_level":"{{ (brightness * 10) | int }}","led_duration":"{{ duration_values[duration] }}"}
-                                  manufacturer: 4655
+                ### LED strip color when off ###
+                ### Not supported ###
+                
+                ### LED strip brightness ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness is defined and int(LEDbrightness) != 11 and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM30SN-104' }}"
+                  then:
+                        - service: select.select_option
+                          data:
+                            option: "{{ iif(LEDcolor == 'off','0',int(repeat.item.brightness_on_level)) }}"
+                            entity_id: "{{ repeat.item.brightness_on_entities }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness is defined and int(LEDbrightness) != 11 and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-115' }}"
+                  then:
+                        - service: select.select_option
+                          data:
+                            option: "{{ iif(LEDcolor == 'off','0',int(repeat.item.brightness_on_level)) }}"
+                            entity_id: "{{ repeat.item.brightness_on_entities }}"  
+                            
+                ### LED strip brightness when off ###
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 and 'all' not in LEDcolor_off and LEDnumber == 'all' and repeat.item.device_type == 'VTM30SN-104' }}"
+                  then:
+                        - service: select.select_option
+                          data:
+                            option: "{{ iif(LEDcolor_off == 'off','0',int(repeat.item.brightness_off_level)) }}"
+                            entity_id: "{{ repeat.item.brightness_off_entities }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 and 'all' not in LEDcolor_off and LEDnumber == 'all' and repeat.item.device_type == 'VTM31SN-115' }}"
+                  then:
+                        - service: select.select_option
+                          data:
+                            option: "{{ iif(LEDcolor_off == 'off','0',int(repeat.item.brightness_off_level)) }}"
+                            entity_id: "{{ repeat.item.brightness_off_entities }}"     
 
-                ### Matter ###
+        ##################
+        # Effects (fully defined)
+        ##################
+        - choose:
+            - conditions: >-
+                {{ effect != "off" and
+                effect != "clear effect" and
+                color != "no change" and
+                int(brightness) != 11 and
+                duration != 'off' and
+                duration != 0 and
+                repeat.item.call_type == 'matter' }}
+              sequence:
                 - choose:
                     - conditions: "{{ repeat.item.call_type == 'matter' and 'all' in LEDnumber_effect and 'all' not in color and repeat.item.device_type == 'VTM30SN-104' }}"
                       sequence:
@@ -3455,7 +3612,7 @@ sequence:
                           data:
                             brightness_pct: "{{ (brightness * 10) | int }}"
                             hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, 100 ]"
-                          
+
                         ### Effect type ###
                         - service: select.select_option
                           data:
@@ -3487,107 +3644,12 @@ sequence:
                             entity_id: "{{ repeat.item.effect_entities }}"
                           data:
                             hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, 100 ]"
-
-
           default:
             ##################
             # Default will be to clear the effect and set the duration to 1 second.
             # This way, "forever" effects can be set, then easily cleared.
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
-            # Setting only the effect to "off" turned the LED off on LZW36 fan / light combos for the duration (which could be "forever").
-            #    This way it turns off for 1 sec before it returns to its default state, but until the min value for effect changes to 0 in the DB, that's the best I can do.
             ##################
-
-            ### Zwave JS ###
-            - choose:
-
-                ### Red 500 Series ###
-                - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber_effect }}"
-                  sequence:
-                    - variables:
-                        effects: "{{ repeat.item.effects }}"
-                    - service: zwave_js.set_config_parameter
-                      data:
-                        entity_id: "{{ repeat.item.entities }}"
-                        parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_effect' %}
-                          {{ parameters[effect_param] }}
-                        value: >-
-                          {% if repeat.item.device_type == "LZW30SN" %}
-                            0
-                          {% else %}
-                            {{ effects }}
-                          {% endif %}
-                    - service: zwave_js.set_config_parameter
-                      data:
-                        entity_id: "{{ repeat.item.entities }}"
-                        parameter: >-
-                          {% set effect_param = repeat.item.device_type + '_' + LEDnumber_effect + '_effect_duration' %}
-                          {{ parameters[effect_param] }}
-                        value: "{{ duration_values[duration] }}"
-
-                ### Red 800 Series ###
-                - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type }}"
-                  sequence:
-                    - variables:
-                        effects: "{{ repeat.item.effects }}"
-                    - service: zwave_js.set_config_parameter
-                      data:
-                        entity_id: "{{ repeat.item.entities }}"
-                        parameter: >-
-                          {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_effect' %}
-                          {{ parameters[bulk_param] }}
-                        value: "{{ effects }}"
-                    - service: zwave_js.set_config_parameter
-                      data:
-                        entity_id: "{{ repeat.item.entities }}"
-                        parameter: >-
-                          {% set bulk_param = repeat.item.device_type + '_' + LEDnumber_effect.split( ' ' )[-1] + '_effect_duration' %}
-                          {{ parameters[bulk_param] }}
-                        value: "{{ duration_values[duration] }}"
-
-            ### Zigbee2mqtt ###
-            - choose:
-                - conditions: "{{ repeat.item.call_type == 'z2m' }}"
-                  sequence:
-                    - variables:
-                        effects: "{{ repeat.item.effects }}"
-                    - repeat:
-                        for_each: "{{ repeat.item.entities }} "
-                        sequence:
-                          - service: mqtt.publish
-                            data:
-                              topic: >-
-                                {{ z2m_topic }}/{{ states[repeat.item].attributes.friendly_name }}/set
-                              payload: >-
-                                {% if LEDnumber_effect == 'all' %}
-                                  {"led_effect":{"color":"{{ color_set['off'] }}","duration":"{{ duration_values[duration] }}","effect":"{{ effects }}","level":"{{ (brightness * 256 / 10) | int }}" }}
-                                {% else %}
-                                  {"individual_led_effect": {"led": "{{ led_map[LEDnumber_effect]|int }}", "effect": "{{ effects }}", "color": "{{ color_set[color] }}", "level": "{{ (brightness * 256 / 10) | int }}", "duration": "{{ duration_values[duration] }}"}}
-                                {% endif %}
-
-            ### ZHA ###
-            - choose:
-                - conditions: "{{ repeat.item.call_type == 'zha' }}"
-                  sequence:
-                    - variables:
-                        effects: "{{ repeat.item.effects }}"
-                    - repeat:
-                        for_each: "{{ repeat.item.entities }} "
-                        sequence:
-                          - service: zha.issue_zigbee_cluster_command
-                            continue_on_error: true
-                            data:
-                              ieee: "{{ (device_attr(repeat.item, 'identifiers')|list).0.1 }}"
-                              endpoint_id: 1
-                              cluster_id: 64561
-                              cluster_type: in
-                              command: "{{ iif('all' in LEDnumber_effect,1,3) }}"
-                              command_type: server
-                              params: {"led_number":"{{ led_map[LEDnumber_effect]|int }}","led_effect":"{{ effects }}","led_color":0,"led_level":0,"led_duration":"{{ duration_values[duration] }}"}
-                              manufacturer: 4655
-
-            ### Matter ###
             - choose:
                 - conditions: "{{ repeat.item.call_type == 'matter' and repeat.item.device_type == 'VTM30SN-104' }}"
                   sequence:
