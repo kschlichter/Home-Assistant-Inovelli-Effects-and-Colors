@@ -59,7 +59,7 @@ max: 100 # Default max is 10, which might be an issue if you have a lot of switc
 #    min_version: 2025.04.0
 #  input:
 
-alias: Inovelli LED Settings and Effects Reordered
+alias: Inovelli LED Settings and Effects
 description: |
     Sets LED colors and effects on Inovelli "Black", "Red 500", "Red 800", "Blue", and "White" Series switches, dimmers, and fan controllers
     through the Zwave JS, ZHA, Zigbee2MQTT, and Matter integrations.  Devices from all series can be used together,
@@ -140,7 +140,7 @@ fields:
     selector:
       floor:
         multiple: true
-        device:
+        device: &inovelli_devices
           - integration: zwave_js
             manufacturer: Inovelli
             model: LZW30
@@ -223,79 +223,7 @@ fields:
     selector:
       area:
         multiple: true
-        device:
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW36
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: VZW31-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: VZW32-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM30-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM31-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM32-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM35-SN
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: mmWave Zigbee Dimmer (VZM32-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: mmWave Zigbee Dimmer
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: On/off switch
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan controller
-          - integration: matter
-            manufacturer: Inovelli
-            model: White Series On/Off Switch
-          - integration: matter
-            manufacturer: Inovelli
-            model: Inovelli On/Off Switch
-          - integration: matter
-            manufacturer: Inovelli
-            model: White Series Smart 2-1 Switch
-          - integration: matter
-            manufacturer: Inovelli
-            model: White Series Smart Fan Switch
+        device: *inovelli_devices
 
   group:
     name: Group
@@ -321,79 +249,7 @@ fields:
     selector:
       device:
         multiple: true
-        filter:
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW36
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: VZW31-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: VZW32-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM30-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM31-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM32-SN
-          - integration: zha
-            manufacturer: Inovelli
-            model: VZM35-SN
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli 2-in-1 switch + dimmer (VZM31-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: mmWave Zigbee Dimmer (VZM32-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: mmWave Zigbee Dimmer
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Inovelli Fan Controller (VZM35-SN)
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: On/off switch
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: 2-in-1 switch + dimmer
-          - integration: mqtt
-            manufacturer: Inovelli
-            model: Fan controller
-          - integration: matter
-            manufacturer: Inovelli
-            model: White Series On/Off Switch
-          - integration: matter
-            manufacturer: Inovelli
-            model: Inovelli On/Off Switch
-          - integration: matter
-            manufacturer: Inovelli
-            model: White Series Smart 2-1 Switch
-          - integration: matter
-            manufacturer: Inovelli
-            model: White Series Smart Fan Switch
+        filter: *inovelli_devices
 
   entity:
     name: Entity
@@ -450,7 +306,7 @@ fields:
     default: 'no change'
     selector:
       select:
-        options:
+        options: &LED_colors
           - "Off"
           - Red
           - Orange
@@ -478,7 +334,7 @@ fields:
     name: LED Color Custom Dict When On (non-effect). Blue Series only.
     description: |
       (LEDcolor_custom: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}") - Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
-    default: {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
+    default: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}"
     selector:
       text:
         multiline: true
@@ -493,35 +349,13 @@ fields:
     default: 'no change'
     selector:
       select:
-        options:
-          - "Off"
-          - Red
-          - Orange
-          - Lemon
-          - Yellow
-          - Lime
-          - Green
-          - Cyan
-          - Teal
-          - Aqua
-          - Blue
-          - Purple
-          - Violet
-          - Magenta
-          - Light Pink
-          - Pink
-          - Hot Pink
-          - White
-          - All Clear
-          - All Unicorn
-          - All USA
-          - All Custom Off
+        options: *LED_colors
 
   LEDcolor_off_custom:
     name: LED Color Custom Dict When Off (non-effect). Blue Series only.
     description: |
       (LEDcolor_off_custom: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}") - Sets the color of the LED status bar to a custom dictionary, which indicates brightness levels of the light.
-    default: {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
+    default: "{'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}"
     selector:
       text:
         multiline: true
@@ -619,25 +453,7 @@ fields:
     default: 'no change'
     selector:
       select:
-        options:
-          - "Off"
-          - Red
-          - Orange
-          - Lemon
-          - Yellow
-          - Lime
-          - Green
-          - Cyan
-          - Teal
-          - Aqua
-          - Blue
-          - Purple
-          - Violet
-          - Magenta
-          - Light Pink
-          - Pink
-          - Hot Pink
-          - White
+        options: *LED_colors
 
   duration:
     name: Duration of Effect
@@ -2392,7 +2208,7 @@ sequence:
             {% for device in device.device %}
               {% for effect_color in device_entities(device) %}
                 {% if 'inovelli on/off switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
-                      device_attr(device_id(effect_color), 'sw_version') <= version('1.1.0') %}
+                      device_attr(device_id(effect_color), 'sw_version') < version('1.1.0') %}
                   {% set entities.entities = entities.entities + [effect_color] %}
                 {% endif %}
               {% endfor %}
