@@ -546,6 +546,14 @@ variables:
 
 
   ##################
+  # Caching entities for reference below.
+  ##################
+  zwave_js_entities: "{{ integration_entities('zwave_js') }}"
+  zha_entities: "{{ integration_entities('zha') }}"
+  mqtt_entities: "{{ integration_entities('mqtt') }}"
+  matter_entities: "{{ integration_entities('matter') }}"
+  
+  ##################
   # Look-up tables for easy reference and future maintenance.
   ##################
   color_set:
@@ -1941,7 +1949,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if  is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' and ent in integration_entities('zwave_js') %}
+              {% if  is_device_attr(ent,'model','LZW30') and ent.split('.')[0] == 'switch' and ent in zwave_js_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -1952,7 +1960,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if  is_device_attr(ent,'model','LZW31') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+              {% if  is_device_attr(ent,'model','LZW31') and ent.split('.')[0] == 'light' and ent in zwave_js_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -1964,7 +1972,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'LZW30-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'switch' and ent in integration_entities('zwave_js') %}
+              {% if 'LZW30-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'switch' and ent in zwave_js_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -1976,7 +1984,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'LZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+              {% if 'LZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in zwave_js_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -1988,7 +1996,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+              {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in zwave_js_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2000,7 +2008,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent in integration_entities('zwave_js') %}
+              {% if 'LZW36' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent in zwave_js_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2012,7 +2020,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'VZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+              {% if 'VZW31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in zwave_js_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2024,7 +2032,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'VZW32-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zwave_js') %}
+              {% if 'VZW32-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in zwave_js_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2039,7 +2047,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if ('On/off switch' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM30-SN')) and ent.split('.')[0] == 'light' and ent in integration_entities('mqtt') %}
+              {% if ('On/off switch' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM30-SN')) and ent.split('.')[0] == 'light' and ent in mqtt_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2051,7 +2059,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if ('2-in-1 switch' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM31-SN')) and ent.split('.')[0] == 'light' and ent in integration_entities('mqtt') %}
+              {% if ('2-in-1 switch' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM31-SN')) and ent.split('.')[0] == 'light' and ent in mqtt_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2063,7 +2071,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if ('mmWave Zigbee Dimmer' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM32-SN')) and ent.split('.')[0] == 'light' and ent in integration_entities('mqtt') %}
+              {% if ('mmWave Zigbee Dimmer' in device_attr(ent,'model') or is_device_attr(ent,'model_id','VZM32-SN')) and ent.split('.')[0] == 'light' and ent in mqtt_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2075,7 +2083,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if ('fan controller' in (device_attr(ent,'model')|lower) or is_device_attr(ent,'model_id','VZM35-SN')) and ent.split('.')[0] == 'fan' and ent in integration_entities('mqtt') %}
+              {% if ('fan controller' in (device_attr(ent,'model')|lower) or is_device_attr(ent,'model_id','VZM35-SN')) and ent.split('.')[0] == 'fan' and ent in mqtt_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2090,7 +2098,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'VZM30-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zha') %}
+              {% if 'VZM30-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in zha_entities %}
                 {% set entities.entities = entities.entities + [ent] %} 
               {% endif %}
             {% endfor %}
@@ -2102,7 +2110,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'VZM31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zha') %}
+              {% if 'VZM31-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in zha_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2114,7 +2122,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'VZM32-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in integration_entities('zha') %}
+              {% if 'VZM32-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'light' and ent in zha_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2126,7 +2134,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'VZM35-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent in integration_entities('zha') %}
+              {% if 'VZM35-SN' in device_attr(ent,'model') and ent.split('.')[0] == 'fan' and ent in zha_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
@@ -2143,7 +2151,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in matter_entities %}
                 {% for led_bar in device_entities(device_id(ent)) %}
                   {% if 'red' in state_attr(led_bar,'options') | lower and led_bar not in entities.entities %}
                     {% set entities.entities = entities.entities + [led_bar] %}
@@ -2156,7 +2164,7 @@ sequence:
           brightness_on_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in matter_entities %}
                 {% for brightness_on in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_on,'options') | lower and brightness_on.split('_')[-1] == 'on' and brightness_on not in entities.entities %}
                     {% set entities.entities = entities.entities + [brightness_on] %}
@@ -2178,7 +2186,7 @@ sequence:
           brightness_off_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in matter_entities %}
                 {% for brightness_off in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_off,'options') | lower and brightness_off.split('_')[-1] == 'off' and brightness_off not in entities.entities %}
                     {% set entities.entities = entities.entities + [brightness_off] %}
@@ -2207,7 +2215,7 @@ sequence:
             {% endfor %}
             {% for device in device.device %}
               {% for effect_color in device_entities(device) %}
-                {% if 'inovelli on/off switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
+                {% if 'inovelli on/off switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in matter_entities and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
                       device_attr(device_id(effect_color), 'sw_version') < version('1.1.0') %}
                   {% set entities.entities = entities.entities + [effect_color] %}
                 {% endif %}
@@ -2218,7 +2226,7 @@ sequence:
           effect_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') %}
+              {% if 'inovelli on/off switch' in (device_attr(ent,'model') | lower ) and ent in matter_entities %}
                 {% for effect in device_entities(device_id(ent)) %}
                   {% if 'solid' in state_attr(effect,'options')|lower and effect not in entities.entities %}
                     {% set entities.entities = entities.entities + [effect] %}
@@ -2237,7 +2245,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in matter_entities and
                     device_attr(device_id(ent), 'sw_version') >= version('1.1.0') %}
                 {% for led_bar in device_entities(device_id(ent)) %}
                   {% if 'red' in state_attr(led_bar,'options') | lower and led_bar not in entities.entities %}
@@ -2251,7 +2259,7 @@ sequence:
           brightness_on_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in matter_entities and
                     device_attr(device_id(ent), 'sw_version') >= version('1.1.0') %}
                 {% for brightness_on in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_on,'options') | lower and brightness_on.split('_')[-1] == 'on' and brightness_on not in entities.entities %}
@@ -2274,7 +2282,7 @@ sequence:
           brightness_off_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in matter_entities and
                     device_attr(device_id(ent), 'sw_version') >= version('1.1.0') %}
                 {% for brightness_off in device_entities(device_id(ent)) %}
                   {% if '100' in state_attr(brightness_off,'options') | lower and brightness_off.split('_')[-1] == 'off' and brightness_off not in entities.entities %}
@@ -2304,7 +2312,7 @@ sequence:
             {% endfor %}
             {% for dev in device.device %}
               {% for effect_color in device_entities(dev) %}
-                {% if 'white series smart 2-1 switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in integration_entities('matter') and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
+                {% if 'white series smart 2-1 switch' in (device_attr(effect_color,'model') | lower ) and effect_color.split('.')[0] == 'light' and effect_color in matter_entities and 'color_temp' in state_attr(effect_color,'supported_color_modes') and
                       device_attr(device_id(effect_color), 'sw_version') >= version('1.1.0') %}
                   {% set entities.entities = entities.entities + [effect_color] %}
                 {% endif %}
@@ -2315,7 +2323,7 @@ sequence:
           effect_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and ent in matter_entities and
                     device_attr(device_id(ent), 'sw_version') >= version('1.1.0') %}
                 {% for effect in device_entities(device_id(ent)) %}
                   {% if 'solid' in state_attr(effect,'options')|lower and effect not in entities.entities %}
@@ -2332,7 +2340,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in matter_entities and
                     device_attr(device_id(ent), 'sw_version') < version('1.1.0') %}
                 {% set entities.entities = entities.entities + ['select.' + ent.split('.')[1].split('_light_1')[0] + '_led_color'] %}
               {% endif %}
@@ -2342,7 +2350,7 @@ sequence:
           effect_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in integration_entities('matter') and
+              {% if 'white series smart 2-1 switch' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'light' and ent in matter_entities and
                     device_attr(device_id(ent), 'sw_version') < version('1.1.0') %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
@@ -2355,7 +2363,7 @@ sequence:
           entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series smart fan switch' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
+              {% if 'white series smart fan switch' in (device_attr(ent,'model') | lower ) and not 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in matter_entities %}
                 {% set entities.entities = entities.entities + ['select.' + ent.split('.')[1].split('_light_1')[0] + '_led_color'] %}
               {% endif %}
             {% endfor %}
@@ -2364,7 +2372,7 @@ sequence:
           effect_entities: >-
             {% set entities = namespace(entities=[]) %}
             {% for ent in all_selected_entities %}
-              {% if 'white series smart fan switch' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in integration_entities('matter') %}
+              {% if 'white series smart fan switch' in (device_attr(ent,'model') | lower ) and 'color_temp' in state_attr(ent,'supported_color_modes') and ent.split('.')[0] == 'fan' and ent in matter_entities %}
                 {% set entities.entities = entities.entities + [ent] %}
               {% endif %}
             {% endfor %}
