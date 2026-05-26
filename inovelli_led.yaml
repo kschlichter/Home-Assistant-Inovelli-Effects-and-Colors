@@ -547,10 +547,26 @@ variables:
   ##################
   # Caching entities for reference below.
   ##################
-  zwave_js_entities: "{{ integration_entities('zwave_js') }}"
-  zha_entities: "{{ integration_entities('zha') }}"
-  mqtt_entities: "{{ integration_entities('mqtt') }}"
-  matter_entities: "{{ integration_entities('matter') }}"
+  #zwave_js_entities: "{{ integration_entities('zwave_js') }}"
+  #zha_entities: "{{ integration_entities('zha') }}"
+  #mqtt_entities: "{{ integration_entities('mqtt') }}"
+  #matter_entities: "{{ integration_entities('matter') }}"
+  zwave_js_entities: "{{  integration_entities('zwave_js')
+                          | select('is_device_attr', 'manufacturer', 'Inovelli')
+                          | select('match', '^(light|switch|fan)\\.')
+                          | list }}"
+  zha_entities:      "{{  integration_entities('zha')
+                          | select('is_device_attr', 'manufacturer', 'Inovelli')
+                          | select('match', '^(light|switch|fan)\\.')
+                          | list }}"
+  mqtt_entities:     "{{  integration_entities('mqtt')
+                          | select('is_device_attr', 'manufacturer', 'Inovelli')
+                          | select('match', '^(light|switch|fan)\\.')
+                          | list }}"
+  matter_entities:   "{{  integration_entities('matter')
+                          | select('is_device_attr', 'manufacturer', 'Inovelli')
+                          | select('match', '^(light|switch|fan)\\.')
+                          | list }}"
   
   ##################
   # Look-up tables for easy reference and future maintenance.
