@@ -29,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 72.502s
+#   Add two spaces to lines between label: and variables: 72.501s
 #   Comment out example:
 #   Switch input_* and script variables (1 place)
 #
@@ -531,17 +531,17 @@ variables:
   color:               !input color
   duration:            !input duration
 
-#  ### Script Variables
-#  selector_mode:   "{{ selector_mode   | default('any') }}"
-#  z2m_topic:       "{{ z2m_topic       | default('zigbee2mqtt') }}"
-#  allowed_domains: "{{ allowed_domains | default([]) }}"
-#  domain:          "{{ domain          | default([]) }}"
-#  label:           "{{ label           | default([]) }}"
-#  floor:           "{{ floor           | default([]) }}"
-#  area:            "{{ area            | default([]) }}"
-#  group:           "{{ group           | default([]) }}"
-#  device:          "{{ device          | default([]) }}"
-#  entity:          "{{ entity          | default([]) }}"
+  ### Script Variables
+  #selector_mode:   "{{ selector_mode   | default('any') }}"
+  #z2m_topic:       "{{ z2m_topic       | default('zigbee2mqtt') }}"
+  #allowed_domains: "{{ allowed_domains | default([]) }}"
+  #domain:          "{{ domain          | default([]) }}"
+  #label:           "{{ label           | default([]) }}"
+  #floor:           "{{ floor           | default([]) }}"
+  #area:            "{{ area            | default([]) }}"
+  #group:           "{{ group           | default([]) }}"
+  #device:          "{{ device          | default([]) }}"
+  #entity:          "{{ entity          | default([]) }}"
 
 
   ##################
@@ -2432,7 +2432,7 @@ sequence:
                 ### Red Series can't set individual LEDs so we'll filter out color sets and force 'all'.  Prefer no action over partial implementation of users' intents.  ###
                 - if:
                     - condition: template
-                      value_template: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 and 'VZW' in repeat.item.device_type and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
+                      value_template: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 and 'all' not in LEDcolor_off and LEDnumber == 'all' }}"
                   then:
                         - service: zwave_js.set_config_parameter
                           continue_on_error: true
