@@ -545,30 +545,6 @@ variables:
 
 
   ##################
-  # Caching entities for reference below.
-  ##################
-  #zwave_js_entities: "{{ integration_entities('zwave_js') }}"
-  #zha_entities: "{{ integration_entities('zha') }}"
-  #mqtt_entities: "{{ integration_entities('mqtt') }}"
-  #matter_entities: "{{ integration_entities('matter') }}"
-  zwave_js_entities: "{{  integration_entities('zwave_js')
-                          | select('is_device_attr', 'manufacturer', 'Inovelli')
-                          | select('match', '^(light|switch|fan)\\.')
-                          | list }}"
-  zha_entities:      "{{  integration_entities('zha')
-                          | select('is_device_attr', 'manufacturer', 'Inovelli')
-                          | select('match', '^(light|switch|fan)\\.')
-                          | list }}"
-  mqtt_entities:     "{{  integration_entities('mqtt')
-                          | select('is_device_attr', 'manufacturer', 'Inovelli')
-                          | select('match', '^(light|switch|fan)\\.')
-                          | list }}"
-  matter_entities:   "{{  integration_entities('matter')
-                          | select('is_device_attr', 'manufacturer', 'Inovelli')
-                          | select('match', '^(light|switch|fan)\\.')
-                          | list }}"
-  
-  ##################
   # Look-up tables for easy reference and future maintenance.
   ##################
   color_set:
@@ -1945,9 +1921,33 @@ sequence:
       color:               "{{ color                 | default('no change')    | lower }}"
       duration:            "{{ duration              | default(0)              | lower }}"
 
-  ##################
-  # Group entities by device type so the right integration and parameters can be used
-  ##################
+      ##################
+      # Caching entities for reference below.
+      ##################
+      zwave_js_entities: >
+        {{  integration_entities('zwave_js')
+            | select('is_device_attr', 'manufacturer', 'Inovelli')
+            | select('match', '^(' ~ (domains_allowed | join('|')) ~ ')\.')
+            | list }}
+      zha_entities: >
+        {{  integration_entities('zha')
+            | select('is_device_attr', 'manufacturer', 'Inovelli')
+            | select('match', '^(' ~ (domains_allowed | join('|')) ~ ')\.')
+            | list }}
+      mqtt_entities: >
+        {{  integration_entities('mqtt')
+            | select('is_device_attr', 'manufacturer', 'Inovelli')
+            | select('match', '^(' ~ (domains_allowed | join('|')) ~ ')\.')
+            | list }}
+      matter_entities: >
+        {{  integration_entities('matter')
+            | select('is_device_attr', 'manufacturer', 'Inovelli')
+            | select('match', '^(' ~ (domains_allowed | join('|')) ~ ')\.')
+            | list }}
+  
+      ##################
+      # Group entities by device type so the right integration and parameters can be used
+      ##################
       entity_models: >-
         {{ dict(zip(all_selected_entities, all_selected_entities | map('device_attr', 'model') | map('default', '', true))) }}
 
