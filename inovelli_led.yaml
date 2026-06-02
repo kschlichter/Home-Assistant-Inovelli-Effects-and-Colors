@@ -2625,13 +2625,100 @@ sequence:
                       led 5: defaultLed5IntensityWhenOff
                       led 6: defaultLed6IntensityWhenOff
                       led 7: defaultLed7IntensityWhenOff
+
+                ##################
+                # Z2M >= 2.11.0 batches all keys from an mqtt.publish now.
+                # (zigbee-herdsman-converters PR #12176) https://github.com/Koenkk/zigbee-herdsman-converters/pull/12176
+                # Each entity's Z2M version is read from its bridge device (via_device_id -> sw_version).
+                # Entities on older Z2M fall back to the individual-payload path below.
+                ##################
+                - variables:
+                    z2m_combined_payload_entities: >-
+                      {% set single_array = namespace(entity_list=[]) %}
+                      {% for mqtt_entity in repeat.item.entities %}
+                        {% set bridge = device_attr(device_id(mqtt_entity), 'via_device_id') %}
+                        {% set sw_version = device_attr(bridge, 'sw_version') if bridge else none %}
+                        {% set version = (sw_version | string | regex_findall('(\d+\.\d+\.\d+)') | first | default('0.0.0', true)).split('.') %}
+                        {% if (version[0] | int, version[1] | int, version[2] | int) >= (2, 11, 0) %}
+                          {% set single_array.entity_list = single_array.entity_list + [mqtt_entity] %}
+                        {% endif %}
+                      {% endfor %}
+                      {{ single_array.entity_list }}
+                    z2m_individual_payload_entities: >-
+                      {{ repeat.item.entities | reject('in', z2m_combined_payload_entities) | list }}
+
+                ### Single combined payload (Z2M >= 2.11.0) ###
+                - repeat:
+                    for_each: "{{ z2m_combined_payload_entities }}"
+                    sequence:
+                      - variables:
+                          entity: "{{ repeat.item }}"
+                          z2m_max_keys_per_payload: 16 ### reduce if Z2M gives MESSAGE_TOO_LONG errors; tradeoff is more mqtt.publish rounds.
+                          payload_map: >-
+                            {# Accumulate every requested LED setting into one dict, then publish it as a single SET payload. #}
+                            {% set leds = ['led 1','led 2','led 3','led 4','led 5','led 6','led 7','all'] %}
+                            {% set payload = namespace(map={}) %}
+
+                            {# LED strip color #}
+                            {% if LEDcolor != 'no change' and 'all' in LEDcolor and LEDnumber == 'all' %}
+                              {% for led in leds %}
+                                {% set payload.map = payload.map | combine({ z2m_color_on_key[led]: color_set[LEDcolor][led] }) %}
+                              {% endfor %}
+                            {% elif LEDcolor != 'no change' and 'all' not in LEDcolor %}
+                              {% set payload.map = payload.map | combine({ z2m_color_on_key[LEDnumber]: color_set[LEDcolor] }) %}
+                            {% endif %}
+
+                            {# LED strip color when off #}
+                            {% if LEDcolor_off != 'no change' and 'all' in LEDcolor_off and LEDnumber == 'all' %}
+                              {% for led in leds %}
+                                {% set payload.map = payload.map | combine({ z2m_color_off_key[led]: color_set[LEDcolor_off][led] }) %}
+                              {% endfor %}
+                            {% elif LEDcolor_off != 'no change' and 'all' not in LEDcolor_off %}
+                              {% set payload.map = payload.map | combine({ z2m_color_off_key[LEDnumber]: color_set[LEDcolor_off] }) %}
+                            {% endif %}
+
+                            {# LED strip brightness #}
+                            {% if int(LEDbrightness) != 11 and LEDnumber == 'all' and 'all' in LEDcolor %}
+                              {% for led in leds %}
+                                {% set payload.map = payload.map | combine({ z2m_brightness_on_key[led]: iif(LEDcolor == 'all clear' and 'led' in led, 101, (LEDbrightness * 10) | int) }) %}
+                              {% endfor %}
+                            {% elif int(LEDbrightness) != 11 %}
+                              {% set payload.map = payload.map | combine({ z2m_brightness_on_key[LEDnumber]: iif(LEDcolor == 'all clear', 101, (LEDbrightness * 10) | int) }) %}
+                            {% endif %}
+
+                            {# LED strip brightness when off #}
+                            {% if int(LEDbrightness_off) != 11 and LEDnumber == 'all' and 'all' in LEDcolor_off %}
+                              {% for led in leds %}
+                                {% set payload.map = payload.map | combine({ z2m_brightness_off_key[led]: iif(LEDcolor_off == 'all clear' and 'led' in led, 101, (LEDbrightness_off * 10) | int) }) %}
+                              {% endfor %}
+                            {% elif int(LEDbrightness_off) != 11 %}
+                              {% set payload.map = payload.map | combine({ z2m_brightness_off_key[LEDnumber]: iif(LEDcolor_off == 'all clear', 101, (LEDbrightness_off * 10) | int) }) %}
+                            {% endif %}
+
+                            {{ payload.map }}
+
+                          z2m_payload_chunks: >-
+                            {{ payload_map.items() | list | batch(z2m_max_keys_per_payload | int) | list }}
+                      - repeat:
+                          for_each: "{{ z2m_payload_chunks }}"
+                          sequence:
+                            - service: mqtt.publish
+                              continue_on_error: true
+                              data:
+                                topic: >-
+                                  {{ z2m_topic }}/{{ (device_attr(entity, 'identifiers') | list).0.1 | replace('zigbee2mqtt_', '') }}/set
+                                payload: "{{ dict(repeat.item) | to_json }}"
+
+                ##################
+                # Individual payloads (Z2M < 2.11.0 or undetectable)
+                ##################
                 ### LED strip color ###
                 - if:
                     - condition: template
                       value_template: "{{ LEDcolor != 'no change' }}"
                   then:
                         - repeat:
-                            for_each: "{{ repeat.item.entities }}"
+                            for_each: "{{ z2m_individual_payload_entities }}"
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
@@ -2672,7 +2759,7 @@ sequence:
                       value_template: "{{ LEDcolor_off != 'no change' }}"
                   then:
                         - repeat:
-                            for_each: "{{ repeat.item.entities }}"
+                            for_each: "{{ z2m_individual_payload_entities }}"
                             sequence:
                               - choose:
                                   ### Configuring a color set for all LEDs ###
@@ -2714,7 +2801,7 @@ sequence:
                   then:
                         - repeat:
                             for_each: |
-                              {{ repeat.item.entities }}
+                              {{ z2m_individual_payload_entities }}
                             sequence:
                               - choose:
                                   ### Configuring intensity for all LEDs ###
@@ -2756,7 +2843,7 @@ sequence:
                       value_template: "{{ LEDbrightness_off is defined and int(LEDbrightness_off) != 11 }}"
                   then:
                         - repeat:
-                            for_each: "{{ repeat.item.entities }}"
+                            for_each: "{{ z2m_individual_payload_entities }}"
                             sequence:
                               - choose:
                                   ### Configuring intensity for all LEDs ###
