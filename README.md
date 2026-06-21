@@ -12,7 +12,8 @@
     * [LZW31 Black 500 series Dimmer](https://inovelli.com/products/z-wave-black-series-smart-dimmer-switch)
     * [LZW30-SN Red 500 Series Switch](https://help.inovelli.com/en/articles/8453781-red-series-on-off-switch-manual)
     * [LZW31-SN Red 500 Series Dimmer](https://help.inovelli.com/en/articles/8319390-red-series-dimmer-switch-manual)
-    * [LZW36 Red 500 Series Fan / Light Combo](https://help.inovelli.com/en/articles/8483467-red-series-fan-light-switch-manual)
+    * [LZW36 Red 500 Series Fan/Light Combo](https://help.inovelli.com/en/articles/8483467-red-series-fan-light-switch-manual)
+    * [VZW30-SN Red 800 Series On/Off Switch](https://inovelli.com/collections/z-wave-light-switches-red-series/products/red-series-z-wave-smart-on-off-switch)
     * [VZW31-SN Red 800 Series 2-in-1 Dimmer](https://inovelli.com/products/z-wave-800-red-series-smart-2-1-on-off-dimmer-switch)
     * [VZW32-SN Red 800 Series mmWave Presence Dimmer](https://inovelli.com/collections/z-wave-light-switches-red-series/products/zwave-800-red-series-mmwave-presence-sensor-smart-dimmer-switch)
   * Zigbee2MQTT or ZHA:
