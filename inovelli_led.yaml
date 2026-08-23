@@ -29,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 71.504s
+#   Add two spaces to lines between label: and variables: 71.505s
 #   Comment out example:
 #   Switch input_* and script variables (1 place)
 #
@@ -416,6 +416,7 @@ fields:
         options:
           - "Off"
           - Clear Effect
+          - No Change
           - Aurora
           - Blink Fast
           - Blink Medium
@@ -634,6 +635,7 @@ variables:
   LZW30_effects:
     "off": 0
     clear effect: 0
+    no change: 0
     aurora: 0
     blink: 0
     blink fast: 0
@@ -662,6 +664,7 @@ variables:
   LZW31_effects:
     "off": 0
     clear effect: 0
+    no change: 0
     aurora: 0
     blink: 0
     blink fast: 0
@@ -690,6 +693,7 @@ variables:
   LZW30SN_effects:
     "off": 0
     clear effect: 0
+    no change: 0
     aurora: 4
     blink: 3
     blink fast: 2
@@ -718,6 +722,7 @@ variables:
   LZW31SN_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 4
     blink: 4
     blink fast: 3
@@ -746,6 +751,7 @@ variables:
   LZW36_light_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 4
     blink: 4
     blink fast: 3
@@ -773,6 +779,7 @@ variables:
   LZW36_fan_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 4
     blink: 4
     blink fast: 3
@@ -801,6 +808,7 @@ variables:
   VZW31SN_all_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -828,6 +836,7 @@ variables:
   VZW31SN_led_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 2
     blink fast: 2
@@ -856,6 +865,7 @@ variables:
   VZW30SN_all_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -883,6 +893,7 @@ variables:
   VZW30SN_led_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 2
     blink fast: 2
@@ -911,6 +922,7 @@ variables:
   VZW32SN_all_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -938,6 +950,7 @@ variables:
   VZW32SN_led_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 2
     blink fast: 2
@@ -966,6 +979,7 @@ variables:
   VZM30SN_ZHA_all_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -993,6 +1007,7 @@ variables:
   VZM30SN_ZHA_led_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 2
     blink fast: 2
@@ -1020,6 +1035,7 @@ variables:
   VZM30SN_Z2M_all_effects:
     "off": "off"
     clear effect: clear_effect
+    no change: no_change
     aurora: aurora
     blink: blink
     blink fast: fast_blink
@@ -1047,6 +1063,7 @@ variables:
   VZM30SN_Z2M_led_effects:
     "off": "off"
     clear effect: clear_effect
+    no change: no_change
     aurora: aurora
     blink: fast_blink
     blink fast: fast_blink
@@ -1075,6 +1092,7 @@ variables:
   VZM31SN_ZHA_all_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -1102,6 +1120,7 @@ variables:
   VZM31SN_ZHA_led_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 2
     blink fast: 2
@@ -1129,6 +1148,7 @@ variables:
   VZM31SN_Z2M_all_effects:
     "off": "off"
     clear effect: clear_effect
+    no change: no_change
     aurora: aurora
     blink: blink
     blink fast: fast_blink
@@ -1156,6 +1176,7 @@ variables:
   VZM31SN_Z2M_led_effects:
     "off": "off"
     clear effect: clear_effect
+    no change: no_change
     aurora: aurora
     blink: fast_blink
     blink fast: fast_blink
@@ -1184,6 +1205,7 @@ variables:
   VZM32SN_ZHA_all_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -1211,6 +1233,7 @@ variables:
   VZM32SN_ZHA_led_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 2
     blink fast: 2
@@ -1238,6 +1261,7 @@ variables:
   VZM32SN_Z2M_all_effects:
     "off": "off"
     clear effect: clear_effect
+    no change: no_change
     aurora: aurora
     blink: blink
     blink fast: fast_blink
@@ -1265,6 +1289,7 @@ variables:
   VZM32SN_Z2M_led_effects:
     "off": "off"
     clear effect: clear_effect
+    no change: no_change
     aurora: aurora
     blink: fast_blink
     blink fast: fast_blink
@@ -1293,6 +1318,7 @@ variables:
   VZM35SN_ZHA_all_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 15
     blink fast: 2
@@ -1320,6 +1346,7 @@ variables:
   VZM35SN_ZHA_led_effects:
     "off": 0
     clear effect: 255
+    no change: 255
     aurora: 8
     blink: 2
     blink fast: 2
@@ -1347,6 +1374,7 @@ variables:
   VZM35SN_Z2M_all_effects:
     "off": "off"
     clear effect: clear_effect
+    no change: no_change
     aurora: aurora
     blink: blink
     blink fast: fast_blink
@@ -1374,6 +1402,7 @@ variables:
   VZM35SN_Z2M_led_effects:
     "off": "off"
     clear effect: clear_effect
+    no change: no_change
     aurora: aurora
     blink: fast_blink
     blink fast: fast_blink
@@ -1402,6 +1431,7 @@ variables:
   VTM30SN_all_effects:
     "off": 0
     clear effect: 0
+    no change: 0
     aurora: "Middle Chase"
     blink: "Middle Blink"
     blink fast: "Fast Blink"
@@ -1450,6 +1480,7 @@ variables:
   VTM31SN_all_effects:
     "off": 0
     clear effect: 0
+    no change: 0
     aurora: "Middle Chase"
     blink: "Middle Blink"
     blink fast: "Fast Blink"
@@ -1498,6 +1529,7 @@ variables:
   VTM35SN_all_effects:
     "off": 0
     clear effect: 0
+    no change: 0
     aurora: 0
     blink: 0
     blink fast: 0
@@ -2495,7 +2527,7 @@ sequence:
         # Do not continue if we don't have at least one entity of this type
         ##################
         - condition: template
-          value_template: "{{ (repeat.item.entities | count >0) or (repeat.item.effect_entities | count >0) }}"
+          value_template: "{{ (repeat.item.entities | default([]) | count >0) or (repeat.item.effect_entities | default([]) | count >0) }}"
 
         ##################
         # Zwave JS
@@ -2588,6 +2620,7 @@ sequence:
             - conditions: >-
                 {{ effect != "off" and 
                    effect != "clear effect" and 
+                   effect != "no change" and 
                    color != "no change" and 
                    int(brightness) != 11 and 
                    duration != 'off' and 
@@ -2648,7 +2681,7 @@ sequence:
             - choose:
 
                 ### Red 500 Series ###
-                - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber_effect }}"
+                - conditions: "{{ repeat.item.call_type == 'zwave_js' and repeat.item.device_type != 'LZW30' and repeat.item.device_type != 'LZW31' and 'all' in LEDnumber_effect and effect != 'no change' }}"
                   sequence:
                     - variables:
                         effects: "{{ repeat.item.effects }}"
@@ -2675,7 +2708,7 @@ sequence:
                         value: "{{ duration_values[duration] }}"
 
                 ### Red 800 Series ###
-                - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type }}"
+                - conditions: "{{ repeat.item.call_type == 'zwave_js' and 'VZW' in repeat.item.device_type and effect != 'no change' }}"
                   sequence:
                     - variables:
                         effects: "{{ repeat.item.effects }}"
@@ -3002,6 +3035,7 @@ sequence:
             - conditions: >-
                 {{ effect != "off" and 
                 effect != "clear effect" and 
+                effect != "no change" and 
                 color != "no change" and 
                 int(brightness) != 11 and 
                 duration != 'off' and 
@@ -3031,7 +3065,7 @@ sequence:
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
             ##################
             - choose:
-                - conditions: "{{ repeat.item.call_type == 'z2m' }}"
+                - conditions: "{{ repeat.item.call_type == 'z2m' and effect != 'no change' }}"
                   sequence:
                     - variables:
                         effects: "{{ repeat.item.effects }}"
@@ -3311,6 +3345,7 @@ sequence:
             - conditions: >-
                 {{ effect != "off" and
                 effect != "clear effect" and
+                effect != "no change" and
                 color != "no change" and
                 int(brightness) != 11 and
                 duration != 'off' and
@@ -3340,7 +3375,7 @@ sequence:
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
             ##################
             - choose:
-                - conditions: "{{ repeat.item.call_type == 'zha' }}"
+                - conditions: "{{ repeat.item.call_type == 'zha' and effect != 'no change' }}"
                   sequence:
                     - variables:
                         effects: "{{ repeat.item.effects }}"
@@ -3450,6 +3485,7 @@ sequence:
             - conditions: >-
                 {{ effect != "off" and
                 effect != "clear effect" and
+                effect != "no change" and
                 color != "no change" and
                 int(brightness) != 11 and
                 duration != 'off' and
@@ -3511,19 +3547,19 @@ sequence:
             # It's also a safer way to fail since the worst case scenario is that an effect is cleared.
             ##################
             - choose:
-                - conditions: "{{ repeat.item.call_type == 'matter' and repeat.item.device_type == 'VTM30SN-104' }}"
+                - conditions: "{{ repeat.item.call_type == 'matter' and repeat.item.device_type == 'VTM30SN-104' and effect != 'no change' }}"
                   sequence:
                     - service: light.turn_off
                       continue_on_error: true
                       data:
                         entity_id: "{{ repeat.item.effect_color_entities }}"
-                - conditions: "{{ repeat.item.call_type == 'matter' and repeat.item.device_type == 'VTM31SN-115' }}"
+                - conditions: "{{ repeat.item.call_type == 'matter' and repeat.item.device_type == 'VTM31SN-115' and effect != 'no change' }}"
                   sequence:
                     - service: light.turn_off
                       continue_on_error: true
                       data:
                         entity_id: "{{ repeat.item.effect_color_entities }}"
-                - conditions: "{{ repeat.item.call_type == 'matter' and repeat.item.device_type != 'VTM31SN-115' }}"
+                - conditions: "{{ repeat.item.call_type == 'matter' and repeat.item.device_type != 'VTM31SN-115' and effect != 'no change' }}"
                   sequence:
                     - service: light.turn_off
                       continue_on_error: true
