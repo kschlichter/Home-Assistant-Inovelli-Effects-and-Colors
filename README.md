@@ -113,11 +113,12 @@ As a quick start you can follow these steps:
 
   All four parameters must be passed in order to change the effect.
 
-    - duration: (string) Either "Off", or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
     - effect: (string) Where older devices and individual LEDs don't support a given effect, that effect has been mapped to something that is supported.
+        Effects will default to being cleared if an invalid option is selected, or a parameter isn't defined.  This can be overridden by selecting `No Change`.  This preserves the behavior I've had since 2020 and the default behavior will not change.  
     - brightness: (integer 1 – 10) Sets the brightness of the LED's effect
     - color: (int or string) Sets color of LED effect and must be one of: "Off", Red, Orange, Lemon, Yellow, Lime, Green, Cyan, Teal, Aqua, Blue, Purple, Magenta, Violet, Light Pink, Pink, Hot Pink, White
         Color sets like "all usa" cannot be used with effects.  I can't think of a way to get all 7 LEDs synchronized for effects like "pulse" or "chase".
+    - duration: (string) Either "Off", or a whole integer followed by "Seconds", "Minutes", "Hours", "Indefinitely", or "Forever".
 
 
 ## Selector Mode:
@@ -341,6 +342,7 @@ data:
   LEDcolor_off: 'All USA'
   LEDbrightness: 8.6
   LEDbrightness_off: 0.4
+  effect: 'no change'
 ```
       
  **Configuring an LED color for one LED**
