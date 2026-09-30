@@ -3442,7 +3442,7 @@ sequence:
                 ### VTM31-SN FW < 1.0.5 and VTM35-SN
                 - if:
                     - condition: template
-                      value_template: "{{ LEDcolor != 'no change' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type != 'VTM31SN-115' }}"
+                      value_template: "{{ LEDcolor != 'no change' and 'all' not in LEDcolor and LEDnumber == 'all' and repeat.item.device_type not in ['VTM30SN-104', 'VTM31SN-115'] }}"
                   then:
                         - service: select.select_option
                           continue_on_error: true
