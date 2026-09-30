@@ -29,7 +29,7 @@
 #
 # Convert to blueprint:
 #   Switch blueprint: and script alias: lines
-#   Add two spaces to lines between label: and variables: 71.505s
+#   Add two spaces to lines between label: and variables: 71.513s
 #   Comment out example:
 #   Switch input_* and script variables (1 place)
 #
@@ -328,9 +328,17 @@ fields:
           - Hot Pink
           - White
           - All Clear
+          - All Custom On
+          - All Aurora
+          - All Christmas
+          - All Halloween
+          - All Hanukkah
+          - All Ireland
+          - All Ocean
+          - All Rainbow
+          - All Sunset
           - All Unicorn
           - All USA
-          - All Custom On
 
   LEDcolor_custom:
     name: LED Color Custom Dict When On (non-effect). Blue Series only.
@@ -571,10 +579,18 @@ variables:
     hot pink: 234
     white: 255
     "all clear": {'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}
-    "all unicorn": {'led 1':234,'led 2':234,'led 3':170,'led 4':170,'led 5':170,'led 6':85,'led 7':85,'all':0}
-    "all usa": {'led 1':170,'led 2':170,'led 3':255,'led 4':255,'led 5':0,'led 6':0,'led 7':0,'all':255}
     "all custom on": "{{ LEDcolor_custom | default({'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}) }}"
     "all custom off": "{{ LEDcolor_off_custom | default({'led 1':255,'led 2':255,'led 3':255,'led 4':255,'led 5':255,'led 6':255,'led 7':255,'all':0}) }}"
+    "all aurora":     {'led 1':85, 'led 2':85, 'led 3':127,'led 4':145,'led 5':190,'led 6':212,'led 7':200,'all':255}
+    "all christmas":  {'led 1':0,  'led 2':0, 'led 3':0,  'led 4':85, 'led 5':85,  'led 6':0, 'led 7':0,  'all':255}
+    "all halloween":  {'led 1':8,'led 2':8,  'led 3':85,'led 4':85,  'led 5':85,'led 6':8,  'led 7':8,'all':255}
+    "all hanukkah":   {'led 1':170,'led 2':170,'led 3':255,'led 4':255,'led 5':255,'led 6':170,'led 7':170,'all':255}
+    "all ireland":    {'led 1':85, 'led 2':85, 'led 3':255,'led 4':255,'led 5':255,  'led 6':8,  'led 7':8,  'all':255}
+    "all ocean":      {'led 1':127,'led 2':145,'led 3':155,'led 4':160,'led 5':165,'led 6':170,'led 7':170,'all':255}
+    "all rainbow":    {'led 1':0,  'led 2':8,  'led 3':42, 'led 4':85, 'led 5':170,'led 6':190,'led 7':234,'all':255}
+    "all sunset":     {'led 1':0,  'led 2':8,  'led 3':8,  'led 4':28,  'led 5':42, 'led 6':170, 'led 7':170, 'all':255}
+    "all unicorn": {'led 1':234,'led 2':234,'led 3':170,'led 4':170,'led 5':170,'led 6':85,'led 7':85,'all':255}
+    "all usa": {'led 1':170,'led 2':170,'led 3':255,'led 4':255,'led 5':0,'led 6':0,'led 7':0,'all':255}
   
   ### Blue Series ZHA Quirks says 1 – 7 but it seems to be 0 – 6 ###
   led_map:
