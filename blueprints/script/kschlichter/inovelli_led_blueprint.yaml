@@ -3519,7 +3519,7 @@ sequence:
                             entity_id: "{{ repeat.item.effect_color_entities }}"
                           data:
                             brightness_pct: "{{ (brightness * 10) | int }}"
-                            hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, 100 ]"
+                            hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, {{ iif(color == 'white',0,100) }} ]"
 
                         ### Effect type ###
                         - service: select.select_option
@@ -3555,7 +3555,7 @@ sequence:
                           target:
                             entity_id: "{{ repeat.item.effect_entities }}"
                           data:
-                            hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, 100 ]"
+                            hs_color: "[{{ ((color_set[color] / 255)*360) | round(1) }}, {{ iif(color == 'white',0,100) }} ]"
           default:
             ##################
             # Default will be to clear the effect and set the duration to 1 second.
