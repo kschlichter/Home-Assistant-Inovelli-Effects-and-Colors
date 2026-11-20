@@ -2032,7 +2032,7 @@ variables:
                          | reject('equalto', [])
                          | list %}
     {% if selector_mode == 'all' %}
-      {% set selector_array = namespace(selector_list=selectors[0]) %}
+      {% set selector_array = namespace(selector_list=(selectors[0] if selectors else [])) %}
       {% for i in range(1,selectors|count) %}
         {% set selector_array.selector_list = intersect(selectors[i], selector_array.selector_list) %}
       {% endfor %}
